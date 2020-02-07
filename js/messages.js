@@ -24,7 +24,16 @@ function parseMessage(message) {
   var robot = robots[0];
   switch(message.cmd) {
     case "triled":
-      robot.setTriLED(message.port, message.red, message.green, message.blue);
+      //finch tail leds only
+      if (message.port == "all") {
+        robot.setTriLED(2, message.red, message.green, message.blue);
+        robot.setTriLED(3, message.red, message.green, message.blue);
+        robot.setTriLED(4, message.red, message.green, message.blue);
+        robot.setTriLED(5, message.red, message.green, message.blue);
+      } else {
+        robot.setTriLED(message.port, message.red, message.green, message.blue);
+      }
+
       //robot.write(robot.setAllData);
       break;
 

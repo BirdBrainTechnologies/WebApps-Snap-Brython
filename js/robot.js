@@ -1,3 +1,5 @@
+const SET_ALL_INTERVAL = 30;
+
 function Robot(device) {
   this.device = device;
   this.fancyName = getDeviceFancyName(device.name);
@@ -7,11 +9,11 @@ function Robot(device) {
   this.type = Robot.getTypeFromName(device.name);
   console.log("type set to " + this.type);
   this.setAllData = Robot.initialSetAllFor(this.type);
+  this.oldSetAllData = this.setAllData.slice();
+  this.writeInProgress = false;
+  this.dataQueue = [];
 
-  var me = this;
-  this.setAllInterval = setInterval(function() {
-    me.write(me.setAllData);
-  }, 30);
+  this.setAllInterval = setInterval(this.sendSetAll.bind(this), SET_ALL_INTERVAL);
 }
 
 Robot.ofType = {
@@ -79,12 +81,25 @@ Robot.prototype.disconnect = function() {
 }
 
 Robot.prototype.write = function(data) {
+  if (this.writeInProgress) {
+    if (data != null) { this.dataQueue.push(data); }
+    setTimeout(this.write(null), SET_ALL_INTERVAL);
+    return;
+  }
+
+  this.writeInProgress = true;
+  if (this.dataQueue.length != 0) {
+    if (data != null) { this.dataQueue.push(data); }
+    data = this.dataQueue.shift();
+  }
   this.TX.writeValue(data).then(_ => {
       console.log('Wrote to ' + this.fancyName + ":");
       console.log(data);
+      this.writeInProgress = false;
     })
     .catch(error => {
-      console.log(error);
+      console.log("Error writting to " + this.fancyName + ": " + error);
+      this.writeInProgress = false;
     });
 }
 
@@ -100,6 +115,18 @@ Robot.prototype.updateSetAll = function(index, value) {
     return;
   }
   this.setAllData[index] = value;
+}
+
+Robot.prototype.sendSetAll = function() {
+  var setAllChanged = false;
+  for (var i = 0; i < this.setAllData.length; i++) {
+    if (this.setAllData[i] != this.oldSetAllData[i]) { setAllChanged = true; }
+  }
+  console.log("sendSetAll " + setAllChanged + " " + this.setAllData + this.oldSetAllData);
+  if (setAllChanged) {
+    this.write(this.setAllData);
+    this.oldSetAllData = this.setAllData.slice();
+  }
 }
 
 Robot.prototype.setLED = function(port, intensity) {
@@ -155,4 +182,15 @@ Robot.prototype.setTriLED = function(port, red, green, blue) {
   this.updateSetAll(index, red);
   this.updateSetAll(index + 1, green);
   this.updateSetAll(index + 2, blue);
+}
+
+Robot.prototype.setServo = function(port, value) {
+  if (!this.isA(Robot.ofType.HUMMINGBIRDBIT)) {
+    console.log("Only hummingbirds have servos.");
+    return
+  }
+  if (port < 1 || port > 4) {
+    console.log("setServo invalid port: " + port);
+  }
+  this.updateSetAll(port + 8, value);
 }
