@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8" />
+		<script src="js/jquery.js" ></script>
+		<link href="fontawesome/css/all.min.css" rel="stylesheet" type="text/css">
+		<link href="css/bootstrap.min.css" rel="stylesheet" type="text/css">
+	<!--	<link href="css/fonts.css" rel="stylesheet" type="text/css"> -->
+		<link href="css/custom.css" rel="stylesheet" type="text/css">
+	<!--	<link href="css/chromebook.css" rel="stylesheet" type="text/css"> -->
+		<link rel="icon"  type="image/png" href="img/icon_32x32.png">
+
+	</head>
+	<body>
+		<header id="main-header">
+			<div class="row">
+				<div class="col-xs-12">
+					<img id="birdbrain-logo" src="img/birdbrain-technologies-logo.svg" alt="BirdBrain Technologies LLC" />
+				</div>
+				<div id="indicators">
+					<div id="indicator-wifi" class="fa-stack /*indicator-on*/">
+						<i class="icon fas fa-fw fa-wifi fa-stack-2x"></i>
+						<i class="dot fas fa-circle fa-stack-1x"></i>
+					</div>
+					<div id="indicator-bluetooth" class="fa-stack /*indicator-on*/">
+						<i class="icon fab fa-fw fa-bluetooth fa-stack-2x"></i>
+						<i class="dot fas fa-circle fa-stack-1x"></i>
+					<!--	<i class="dot dot-spin fas fa-sync-alt fa-spin fa-stack-2x"></i> -->
+					</div>
+				</div>
+			</div>
+		</header>
+
+		<section id="finder">
+			<div class="container">
+				<div class="row">
+					<div class="col-xs-12 text-center">
+						<a id="find-button" class="btn btn-orange btn-lg" href="#">
+							<!-- <i class="fas fa-sync-alt /*fa-spin*/"></i> -->
+							<span id="findBtnText"> Find Robots</span>
+						</a>
+					</div>
+					<!-- for now, we must use the default popup. When the scanning api is ready we can use this again: https://github.com/WebBluetoothCG/web-bluetooth/blob/master/implementation-status.md
+					<div class="col-xs-12">
+						<div id="robots-found" class="robot-list">
+
+						</div>
+					</div>-->
+				</div>
+			</div>
+		</section>
+
+		<section id="connected">
+			<div class="container">
+				<div class="row">
+					<div class="col-xs-12 text-center">
+					    <h1 id="connection-state" style="visibility:hidden">Connected</h1>
+					</div>
+					<i id="startupState" class="dot dot-spin fas fa-sync-alt fa-spin fa-stack-2x"></i>
+					<div class="col-xs-12">
+						<div id="robots-connected" class="robot-list">
+
+						</div>
+					</div>
+					<div id="startProgramming" style="visibility:hidden">
+  					<div class="col-xs-12 text-center"><h1><span id="start_programming">Start Programming</span></h1></div>
+
+  					<div id="programming-buttons" class="col-xs-12 text-center">
+  						<a id="open-snap" class="btn btn-lg btn-orange launch-snap-btn"><img src="img/logo-snap.svg" alt="Snap!" /></a>
+  					</div>
+  				</div>
+				</div>
+			</div>
+		</section>
+
+		<!-- Include main code -->
+		<script src="js/robot.js"></script>
+		<script src="js/gui.js"></script>
+
+	</body>
+</html>
