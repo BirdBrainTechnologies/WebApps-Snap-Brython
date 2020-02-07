@@ -3,13 +3,16 @@ $('#finder').css("display", "block");
 //TODO: this is the spinner that you see instead of the connected robots list. Do we ever want this?
 $('#startupState').css("display", "none");
 
-
+setLanguage();
 
 var robots = []
-var deviceConnecting = null;
+var robotConnecting = null;
+var iframe = null; //a frame for snap
 
 $('#find-button').on('click', function(e) {
-  if (deviceConnecting) { return; }
+  if (robotConnecting) {
+    return;
+  }
   navigator.bluetooth.requestDevice({
       //acceptAllDevices: true
       filters: [{
@@ -20,7 +23,7 @@ $('#find-button').on('click', function(e) {
     .then(device => {
 
       console.log(device.name);
-      deviceConnecting = new Robot(device);
+      robotConnecting = new Robot(device);
       device.addEventListener('gattserverdisconnected', onDisconnected);
       // Attempts to connect to remote GATT Server.
       return device.gatt.connect();
@@ -33,17 +36,35 @@ $('#find-button').on('click', function(e) {
     .then(service => {
       console.log("getting characteristic from ")
       console.log(service)
-      // Getting Characteristics
-      service.getCharacteristic("6e400003-b5a3-f393-e0a9-e50e24dcca9e").then((char) => {
-        console.log(char)
-        deviceConnecting.RX = char;
-        if (deviceConnecting.TX != null) { onConnectionComplete(); }
-      })
-      service.getCharacteristic("6e400002-b5a3-f393-e0a9-e50e24dcca9e").then((char) => {
-        console.log(char)
-        deviceConnecting.TX = char;
-        if (deviceConnecting.RX != null) { onConnectionComplete(); }
-      })
+
+      // Get receiving Characteristics
+      service.getCharacteristic("6e400003-b5a3-f393-e0a9-e50e24dcca9e")
+        .then(characteristic => characteristic.startNotifications())
+        .then(characteristic => {
+          characteristic.addEventListener('characteristicvaluechanged',
+            onCharacteristicValueChanged);
+          console.log('Notifications have been started.');
+          robotConnecting.RX = characteristic;
+          if (robotConnecting.TX != null) {
+            onConnectionComplete();
+          }
+        })
+        .catch(error => {
+          console.log(error);
+        });
+
+      // Get sending Characteristics
+      service.getCharacteristic("6e400002-b5a3-f393-e0a9-e50e24dcca9e")
+        .then(characteristic => {
+          robotConnecting.TX = characteristic;
+          if (robotConnecting.RX != null) {
+            onConnectionComplete();
+          }
+        })
+        .catch(error => {
+          console.log(error);
+        });
+
     })
     .catch(error => {
       console.log(error);
@@ -51,16 +72,29 @@ $('#find-button').on('click', function(e) {
 });
 
 function onConnectionComplete() {
-  if (deviceConnecting == null || deviceConnecting.RX == null || deviceConnecting.TX == null) {
+  if (robotConnecting == null || robotConnecting.RX == null || robotConnecting.TX == null) {
     console.error("onConnectionComplete: incomplete connection");
     return;
   }
 
-  robots.push(deviceConnecting);
-  //updateConnectedDevices();
-  displayConnectedDevice(deviceConnecting);
+  //Start polling sensors
+  var pollStart = Uint8Array.of(62, 67);
+  var pollStop = Uint8Array.of(62, 73);
+  //robotConnecting.write(pollStart);
 
-  deviceConnecting = null;
+  //test command
+  //0xCA LED1 Reserved R1 G1 B1 R2 G2 B2 SS1 SS2 SS3 SS4 LED2 LED3 Time us(MSB) Time us(LSB) Time ms(MSB) Time ms(LSB)
+  //var command = new Uint8Array([0xCA, 255, 0, 0, 0, 0, 0, 0, 0, 255, 255, 255, 255, 0, 0, 0, 0, 0, 0]);
+  //robotConnecting.write(command);
+  //robotConnecting.setLED(1, 100);
+  robotConnecting.setTriLED(1, 255, 255, 255);
+  robotConnecting.write(robotConnecting.setAllData);
+
+  robots.push(robotConnecting);
+  updateConnectedDevices();
+  //displayConnectedDevice(robotConnecting);
+
+  robotConnecting = null;
 }
 
 function updateConnectedDevices() {
@@ -70,7 +104,9 @@ function updateConnectedDevices() {
     $('#startProgramming').css("visibility", "hidden");
   } else {
     $('#connection-state').css("visibility", "visible");
-    $('#startProgramming').css("visibility", "visible");
+    if (iframe == null) {
+      $('#startProgramming').css("visibility", "visible");
+    }
 
     robots.forEach(robot => {
       displayConnectedDevice(robot);
@@ -81,13 +117,14 @@ function updateConnectedDevices() {
 // Display connected deivce(s)
 function displayConnectedDevice(robot) {
   var deviceImage = "img/img-hummingbird-bit.svg"
-  var deviceFancyName = robot.name;
+  var deviceFancyName = robot.fancyName;
   var batteryDisplay = "style=\"display:inline-block\"";
 
-  if (robot.name.startsWith("MB")) {
+
+  if (robot.device.name.startsWith("MB")) {
     deviceImage = "img/img-bit.svg";
     batteryDisplay = "style=\"display:none\"";
-  } else if (robot.name.startsWith("FN")) {
+  } else if (robot.device.name.startsWith("FN")) {
     deviceImage = "img/img-finch.svg";
   }
 
@@ -107,14 +144,14 @@ function displayConnectedDevice(robot) {
     "                     <i class=\"fas fa-square fa-stack-2x\"></i>" +
     "                     <i class=\"fas fa-compass fa-stack-1x fa-inverse\"></i>" +
     "                   </span></a>" +
-    "                  </div>"+
+    "                  </div>" +
 
     //Disconnect Button
-    "                 <a class=\"button\" href=\"#\"><span class=\"button-disconnect fa-stack fa-2x\">"+
-    "                   <i class=\"fas fa-circle fa-stack-2x\"></i>"+
-    "                   <i class=\"fas fa-minus fa-stack-1x fa-inverse\"></i>"+
-    "                 </span></a>"+
-    "               </div>"+
+    "                 <a class=\"button\" href=\"#\"><span class=\"button-disconnect fa-stack fa-2x\">" +
+    "                   <i class=\"fas fa-circle fa-stack-2x\"></i>" +
+    "                   <i class=\"fas fa-minus fa-stack-1x fa-inverse\"></i>" +
+    "                 </span></a>" +
+    "               </div>" +
     "             </div>"
 
 
@@ -139,3 +176,20 @@ function onDisconnected(event) {
   let device = event.target;
   console.log('Device ' + device.name + ' is disconnected.');
 }
+
+function onCharacteristicValueChanged(event) {
+  var value = event.target.value;
+  console.log('Received ' + value);
+}
+
+$('#startProgramming').on('click', function(e) {
+  $('#startProgramming').css("visibility", "hidden");
+
+  //<iframe src="https://snap.berkeley.edu/snap/snap.html" width="100%" height="600">blabla</iframe>
+  iframe = document.createElement("iframe");
+  iframe.src = "https://snap.berkeley.edu/snap/snap.html";
+  iframe.width = "100%";
+  iframe.height = "600";
+
+  document.body.appendChild(iframe);
+})
