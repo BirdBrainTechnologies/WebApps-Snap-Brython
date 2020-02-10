@@ -82,15 +82,25 @@ Robot.prototype.disconnect = function() {
 
 Robot.prototype.write = function(data) {
   if (this.writeInProgress) {
-    if (data != null) { this.dataQueue.push(data); }
-    setTimeout(this.write(null), SET_ALL_INTERVAL);
+    console.log("Write already in progress. Pushing data to the queue.")
+    if (data != null) {
+      console.log(data);
+      this.dataQueue.push(data);
+    }
+    setTimeout(function() {
+      console.log("timeout");
+      this.write()
+    }.bind(this), SET_ALL_INTERVAL);
     return;
   }
 
+  console.log("About to write:");
+  console.log(data);
   this.writeInProgress = true;
   if (this.dataQueue.length != 0) {
     if (data != null) { this.dataQueue.push(data); }
     data = this.dataQueue.shift();
+    console.log(data);
   }
   this.TX.writeValue(data).then(_ => {
       console.log('Wrote to ' + this.fancyName + ":");
@@ -122,7 +132,7 @@ Robot.prototype.sendSetAll = function() {
   for (var i = 0; i < this.setAllData.length; i++) {
     if (this.setAllData[i] != this.oldSetAllData[i]) { setAllChanged = true; }
   }
-  console.log("sendSetAll " + setAllChanged + " " + this.setAllData + this.oldSetAllData);
+  //console.log("sendSetAll " + setAllChanged + " " + this.setAllData + " " + this.oldSetAllData);
   if (setAllChanged) {
     this.write(this.setAllData);
     this.oldSetAllData = this.setAllData.slice();

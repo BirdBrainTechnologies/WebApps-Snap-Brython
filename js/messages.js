@@ -44,9 +44,11 @@ function parseMessage(message) {
 
 function sendMessage(message) {
   if (messagePort == undefined) {
-    console.log("Message channel not set up. Trying to send: " + message);
+    //console.log("Message channel not set up. Trying to send: ");
+    //console.log(message);
     return;
   }
-  console.log("Sending: " + message);
+  //console.log("Sending: ");
+  //console.log(message);
   messagePort.postMessage(message);
 }

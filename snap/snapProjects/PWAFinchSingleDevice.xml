@@ -120,46 +120,56 @@
                 <input type="%txt" readonly="true">Right<options>Left&#xD;Right</options></input>
             </inputs>
             <script>
-                <block s="doDeclareVariables">
-                    <list>
-                        <l>value</l>
-                    </list>
+              <block s="doReport">
+                <block s="evaluate">
+                  <block s="reportJSFunction">
+                      <list>
+                          <l>port</l>
+                      </list>
+                      <l>
+                        if (window.birdbrain === undefined || window.birdbrain.sensorData === undefined) {
+                          window.birdbrain = window.birdbrain || {};
+                          window.birdbrain.sensorData = {};
+                          window.birdbrain.sensorData.A = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
+                          window.birdbrain.sensorData.B = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
+                          window.birdbrain.sensorData.C = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
+
+                          console.log("setting up message channel")
+                          window.birdbrain.messageChannel = new MessageChannel();
+                          window.birdbrain.messageChannel.port1.onmessage = function (e) {
+                              //console.log("Got a message: ");
+                              //console.log(e.data);
+
+                              window.birdbrain.sensorData.A = e.data.sensorData;
+                          }
+                          window.parent.postMessage("hello from snap", "*", [window.birdbrain.messageChannel.port2]);
+                        } else {
+                          console.log("message channel already set up");
+                        }
+
+                        if (window.birdbrain.getLight === undefined) {
+                          window.birdbrain.getLight = function (port, robot) {
+                            switch (port) {
+                              case 'Right':
+                                return window.birdbrain.sensorData.A[3];
+                              case 'Left':
+                                return window.birdbrain.sensorData.A[2];
+                              default:
+                                console.log("unknown light port " + port);
+                                return 0;
+                            }
+                          }
+                        }
+
+                        return window.birdbrain.getLight(port, 'A');
+
+                      </l>
+                  </block>
+                  <list>
+                      <block var="port"/>
+                  </list>
                 </block>
-                <block s="doSetVar">
-                    <l>value</l>
-                    <block s="reportURL">
-                        <block s="reportJoinWords">
-                            <list>
-                                <l>http://127.0.0.1:30061/hummingbird/in/Light/</l>
-                                <block var="port"/>
-                            </list>
-                        </block>
-                    </block>
-                </block>
-                <block s="doIfElse">
-                    <block s="reportNot">
-                        <block s="reportEquals">
-                            <block var="value"/>
-                            <l>Not Connected</l>
-                        </block>
-                    </block>
-                    <script>
-                        <block s="doReport">
-                            <block s="reportRound">
-                                <block s="reportProduct">
-                                    <l>0.392</l>
-                                    <block var="value"/>
-                                    <comment w="140" collapsed="false">100/255 Scaling factor</comment>
-                                </block>
-                            </block>
-                        </block>
-                    </script>
-                    <script>
-                        <block s="doReport">
-                            <l>Not Connected</l>
-                        </block>
-                    </script>
-                </block>
+              </block>
             </script>
         </block-definition>
         <block-definition s="Finch %&apos;port&apos; Line" type="reporter" category="sensing">
@@ -1054,56 +1064,6 @@ window.birdbrain.triLEDs.setLEDIntensities(realPort, [rednum, greennum, bluenum]
                     <l>0</l>
                 </block>
             </script>
-            <scripts>
-                <script x="251.42857142857144" y="108.85714285714293">
-                    <block s="doSetVar">
-                        <l>redLED</l>
-                        <block s="reportRound">
-                            <block s="reportProduct">
-                                <block var="redLED"/>
-                                <l>2.55</l>
-                                <comment w="90" collapsed="false">Scale factor 255/100</comment>
-                            </block>
-                        </block>
-                    </block>
-                    <block s="doSetVar">
-                        <l>blueLED</l>
-                        <block s="reportRound">
-                            <block s="reportProduct">
-                                <block var="blueLED"/>
-                                <l>2.55</l>
-                                <comment w="90" collapsed="false">Scale factor 255/100</comment>
-                            </block>
-                        </block>
-                    </block>
-                    <block s="doSetVar">
-                        <l>greenLED</l>
-                        <block s="reportRound">
-                            <block s="reportProduct">
-                                <block var="greenLED"/>
-                                <l>2.55</l>
-                                <comment w="90" collapsed="false">Scale factor 255/100</comment>
-                            </block>
-                        </block>
-                    </block>
-                    <block s="doReport">
-                        <block s="reportURL">
-                            <block s="reportJoinWords">
-                                <list>
-                                    <l>http://127.0.0.1:30061/hummingbird/out/triled/</l>
-                                    <l></l>
-                                    <l>/</l>
-                                    <l></l>
-                                    <l>/</l>
-                                    <l></l>
-                                    <l>/</l>
-                                    <l></l>
-                                </list>
-                            </block>
-                        </block>
-                    </block>
-                </script>
-            </scripts>
         </block-definition>
         <block-definition s="Finch Tail %&apos;port&apos; R %&apos;redLED&apos; % G %&apos;greenLED&apos; % B %&apos;blueLED&apos; %"
                 type="command" category="looks">
