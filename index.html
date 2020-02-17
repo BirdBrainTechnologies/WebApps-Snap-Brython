@@ -2,6 +2,16 @@
 <html>
 	<head>
 		<meta charset="UTF-8" />
+
+		<!-- iOS meta tags and icons -->
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+		<meta name="apple-mobile-web-app-title" content="BirdBrain PWA">
+		<link rel="apple-touch-icon" href="/img/icon_152x152.png">
+
+		<!-- PWA manifest -->
+		<link rel="manifest" href="/manifest.json">
+
 		<script src="js/jquery.js" ></script>
 		<link href="fontawesome/css/all.min.css" rel="stylesheet" type="text/css">
 		<link href="css/bootstrap.min.css" rel="stylesheet" type="text/css">
@@ -26,6 +36,11 @@
 						<i class="icon fab fa-fw fa-bluetooth fa-stack-2x"></i>
 						<i class="dot fas fa-circle fa-stack-1x"></i>
 					<!--	<i class="dot dot-spin fas fa-sync-alt fa-spin fa-stack-2x"></i> -->
+					</div>
+					<div>
+						<button id="butInstall" aria-label="Install" hidden>
+							<i class="fas fa-download"></i>
+						</button>
 					</div>
 				</div>
 			</div>
@@ -74,11 +89,25 @@
 		</section>
 
 		<!-- Include main code -->
-		<script src="js/utilities.js"></script>
+		<script src="js/install.js"></script>
+		<script src="js/fancyNames.js"></script>
+		<script src="js/translations.js"></script>
 		<script src="js/robot.js"></script>
 		<script src="js/messages.js"></script>
 		<script src="js/ble.js"></script>
 		<script src="js/gui.js"></script>
+
+		<script>
+	    // Register service worker.
+	    if ('serviceWorker' in navigator) {
+	      window.addEventListener('load', () => {
+	        navigator.serviceWorker.register('/service-worker.js')
+	          .then((reg) => {
+	            console.log('Service worker registered.', reg);
+	          });
+	      });
+	    }
+  	</script>
 
 	</body>
 </html>
