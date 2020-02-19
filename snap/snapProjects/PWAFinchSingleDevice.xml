@@ -1377,17 +1377,7 @@ window.birdbrain.triLEDs.setLEDIntensities(realPort, [rednum, greennum, bluenum]
                                 r4c1, r4c2, r4c3, r4c4, r4c5, r5c1, r5c2, r5c3, r5c4, r5c5
                             </l>
                         </list>
-                        <l>////////////////////////////////////////////////////////////////////////////////
-                            // In order to avoid sending more messages than the app can handle, whenever we
-                            // send a message we also save it in a persistent global variable. When the
-                            // message is processed in the app, the callback checks if the global variable
-                            // still matches what it was changed to. If it was, it deletes the global
-                            // variable. Otherwise the message is resent with new data.
-                            //
-                            // When this block is called it checks if the global value has been set. If it
-                            // has, it sends a message. Otherwise it just updates the value and lets the
-                            // callback handle it.
-
+                        <l>
                             // Create url representation from inputs
                             var symbolString = r1c1 + "\/"+ r1c2 + "\/"+ r1c3 + "\/"+ r1c4 + "\/"+ r1c5 + "\/" +
                              r2c1 + "\/"+ r2c2 + "\/"+ r2c3 + "\/"+ r2c4 + "\/"+ r2c5 + "\/" +
@@ -1395,51 +1385,22 @@ window.birdbrain.triLEDs.setLEDIntensities(realPort, [rednum, greennum, bluenum]
                              r4c1 + "\/"+ r4c2 + "\/"+ r4c3 + "\/"+ r4c4 + "\/"+ r4c5 + "\/" +
                              r5c1 + "\/"+ r5c2 + "\/"+ r5c3 + "\/"+ r5c4 + "\/"+ r5c5 ;
 
-                            //r1c1, r1c2, r1c3, r1c4, r1c5, r2c1, r2c2, r2c3, r2c4, r2c5, r3c1, r3c2, r3c3, r3c4,
-                            r3c5, r4c1, r4c2, r4c3, r4c4, r4c5, r5c1, r5c2, r5c3, r5c4, r5c5
 
                             // We can&apos;t run code beforehand to define values so we must check each block
                             // call if they are set.
-                            if (window.birdbrain === undefined || window.birdbrain.symbolObj === undefined) {
+                            if (window.birdbrain === undefined || window.birdbrain.setSymbol === undefined) {
                                 window.birdbrain = window.birdbrain || {};
-                                window.birdbrain.symbolObj = {
-                                    // By attaching this function to a global variable, it is only
-                                    // defined once instead of every time this block is called, improving
-                                    // performance significantly.
-                                    printSymbol: function(symbol) {
-                                        function callback() {
-                                            if (window.birdbrain.symbolObj.symbolToPrint === symbol) { // Check if arrays are equal
-                                                delete window.birdbrain.symbolObj.symbolToPrint;
-                                            } else {
-                                                window.birdbrain.symbolObj.printSymbol(window.birdbrain.symbolObj.symbolToPrint);
-                                            }
-                                        }
-                                        //Create a new XMLHttpRequest object
-                                        var xhr = new XMLHttpRequest();
-                                        var symbolURL = "http://127.0.0.1:30061/hummingbird/out/symbol/A/" + symbol;
-                                        xhr.open("GET", symbolURL, true);
-                                        xhr.onload = function (e) {
-                                            if (xhr.readyState === 4) {
-                                                if (xhr.status === 200) {
-                                                    callback();
-                                                } else {
-                                                    console.error(xhr.statusText);
-                                                }
-                                            }
-                                        };
-                                        xhr.onerror = function (e) {
-                                            console.error(xhr.statusText);
-                                        };
-                                        xhr.send(null);
+                                window.birdbrain.setSymbol = function (symbolString) {
+                                    var thisCommand = {
+                                      cmd: "symbol",
+                                      symbolString: symbolString
                                     }
+
+                                    window.parent.postMessage(thisCommand, "*");
                                 }
                             }
 
-                            if (window.birdbrain.symbolObj.symbolToPrint === undefined) {
-                                window.birdbrain.symbolObj.printSymbol(symbolString);
-                            }
-                            window.birdbrain.symbolObj.symbolToPrint = symbolString;
-
+                            window.birdbrain.setSymbol(symbolString);
                         </l>
                     </block>
                     <list>

@@ -40,6 +40,10 @@ function parseMessage(message) {
       robot.setBuzzer(message.note, message.duration)
 
       break;
+    case "symbol":
+      robot.setSymbol(message.symbolString)
+
+      break;
     default:
       console.log("Command not implemented: " + message.cmd);
   }

@@ -37,12 +37,13 @@ function displayConnectedDevice(robot) {
   var deviceLetter = robot.devLetter;
   var batteryDisplay = "style=\"display:inline-block\"";
 
-
-  if (robot.device.name.startsWith("MB")) {
-    deviceImage = "img/img-bit.svg";
-    batteryDisplay = "style=\"display:none\"";
-  } else if (robot.device.name.startsWith("FN")) {
-    deviceImage = "img/img-finch.svg";
+  switch (robot.type) {
+    case Robot.ofType.MICROBIT:
+      deviceImage = "img/img-bit.svg";
+      batteryDisplay = "style=\"display:none\"";
+      break;
+    case Robot.ofType.FINCH:
+      deviceImage = "img/img-finch.svg";
   }
 
   var el = $(
@@ -87,6 +88,7 @@ function displayConnectedDevice(robot) {
   robot.displayElement = el; //TODO: need this?
 
   $('#robots-connected').append(el);
+  updateBatteryStatus();
 }
 
 
@@ -112,7 +114,7 @@ function updateBatteryStatus() {
   $(battSelector).removeClass("fa-battery-quarter");
 
   robots.forEach(function (robot) {
-    console.log("Updating battery status for " + robot.devLetter + " to " + robot.batteryLevel)
+    console.log("Updating battery status for " + robot.devLetter + " of type " + robot.type + " to " + robot.batteryLevel)
     battSelector = '.button-battery-' + robot.devLetter + ' i';
 
     switch (robot.batteryLevel) {
