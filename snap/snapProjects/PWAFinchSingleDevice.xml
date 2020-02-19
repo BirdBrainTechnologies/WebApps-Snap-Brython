@@ -52,18 +52,27 @@
           <script>
             <block s="doRun">
                 <block s="reportJSFunction">
+                  <list></list>
                     <l>
-                      if (window.messageChannel == null)  {
+                      if (window.birdbrain === undefined || window.birdbrain.sensorData === undefined) {
+                        window.birdbrain = window.birdbrain || {};
+                        window.birdbrain.sensorData = {};
+                        window.birdbrain.sensorData.A = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
+                        window.birdbrain.sensorData.B = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
+                        window.birdbrain.sensorData.C = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
+
                         console.log("setting up message channel")
-                        window.messageChannel = new MessageChannel();
-                        window.messageChannel.port1.onmessage = function (e) {
-                            console.log("Got a message: " + e.data);
-
-
+                        window.birdbrain.messageChannel = new MessageChannel();
+                        window.birdbrain.messageChannel.port1.onmessage = function (e) {
+                            //console.log("Got a message: ");
+                            //console.log(e.data);
+                            if (e.data.sensorData != null) {
+                              window.birdbrain.sensorData.A = e.data.sensorData;
+                            }
                         }
-                        window.parent.postMessage("hello from snap", "*", [window.messageChannel.port2]);
+                        window.parent.postMessage("hello from snap", "*", [window.birdbrain.messageChannel.port2]);
                       } else {
-                        console.log("channel already set up")
+                        console.log("message channel already set up");
                       }
                     </l>
                 </block>
@@ -139,8 +148,9 @@
                           window.birdbrain.messageChannel.port1.onmessage = function (e) {
                               //console.log("Got a message: ");
                               //console.log(e.data);
-
-                              window.birdbrain.sensorData.A = e.data.sensorData;
+                              if (e.data.sensorData != null) {
+                                window.birdbrain.sensorData.A = e.data.sensorData;
+                              }
                           }
                           window.parent.postMessage("hello from snap", "*", [window.birdbrain.messageChannel.port2]);
                         } else {
@@ -180,41 +190,40 @@
                 <input type="%txt" readonly="true">Right<options>Left&#xD;Right</options></input>
             </inputs>
             <script>
-                <block s="doDeclareVariables">
+                <custom-block s="Message Channel Setup"></custom-block>
+                <block s="doReport">
+                  <block s="evaluate">
+                    <block s="reportJSFunction">
+                        <list>
+                            <l>port</l>
+                        </list>
+                        <l>
+                          if (window.birdbrain.getLine === undefined) {
+                            window.birdbrain.getLine = function (port, robot) {
+                              var returnVal = 0;
+                              switch (port) {
+                                case 'Right':
+                                  returnVal = window.birdbrain.sensorData.A[5];
+                                  break;
+                                case 'Left':
+                                  returnVal = window.birdbrain.sensorData.A[4];
+                                  //first bit is for position control
+                                  returnVal = (0x7F & returnVal)
+                                  break;
+                                default:
+                                  console.log("unknown line port " + port);
+                              }
+                              return (100 - returnVal)
+                            }
+                          }
+
+                          return window.birdbrain.getLine(port, 'A');
+                        </l>
+                    </block>
                     <list>
-                        <l>value</l>
+                        <block var="port"/>
                     </list>
-                </block>
-                <block s="doSetVar">
-                    <l>value</l>
-                    <block s="reportURL">
-                        <block s="reportJoinWords">
-                            <list>
-                                <l>http://127.0.0.1:30061/hummingbird/in/Line/</l>
-                                <block var="port"/>
-                            </list>
-                        </block>
-                    </block>
-                </block>
-                <block s="doIfElse">
-                    <block s="reportNot">
-                        <block s="reportEquals">
-                            <block var="value"/>
-                            <l>Not Connected</l>
-                        </block>
-                    </block>
-                    <script>
-                        <block s="doReport">
-                            <block s="reportRound">
-                                <block var="value"/>
-                            </block>
-                        </block>
-                    </script>
-                    <script>
-                        <block s="doReport">
-                            <l>Not Connected</l>
-                        </block>
-                    </script>
+                  </block>
                 </block>
             </script>
         </block-definition>
@@ -226,40 +235,47 @@
                 <input type="%txt" readonly="true">Right<options>Left&#xD;Right</options></input>
             </inputs>
             <script>
-                <block s="doDeclareVariables">
-                    <list>
-                        <l>value</l>
-                    </list>
+              <custom-block s="Message Channel Setup"></custom-block>
+              <block s="doReport">
+                <block s="evaluate">
+                  <block s="reportJSFunction">
+                      <list>
+                          <l>port</l>
+                      </list>
+                      <l>
+                        if (window.birdbrain.getEncoder === undefined) {
+                          window.birdbrain.getEncoder = function (port, robot) {
+                            let TICKS_PER_ROTATION = 792
+                            var msb = 0;
+                            var ssb = 0;
+                            var lsb = 0;
+                            switch (port) {
+                              case 'Right':
+                                msb = window.birdbrain.sensorData.A[10];
+                                ssb = window.birdbrain.sensorData.A[11];
+                                lsb = window.birdbrain.sensorData.A[12];
+                                break;
+                              case 'Left':
+                                msb = window.birdbrain.sensorData.A[7];
+                                ssb = window.birdbrain.sensorData.A[8];
+                                lsb = window.birdbrain.sensorData.A[9];
+                                break;
+                              default:
+                                console.log("unknown encoder port " + port);
+                            }
+                            var encoder = msb &lt;&lt; 16 | ssb &lt;&lt; 8 | lsb
+                            return Math.round( encoder * 10 / TICKS_PER_ROTATION ) / 10
+                          }
+                        }
+
+                        return window.birdbrain.getEncoder(port, 'A');
+                      </l>
+                  </block>
+                  <list>
+                      <block var="port"/>
+                  </list>
                 </block>
-                <block s="doSetVar">
-                    <l>value</l>
-                    <block s="reportURL">
-                        <block s="reportJoinWords">
-                            <list>
-                                <l>http://127.0.0.1:30061/hummingbird/in/Encoder/</l>
-                                <block var="port"/>
-                            </list>
-                        </block>
-                    </block>
-                </block>
-                <block s="doIfElse">
-                    <block s="reportNot">
-                        <block s="reportEquals">
-                            <block var="value"/>
-                            <l>Not Connected</l>
-                        </block>
-                    </block>
-                    <script>
-                        <block s="doReport">
-                            <block var="value"/>
-                        </block>
-                    </script>
-                    <script>
-                        <block s="doReport">
-                            <l>Not Connected</l>
-                        </block>
-                    </script>
-                </block>
+              </block>
             </script>
         </block-definition>
         <block-definition s="Finch Reset Encoders" type="command" category="sensing">
@@ -362,22 +378,31 @@
                     </block>
                 </block>
                 <block s="doRun">
-                    <block s="reifyReporter">
-                        <autolambda>
-                            <block s="reportURL">
-                                <block s="reportJoinWords">
-                                    <list>
-                                        <l>http://127.0.0.1:30061/hummingbird/out/playnote/</l>
-                                        <block var="note"/>
-                                        <l>/</l>
-                                        <block var="beats"/>
-                                    </list>
-                                </block>
-                            </block>
-                        </autolambda>
-                        <list></list>
-                    </block>
-                    <list></list>
+                  <block s="reportJSFunction">
+                      <list>
+                          <l>note</l>
+                          <l>duration</l>
+                      </list>
+                      <l>
+                        if (window.birdbrain === undefined || window.birdbrain.playNote === undefined) {
+                            window.birdbrain = window.birdbrain || {};
+                            window.birdbrain.playNote = function (note, duration){
+                              var thisCommand = {
+                                cmd: "playNote",
+                                note: note,
+                                duration: duration
+                                }
+                              window.parent.postMessage(thisCommand, "*");
+                            }
+                        }
+
+                        window.birdbrain.playNote(note, duration)
+                      </l>
+                  </block>
+                  <list>
+                      <block var="note"/>
+                      <block var="beats"/>
+                  </list>
                 </block>
                 <block s="doWait">
                     <block s="reportQuotient">

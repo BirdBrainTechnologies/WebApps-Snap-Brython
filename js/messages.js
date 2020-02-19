@@ -36,7 +36,10 @@ function parseMessage(message) {
 
       //robot.write(robot.setAllData);
       break;
+    case "playNote":
+      robot.setBuzzer(message.note, message.duration)
 
+      break;
     default:
       console.log("Command not implemented: " + message.cmd);
   }

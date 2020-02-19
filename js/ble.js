@@ -1,8 +1,9 @@
+const MAX_CONNECTIONS = 3;
 var robots = []
 var robotConnecting = null;
 
 function findAndConnect() {
-  if (robotConnecting) {
+  if (robotConnecting || robots.length == MAX_CONNECTIONS) {
     return;
   }
   navigator.bluetooth.requestDevice({
@@ -15,7 +16,9 @@ function findAndConnect() {
     .then(device => {
 
       console.log(device.name);
-      robotConnecting = new Robot(device);
+      const devLetter = getNextDevLetter();
+      console.log("setting dev letter " + devLetter);
+      robotConnecting = new Robot(device, devLetter);
       device.addEventListener('gattserverdisconnected', onDisconnected);
       // Attempts to connect to remote GATT Server.
       return device.gatt.connect();
@@ -99,5 +102,48 @@ function onCharacteristicValueChanged(event) {
   var deviceName = event.target.service.device.name;
   //console.log('Received from ' + deviceName + ":");
   //console.log(dataArray);
-  sendMessage({sensorData: dataArray});
+  const robot = getRobotByName(deviceName)
+  if (robot != null && dataArray != null) {
+    robot.receiveSensorData(dataArray)
+    sendMessage({
+      robot: robot.devLetter,
+      sensorData: dataArray
+    });
+  }
+}
+
+function getRobotByName(name) {
+  for (let i = 0; i < robots.length; i++) {
+    if (robots[i].device.name === name) {
+      return robots[i]
+    }
+  }
+  return null
+}
+
+function getNextDevLetter() {
+  let letter = 'A';
+  if (!devLetterUsed(letter)) {
+    return letter;
+  } else {
+    letter = 'B'
+    if (!devLetterUsed(letter)) {
+      return letter;
+    } else {
+      letter = 'C'
+      if (!devLetterUsed(letter)) {
+        return letter;
+      } else {
+        return null
+      }
+    }
+  }
+}
+
+function devLetterUsed(letter) {
+  var letterFound = false;
+  for (let i = 0; i < robots.length; i++) {
+    if (robots[i].devLetter == letter) { letterFound = true; }
+  }
+  return letterFound
 }

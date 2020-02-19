@@ -1,8 +1,10 @@
 const SET_ALL_INTERVAL = 30;
 
-function Robot(device) {
+function Robot(device, devLetter) {
   this.device = device;
+  this.devLetter = devLetter;
   this.fancyName = getDeviceFancyName(device.name);
+  this.batteryLevel = Robot.batteryLevel.UNKNOWN
   this.RX = null; //receiving
   this.TX = null; //sending
   this.displayElement = null;
@@ -14,6 +16,11 @@ function Robot(device) {
   this.dataQueue = [];
 
   this.setAllInterval = setInterval(this.sendSetAll.bind(this), SET_ALL_INTERVAL);
+
+  if (this.isA(Robot.ofType.FINCH)) {
+    this.motorsData = new Uint8Array(8);
+    this.oldMotorsData = new Uint8Array(8);
+  }
 }
 
 Robot.ofType = {
@@ -40,6 +47,12 @@ Robot.propertiesFor = {
     setAllLength: 8,
     triLedCount: 0
   }
+}
+Robot.batteryLevel = {
+  HIGH: 1,
+  MEDIUM: 2,
+  LOW: 3,
+  UNKNOWN: 4
 }
 Robot.getTypeFromName = function(name) {
   if (name.startsWith("FN")) {
@@ -137,6 +150,15 @@ Robot.prototype.sendSetAll = function() {
     this.write(this.setAllData);
     this.oldSetAllData = this.setAllData.slice();
   }
+
+  //in another half cycle, check to see if the other data needs to be sent
+  setTimeout(function() {
+    //if (this.isA(Robot.ofType.FINCH)) {
+
+    //} else {
+
+    //}
+  }, SET_ALL_INTERVAL/2)
 }
 
 Robot.prototype.setLED = function(port, intensity) {
@@ -196,11 +218,116 @@ Robot.prototype.setTriLED = function(port, red, green, blue) {
 
 Robot.prototype.setServo = function(port, value) {
   if (!this.isA(Robot.ofType.HUMMINGBIRDBIT)) {
-    console.log("Only hummingbirds have servos.");
+    console.log("Only hummingbirds have servos.")
     return
   }
   if (port < 1 || port > 4) {
     console.log("setServo invalid port: " + port);
   }
   this.updateSetAll(port + 8, value);
+}
+
+Robot.prototype.setMotors = function(speedL, distL, speedR, distR) {
+  if (!this.isA(Robot.ofType.FINCH)) {
+    console.log("Only finches have motors.")
+    return
+  }
+
+  const ticksPerCM = 49.7;
+
+	//Make sure speeds do not exceed 100%
+	if (speedL > 100) { speedL = 100; }
+	if (speedL < -100) { speedL = -100; }
+	if (speedR > 100) { speedR = 100; }
+	if (speedR < -100) { speedR = -100; }
+
+	let ticksL = Math.round(distL * ticksPerCM);
+	let ticksR = Math.round(distR * ticksPerCM);
+  //let velL = Math.round(speedL * speedScaling));
+  //let velR = Math.round(speedR * speedScaling));
+
+  let scaledVelocity = function(speed) {
+    const speedScaling = 36/100;
+    let vel = Math.round(speed * speedScaling)
+    if (vel > 0 && vel < 128) {
+      return vel + 128
+    } else if (vel <= 0 && vel > -128) {
+      return Math.abs(val)
+    } else {
+      console.error("bad speed value " + speed)
+      return 0
+    }
+  }
+
+  this.motorsData[0] = scaledVelocity(speedL)
+  this.motorsData[1] = (ticksL & 0x00ff0000 >> 16)
+  this.motorsData[2] = (ticksL & 0x0000ff00 >> 8)
+  this.motorsData[3] = (ticksL & 0x000000ff)
+  this.motorsData[4] = scaledVelocity(speedR)
+  this.motorsData[5] = (ticksR & 0x00ff0000 >> 16)
+  this.motorsData[6] = (ticksR & 0x0000ff00 >> 8)
+  this.motorsData[7] = (ticksR & 0x000000ff)
+}
+
+Robot.prototype.setBuzzer = function(note, duration) {
+  var index;
+  switch(this.type) {
+    case Robot.ofType.HUMMINGBIRDBIT:
+      index = 15;
+      break;
+    case Robot.ofType.FINCH:
+      index = 16;
+      break;
+    default:
+      console.log("setBuzzer invalid robot type: " + this.type);
+      return;
+  }
+
+  let frequency = 440 * Math.pow(2, (note - 69)/12)
+  let period = (1/frequency) * 1000000
+  //TODO: check if period is in range?
+
+  this.updateSetAll(index, period >> 8)
+  this.updateSetAll(index + 1, period & 0x00ff)
+  this.updateSetAll(index + 2, duration >> 8)
+  this.updateSetAll(index + 3, duration & 0x00ff)
+}
+
+Robot.prototype.receiveSensorData = function(data) {
+  var batteryIndex = null;
+  var batteryFactor = 0;
+  var greenThreshold = 0;
+  var yellowThreshold = 0;
+  switch(this.type) {
+    case Robot.ofType.FINCH:
+      batteryIndex = 6
+      batteryFactor = 0.0376
+      greenThreshold = 3.386
+      yellowThreshold = 3.271
+      break;
+    case Robot.ofType.HUMMINGBIRDBIT:
+      batteryIndex = 3
+      batteryFactor = 0.0406
+      greenThreshold = 4.75
+      yellowThreshold = 4.4
+      break;
+    //No battery monitoring for micro:bit
+  }
+
+  if (batteryIndex) {
+    const rawVoltage = data[batteryIndex]
+    const voltage = rawVoltage * batteryFactor
+    var newLevel = Robot.batteryLevel.UNKNOWN
+    if (voltage > greenThreshold) {
+      newLevel = Robot.batteryLevel.HIGH
+    } else if (voltage > yellowThreshold) {
+      newLevel = Robot.batteryLevel.MEDIUM
+    } else {
+      newLevel = Robot.batteryLevel.LOW
+    }
+    if (newLevel != this.batteryLevel) {
+      this.batteryLevel = newLevel
+      updateBatteryStatus(this)
+    }
+  }
 }
