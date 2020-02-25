@@ -2,6 +2,23 @@ const MAX_CONNECTIONS = 3;
 var robots = []
 var robotConnecting = null;
 
+/*
+About getting the ble state... Cannot really determine whether ble is turned on
+in the computer - the ble chooser takes care of that and gives instructions
+if ble is off. You can find out if the computer has ble capability with the
+following (but availability will be true if ble is present but off):
+navigator.bluetooth.getAvailability().then(isAvailable => {
+  // get BLE availability by the promise value
+});
+navigator.bluetooth.addEventListener('availabilitychanged', e => {
+  // get BLE availability by `e.value`
+});
+Theoretically, one can see if the user has granted ble permissions, but chrome
+doesn't seem to be participating in that right now:
+https://stackoverflow.com/questions/52221609/connect-to-a-paired-device-without-user-permission-in-chrome-web-bluetooth-api
+https://bugs.chromium.org/p/chromium/issues/detail?id=577953
+*/
+
 function findAndConnect() {
   if (robotConnecting || robots.length == MAX_CONNECTIONS) {
     return;

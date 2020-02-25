@@ -1,4 +1,9 @@
 const SET_ALL_INTERVAL = 30;
+const MAX_LED_PRINT_WORD_LEN = 10;
+
+//Finch constants
+const FINCH_TICKS_PER_CM = 49.7;
+const FINCH_TICKS_PER_DEGREE = 4.335;
 
 function Robot(device, devLetter) {
   this.device = device;
@@ -12,16 +17,10 @@ function Robot(device, devLetter) {
   console.log("type set to " + this.type);
   this.writeInProgress = false;
   this.dataQueue = [];
+  this.printTimer = null;
 
   //Robot state arrays
-  this.setAllData = Robot.initialSetAllFor(this.type);
-  this.oldSetAllData = this.setAllData.slice();
-  this.ledDisplayData = new Uint8Array(8);
-  this.oldLedDisplayData = this.ledDisplayData.slice();
-  if (this.isA(Robot.ofType.FINCH)) {
-    this.motorsData = new Uint8Array(8);
-    this.oldMotorsData = this.motorsData.slice();
-  }
+  this.initializeDataArrays();
 
   this.setAllInterval = setInterval(this.sendSetAll.bind(this), SET_ALL_INTERVAL);
 }
@@ -36,19 +35,25 @@ Robot.propertiesFor = {
   1: {
     setAllLetter: 0xD0,
     setAllLength: 20,
-    triLedCount: 5
+    triLedCount: 5,
+    buzzerIndex: 16,
+    stopCommand: new Uint8Array([0xDF])
   },
   //hummingbird bit
   2: {
     setAllLetter: 0xCA,
     setAllLength: 19,
-    triLedCount: 2
+    triLedCount: 2,
+    buzzerIndex: 15,
+    stopCommand: new Uint8Array([0xCB, 0xFF, 0xFF, 0xFF])
   },
-  //microbit
+  //micro:bit
   3: {
     setAllLetter: 0x90,
     setAllLength: 8,
-    triLedCount: 0
+    triLedCount: 0,
+    buzzerIndex: null, //no buzzer on the micro:bit
+    stopCommand: new Uint8Array([144, 0, 0, 0, 0, 0, 0, 0])
   }
 }
 Robot.batteryLevel = {
@@ -78,6 +83,16 @@ Robot.initialSetAllFor = function(type) {
   return array;
 }
 
+Robot.prototype.initializeDataArrays = function() {
+  this.setAllData = Robot.initialSetAllFor(this.type);
+  this.oldSetAllData = this.setAllData.slice();
+  this.ledDisplayData = new Uint8Array(8);
+  this.oldLedDisplayData = this.ledDisplayData.slice();
+  if (this.isA(Robot.ofType.FINCH)) {
+    this.motorsData = new Uint8Array(8);
+    this.oldMotorsData = this.motorsData.slice();
+  }
+}
 
 Robot.prototype.isA = function(type) {
   if (this.type === type) return true
@@ -129,6 +144,7 @@ Robot.prototype.write = function(data) {
     });
 }
 //TODO: Make sure updates don't get skipped
+//TODO: Update group of data at once (eg entire buzzer command)
 Robot.updateData = function(data, index, value) {
   //values must be between 0 and 255
   if (value < 0 || value > 255) {
@@ -158,8 +174,10 @@ Robot.prototype.sendSetAll = function() {
 
   //console.log("sendSetAll " + setAllChanged + " " + this.setAllData + " " + this.oldSetAllData);
   if (setAllChanged) {
-    this.write(this.setAllData);
+    const data = this.setAllData.slice();
+    this.clearBuzzerBytes();
     this.oldSetAllData = this.setAllData.slice();
+    this.write(data);
   }
 
   //in another half cycle, check to see if the other data needs to be sent
@@ -178,8 +196,12 @@ Robot.prototype.sendSetAll = function() {
       this.oldLedDisplayData = this.ledDisplayData.slice();
       this.oldMotorsData = this.motorsData.slice();
 
-      let mode = 0x00
       let motorArray = []
+      if (motorsChanged) {
+        motorArray = Array.prototype.slice.call(this.motorsData);
+      }
+
+      let mode = 0x00
       if (motorsChanged && flashSet) {
           mode = 0x80 + this.ledDisplayData.length - 2
       } else if (motorsChanged && symbolSet) {
@@ -273,13 +295,13 @@ Robot.prototype.setServo = function(port, value) {
   Robot.updateData(this.setAllData, port + 8, value);
 }
 
-Robot.prototype.setMotors = function(speedL, distL, speedR, distR) {
+Robot.prototype.setMotors = function(speedL, ticksL, speedR, ticksR) {
   if (!this.isA(Robot.ofType.FINCH)) {
     console.log("Only finches have motors.")
     return
   }
 
-  const ticksPerCM = 49.7;
+  //const ticksPerCM = 49.7;
 
 	//Make sure speeds do not exceed 100%
 	if (speedL > 100) { speedL = 100; }
@@ -287,46 +309,44 @@ Robot.prototype.setMotors = function(speedL, distL, speedR, distR) {
 	if (speedR > 100) { speedR = 100; }
 	if (speedR < -100) { speedR = -100; }
 
-	let ticksL = Math.round(distL * ticksPerCM);
-	let ticksR = Math.round(distR * ticksPerCM);
+	//let ticksL = Math.round(distL * ticksPerCM);
+	//let ticksR = Math.round(distR * ticksPerCM);
   //let velL = Math.round(speedL * speedScaling));
   //let velR = Math.round(speedR * speedScaling));
 
   let scaledVelocity = function(speed) {
     const speedScaling = 36/100;
-    let vel = Math.round(speed * speedScaling)
+    let vel = Math.round(speed * speedScaling);
     if (vel > 0 && vel < 128) {
-      return vel + 128
+      return vel + 128;
     } else if (vel <= 0 && vel > -128) {
-      return Math.abs(val)
+      return Math.abs(vel);
     } else {
-      console.error("bad speed value " + speed)
-      return 0
+      console.error("bad speed value " + speed);
+      return 0;
     }
   }
 
   this.motorsData[0] = scaledVelocity(speedL)
-  this.motorsData[1] = (ticksL & 0x00ff0000 >> 16)
-  this.motorsData[2] = (ticksL & 0x0000ff00 >> 8)
+  this.motorsData[1] = ((ticksL & 0x00ff0000) >> 16)
+  this.motorsData[2] = ((ticksL & 0x0000ff00) >> 8)
   this.motorsData[3] = (ticksL & 0x000000ff)
   this.motorsData[4] = scaledVelocity(speedR)
-  this.motorsData[5] = (ticksR & 0x00ff0000 >> 16)
-  this.motorsData[6] = (ticksR & 0x0000ff00 >> 8)
+  this.motorsData[5] = ((ticksR & 0x00ff0000) >> 16)
+  this.motorsData[6] = ((ticksR & 0x0000ff00) >> 8)
   this.motorsData[7] = (ticksR & 0x000000ff)
+  console.log("setMotors " + ticksL + " array " + this.motorsData);
+  console.log((ticksL & 0x00ff0000 >> 16) + " " + (ticksL & 0x0000ff00 >> 8) + " " + (ticksL & 0x000000ff));
+  console.log((ticksL & 0xff0000 >> 16) + " " + (ticksL & 0xff00 >> 8) + " " + (ticksL & 0xff));
+  console.log((ticksL >> 16) + " " + (ticksL >> 8) + " " + (ticksL));
+  console.log(((ticksL >> 16) & 0xff) + " " + ((ticksL >> 8) & 0xff) + " " + (ticksL & 0xff));
 }
 
 Robot.prototype.setBuzzer = function(note, duration) {
-  var index;
-  switch(this.type) {
-    case Robot.ofType.HUMMINGBIRDBIT:
-      index = 15;
-      break;
-    case Robot.ofType.FINCH:
-      index = 16;
-      break;
-    default:
-      console.log("setBuzzer invalid robot type: " + this.type);
-      return;
+  var index = Robot.propertiesFor[this.type].buzzerIndex
+  if (index == null) {
+    console.log("setBuzzer invalid robot type: " + this.type);
+    return;
   }
 
   let frequency = 440 * Math.pow(2, (note - 69)/12)
@@ -339,8 +359,23 @@ Robot.prototype.setBuzzer = function(note, duration) {
   Robot.updateData(this.setAllData, index + 3, duration & 0x00ff)
 }
 
+Robot.prototype.clearBuzzerBytes = function() {
+  var index = Robot.propertiesFor[this.type].buzzerIndex
+  if (index == null) {
+    console.log("clearBuzzerBytes invalid robot type: " + this.type);
+    return;
+  }
+
+  Robot.updateData(this.setAllData, index, 0)
+  Robot.updateData(this.setAllData, index + 1, 0)
+  Robot.updateData(this.setAllData, index + 2, 0)
+  Robot.updateData(this.setAllData, index + 3, 0)
+}
+
 Robot.prototype.setSymbol = function(symbolString) {
-  let data = this.ledDisplayData
+  if (this.printTimer !== null) { clearTimeout(this.printTimer); }
+
+  let data = new Uint8Array(6);
   data[0] = 0xCC
   data[1] = 0x80 //set symbol
   const sa = symbolString.split("/")
@@ -357,13 +392,48 @@ Robot.prototype.setSymbol = function(symbolString) {
       shift -= 1
     }
   }
+  this.ledDisplayData = data;
   console.log("processed symbol:")
   console.log(this.ledDisplayData)
 
 }
 
-Robot.prototype.setPrint = function() {
+Robot.prototype.setPrint = function(printChars) {
+  if (this.printTimer !== null) { clearTimeout(this.printTimer); }
 
+  if (printChars.length > MAX_LED_PRINT_WORD_LEN) {
+    let nextPrintChars = printChars.slice(MAX_LED_PRINT_WORD_LEN, printChars.length);
+    this.printTimer = setTimeout (function () {
+      this.setPrint(nextPrintChars);
+    }.bind(this), MAX_LED_PRINT_WORD_LEN * 600);  // number of chars * 600ms per char
+
+    printChars = printChars.slice(0, MAX_LED_PRINT_WORD_LEN);
+  }
+
+  let data = new Uint8Array(printChars.length + 2);
+  data[0] = 0xCC
+  data[1] = printChars.length | 0x40;
+
+  for (var i = 0; i < printChars.length; i++) {
+    data[i+2] = printChars[i].charCodeAt(0);
+  }
+
+  this.ledDisplayData = data;
+}
+
+Robot.prototype.stopAll = function() {
+  if (this.printTimer !== null) { clearTimeout(this.printTimer); }
+  this.write(Robot.propertiesFor[this.type].stopCommand);
+  this.initializeDataArrays();
+}
+
+Robot.prototype.resetEncoders = function() {
+  if (!this.isA(Robot.ofType.FINCH)) {
+    console.log("Only finches have encoders.")
+    return
+  }
+
+  this.write(new Uint8Array([0xD5]));
 }
 
 Robot.prototype.receiveSensorData = function(data) {

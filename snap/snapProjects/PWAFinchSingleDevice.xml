@@ -45,7 +45,7 @@
     <headers></headers>
     <code></code>
     <blocks>
-        <block-definition s="Message Channel Setup" type="command">
+        <block-definition s="BirdBrain Setup" type="command">
           <header></header>
           <code></code>
           <translations></translations>
@@ -54,8 +54,8 @@
                 <block s="reportJSFunction">
                   <list></list>
                     <l>
-                      if (window.birdbrain === undefined || window.birdbrain.sensorData === undefined) {
-                        window.birdbrain = window.birdbrain || {};
+                      if (window.birdbrain === undefined) {
+                        window.birdbrain = {};
                         window.birdbrain.sensorData = {};
                         window.birdbrain.sensorData.A = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
                         window.birdbrain.sensorData.B = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
@@ -71,8 +71,66 @@
                             }
                         }
                         window.parent.postMessage("hello from snap", "*", [window.birdbrain.messageChannel.port2]);
+
+                        window.birdbrain.sendCommand = function(command) {
+                          window.parent.postMessage(command, "*");
+                        }
+
+                        window.birdbrain.finchIsMoving = function(finch) {
+                          return (window.birdbrain.sensorData[finch][4] > 127);
+                        }
+
+                        window.birdbrain.getFinchAcceleration = function(axis, finch) {
+                          let sensorData = window.birdbrain.sensorData[finch];
+                          let accVal = 0;
+                          switch (axis) {
+                            case 'X':
+                              accVal = sensorData[13];
+                              break;
+                            case 'Y':
+                            case 'Z':
+                              const rawY = sensorData[14];
+                              const rawZ = sensorData[15];
+                              const rad = 40 * Math.PI / 180; //40° in radians
+
+                              switch(axis) {
+                                case 'Y':
+                                  accVal = (rawY*Math.cos(rad) - rawZ*Math.sin(rad));
+                                  break;
+                                case 'Z':
+                                  accVal = (rawY*Math.sin(rad) + rawZ*Math.cos(rad));
+                                  break;
+                              }
+                            }
+                            return (accVal * 196/1280);
+                        }
+
+                        window.birdbrain.getFinchMagnetometer = function(axis, finch) {
+                          let sensorData = window.birdbrain.sensorData[finch];
+                          switch (axis) {
+                            case 'X':
+                              return sensorData[17];
+                            case 'Y':
+                            case 'Z':
+                              const rawY = sensorData[18];
+                              const rawZ = sensorData[19];
+                              const rad = 40 * Math.PI / 180 //40° in radians
+
+                              let magVal = 0;
+                              switch(axis) {
+                                case 'Y':
+                                  magVal = (rawY*Math.cos(rad) + rawZ*Math.sin(rad));
+                                  break;
+                                case 'Z':
+                                  magVal = (rawZ*Math.cos(rad) - rawY*Math.sin(rad));
+                                  break;
+                              }
+                              return Math.round(magVal);
+                          }
+                        }
+
                       } else {
-                        console.log("message channel already set up");
+                        //console.log("BirdBrain already set up");
                       }
                     </l>
                 </block>
@@ -84,40 +142,28 @@
             <code></code>
             <translations></translations>
             <script>
-                <block s="doDeclareVariables">
-                    <list>
-                        <l>value</l>
-                    </list>
-                </block>
-                <block s="doSetVar">
-                    <l>value</l>
-                    <block s="reportURL">
-                        <l>http://127.0.0.1:30061/hummingbird/in/Distance/static</l>
+                <custom-block s="BirdBrain Setup"></custom-block>
+                <block s="doReport">
+                  <block s="evaluate">
+                    <block s="reportJSFunction">
+                        <list></list>
+                        <l>
+                          if (window.birdbrain.getDistance === undefined) {
+                            window.birdbrain.getDistance = function (port, robot) {
+                              const cmPerDistance = 0.0919;
+                              const msb = window.birdbrain.sensorData.A[0];
+                              const lsb = window.birdbrain.sensorData.A[1];
+
+                              const distance = msb &lt;&lt; 8 | lsb;
+                              return Math.round(distance * cmPerDistance);
+                            }
+                          }
+
+                          return window.birdbrain.getDistance('A');
+                        </l>
                     </block>
-                </block>
-                <block s="doIfElse">
-                    <block s="reportNot">
-                        <block s="reportEquals">
-                            <block var="value"/>
-                            <l>Not Connected</l>
-                        </block>
-                    </block>
-                    <script>
-                        <block s="doReport">
-                            <block s="reportRound">
-                                <block s="reportProduct">
-                                    <l>0.0919</l>
-                                    <block var="value"/>
-                                </block>
-                            </block>
-                            <comment w="90" collapsed="false">0.0919 Scaling factor</comment>
-                        </block>
-                    </script>
-                    <script>
-                        <block s="doReport">
-                            <l>Not Connected</l>
-                        </block>
-                    </script>
+                    <list></list>
+                  </block>
                 </block>
             </script>
         </block-definition>
@@ -129,6 +175,7 @@
                 <input type="%txt" readonly="true">Right<options>Left&#xD;Right</options></input>
             </inputs>
             <script>
+              <custom-block s="BirdBrain Setup"></custom-block>
               <block s="doReport">
                 <block s="evaluate">
                   <block s="reportJSFunction">
@@ -136,27 +183,6 @@
                           <l>port</l>
                       </list>
                       <l>
-                        if (window.birdbrain === undefined || window.birdbrain.sensorData === undefined) {
-                          window.birdbrain = window.birdbrain || {};
-                          window.birdbrain.sensorData = {};
-                          window.birdbrain.sensorData.A = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
-                          window.birdbrain.sensorData.B = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
-                          window.birdbrain.sensorData.C = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
-
-                          console.log("setting up message channel")
-                          window.birdbrain.messageChannel = new MessageChannel();
-                          window.birdbrain.messageChannel.port1.onmessage = function (e) {
-                              //console.log("Got a message: ");
-                              //console.log(e.data);
-                              if (e.data.sensorData != null) {
-                                window.birdbrain.sensorData.A = e.data.sensorData;
-                              }
-                          }
-                          window.parent.postMessage("hello from snap", "*", [window.birdbrain.messageChannel.port2]);
-                        } else {
-                          console.log("message channel already set up");
-                        }
-
                         if (window.birdbrain.getLight === undefined) {
                           window.birdbrain.getLight = function (port, robot) {
                             switch (port) {
@@ -172,7 +198,6 @@
                         }
 
                         return window.birdbrain.getLight(port, 'A');
-
                       </l>
                   </block>
                   <list>
@@ -190,7 +215,7 @@
                 <input type="%txt" readonly="true">Right<options>Left&#xD;Right</options></input>
             </inputs>
             <script>
-                <custom-block s="Message Channel Setup"></custom-block>
+                <custom-block s="BirdBrain Setup"></custom-block>
                 <block s="doReport">
                   <block s="evaluate">
                     <block s="reportJSFunction">
@@ -235,7 +260,7 @@
                 <input type="%txt" readonly="true">Right<options>Left&#xD;Right</options></input>
             </inputs>
             <script>
-              <custom-block s="Message Channel Setup"></custom-block>
+              <custom-block s="BirdBrain Setup"></custom-block>
               <block s="doReport">
                 <block s="evaluate">
                   <block s="reportJSFunction">
@@ -284,23 +309,18 @@
             <translations></translations>
             <inputs></inputs>
             <script>
+                <custom-block s="BirdBrain Setup"></custom-block>
                 <block s="doRun">
-                    <block s="reifyReporter">
-                        <autolambda>
-                            <block s="reportURL">
-                                <block s="reportJoinWords">
-                                    <list>
-                                        <l>http://127.0.0.1:30061/hummingbird/out/resetEncoders/A/</l>
-                                    </list>
-                                </block>
-                            </block>
-                        </autolambda>
-                        <list></list>
-                    </block>
-                    <list></list>
-                </block>
-                <block s="doWait">
-                    <l>0</l>
+                  <block s="reportJSFunction">
+                      <list></list>
+                      <l>
+                        var thisCommand = {
+                          cmd: "resetEncoders"
+                        }
+                        window.birdbrain.sendCommand(thisCommand)
+                      </l>
+                  </block>
+                  <list></list>
                 </block>
             </script>
         </block-definition>
@@ -314,6 +334,7 @@
                 <input type="%n">0.5</input>
             </inputs>
             <script>
+                <custom-block s="BirdBrain Setup"></custom-block>
                 <block s="doIf">
                     <block s="reportGreaterThan">
                         <block var="note"/>
@@ -384,19 +405,12 @@
                           <l>duration</l>
                       </list>
                       <l>
-                        if (window.birdbrain === undefined || window.birdbrain.playNote === undefined) {
-                            window.birdbrain = window.birdbrain || {};
-                            window.birdbrain.playNote = function (note, duration){
-                              var thisCommand = {
-                                cmd: "playNote",
-                                note: note,
-                                duration: duration
-                                }
-                              window.parent.postMessage(thisCommand, "*");
-                            }
+                        var thisCommand = {
+                          cmd: "playNote",
+                          note: note,
+                          duration: duration
                         }
-
-                        window.birdbrain.playNote(note, duration)
+                        window.birdbrain.sendCommand(thisCommand)
                       </l>
                   </block>
                   <list>
@@ -421,36 +435,37 @@
                 <input type="%txt" readonly="true">A<options>A&#xD;B</options></input>
             </inputs>
             <script>
-                <block s="doIfElse">
-                    <block s="reportEquals">
-                        <block s="reportURL">
-                            <block s="reportJoinWords">
-                                <list>
-                                    <l>http://127.0.0.1:30061/hummingbird/in/button/</l>
-                                    <block var="button"/>
-                                </list>
-                            </block>
-                        </block>
-                        <l>true</l>
+                <custom-block s="BirdBrain Setup"></custom-block>
+                <block s="doReport">
+                  <block s="evaluate">
+                    <block s="reportJSFunction">
+                        <list>
+                            <l>button</l>
+                        </list>
+                        <l>
+                          if (window.birdbrain.getButton === undefined) {
+                            window.birdbrain.getButton = function (button, robot) {
+                              var buttonState = window.birdbrain.sensorData.A[16] & 0xF0; //Button Byte position = 7, clear LS Bits as it is for shake and calibrate
+
+                              switch (button) {
+                                case 'A':
+                                  return (buttonState == 0x00 || buttonState == 0x20)
+                                case 'B':
+                                  return (buttonState == 0x00 || buttonState == 0x10)
+                                default:
+                                  console.log("unknown button " + button);
+                                  return false;
+                              }
+                            }
+                          }
+
+                          return window.birdbrain.getButton(button, 'A');
+                        </l>
                     </block>
-                    <script>
-                        <block s="doReport">
-                            <block s="reportBoolean">
-                                <l>
-                                    <bool>true</bool>
-                                </l>
-                            </block>
-                        </block>
-                    </script>
-                    <script>
-                        <block s="doReport">
-                            <block s="reportBoolean">
-                                <l>
-                                    <bool>false</bool>
-                                </l>
-                            </block>
-                        </block>
-                    </script>
+                    <list>
+                        <block var="button"/>
+                    </list>
+                  </block>
                 </block>
             </script>
         </block-definition>
@@ -462,36 +477,57 @@
                 <input type="%txt" readonly="true">Beak Up<options>Beak Up&#xD;Beak Down&#xD;Tilt Left&#xD;Tilt Right&#xD;Level&#xD;Upside Down&#xD;Shake</options></input>
             </inputs>
             <script>
-                <block s="doIfElse">
-                    <block s="reportEquals">
-                        <block s="reportURL">
-                            <block s="reportJoinWords">
-                                <list>
-                                    <l>http://127.0.0.1:30061/hummingbird/in/finchOrientation/</l>
-                                    <block var="dim"/>
-                                </list>
-                            </block>
-                        </block>
-                        <l>true</l>
+                <custom-block s="BirdBrain Setup"></custom-block>
+                <block s="doReport">
+                  <block s="evaluate">
+                    <block s="reportJSFunction">
+                        <list>
+                          <l>dim</l>
+                        </list>
+                        <l>
+                          if (window.birdbrain.finchOrientation === undefined) {
+                            window.birdbrain.finchOrientation = function (dim, robot) {
+                              if (dim == "Shake") {
+                                let shake = window.birdbrain.sensorData.A[16];
+                                return (shake & 0x01 &gt; 0)
+                              }
+                              const threshold = 7.848;
+                              let acceleration = 0;
+                              switch(dim) {
+                                case "Tilt Left":
+                                case "Tilt Right":
+                                  acceleration = window.birdbrain.getFinchAcceleration('X', robot);
+                                  break;
+                                case "Beak Up":
+                                case "Beak Down":
+                                  acceleration = window.birdbrain.getFinchAcceleration('Y', robot);
+                                  break;
+                                case "Level":
+                                case "Upside Down":
+                                  acceleration = window.birdbrain.getFinchAcceleration('Z', robot);
+                                  break;
+                              }
+                              console.log("finchOrientation " + dim + " a=" + acceleration);
+                              switch(dim) {
+                                case "Tilt Right":
+                                case "Beak Up":
+                                case "Upside Down":
+                                  return (acceleration &gt; threshold);
+                                case "Tilt Left":
+                                case "Beak Down":
+                                case "Level":
+                                  return (acceleration &lt; -threshold);
+                              }
+                            }
+                          }
+
+                          return window.birdbrain.finchOrientation(dim, 'A');
+                        </l>
                     </block>
-                    <script>
-                        <block s="doReport">
-                            <block s="reportBoolean">
-                                <l>
-                                    <bool>true</bool>
-                                </l>
-                            </block>
-                        </block>
-                    </script>
-                    <script>
-                        <block s="doReport">
-                            <block s="reportBoolean">
-                                <l>
-                                    <bool>false</bool>
-                                </l>
-                            </block>
-                        </block>
-                    </script>
+                    <list>
+                      <block var="dim"/>
+                    </list>
+                  </block>
                 </block>
             </script>
         </block-definition>
@@ -504,41 +540,35 @@
                 <input type="%txt" readonly="true">X<options>X&#xD;Y&#xD;Z</options></input>
             </inputs>
             <script>
-                <block s="doIf">
-                    <block s="reportEquals">
-                        <block var="device"/>
-                        <l>Accelerometer (m/s²)</l>
-                    </block>
-                    <script>
-                        <block s="doSetVar">
-                            <l>device</l>
-                            <l>finchAccel</l>
-                        </block>
-                    </script>
-                </block>
-                <block s="doIf">
-                    <block s="reportEquals">
-                        <block var="device"/>
-                        <l>Magnetometer (µT)</l>
-                    </block>
-                    <script>
-                        <block s="doSetVar">
-                            <l>device</l>
-                            <l>finchMag</l>
-                        </block>
-                    </script>
-                </block>
+                <custom-block s="BirdBrain Setup"></custom-block>
                 <block s="doReport">
-                    <block s="reportURL">
-                        <block s="reportJoinWords">
-                            <list>
-                                <l>http://127.0.0.1:30061/hummingbird/in/</l>
-                                <block var="device"/>
-                                <l>/</l>
-                                <block var="dim"/>
-                            </list>
-                        </block>
+                  <block s="evaluate">
+                    <block s="reportJSFunction">
+                        <list>
+                            <l>device</l>
+                            <l>dim</l>
+                        </list>
+                        <l>
+                          if (window.birdbrain.getAorM === undefined) {
+                            window.birdbrain.getAorM = function (device, dim, robot) {
+                              switch(device) {
+                                case "Accelerometer (m/s²)":
+                                  let acc = window.birdbrain.getFinchAcceleration(dim, robot);
+                                  return Math.round(acc * 10) / 10;
+                                case "Magnetometer (µT)":
+                                  return window.birdbrain.getFinchMagnetometer(dim, robot);
+                              }
+                            }
+                          }
+
+                          return window.birdbrain.getAorM(device, dim, 'A');
+                        </l>
                     </block>
+                    <list>
+                        <block var="device"/>
+                        <block var="dim"/>
+                    </list>
+                  </block>
                 </block>
             </script>
         </block-definition>
@@ -548,15 +578,42 @@
             <translations>ko:Finch 나침반 센서&#xD;de:Finch Kompass&#xD;pt:Finch Bússola&#xD;fr:Finch Compas&#xD;nl:Finch Kompas&#xD;zh_CN:Finch 指南针&#xD;zh_TW:Finch 指南針&#xD;ar:Finch بوصلة&#xD;dk:Finch Kompas&#xD;he:Finch מצפן&#xD;es:Finch Brujula&#xD;ca:Finch Brúixola&#xD;fi:Finch Kompassi&#xD;sv:Finch Kompass&#xD;</translations>
             <inputs></inputs>
             <script>
+                <custom-block s="BirdBrain Setup"></custom-block>
                 <block s="doReport">
-                    <block s="reportURL">
-                        <block s="reportJoinWords">
-                            <list>
-                                <l>http://127.0.0.1:30061/hummingbird/in/</l>
-                                <l>finchCompass/static</l>
-                            </list>
-                        </block>
+                  <block s="evaluate">
+                    <block s="reportJSFunction">
+                        <list></list>
+                        <l>
+                          if (window.birdbrain.getFinchCompass === undefined) {
+                            window.birdbrain.getFinchCompass = function (robot) {
+                              const ax = window.birdbrain.getFinchAcceleration('X', robot);
+                              const ay = window.birdbrain.getFinchAcceleration('Y', robot);
+                              const az = window.birdbrain.getFinchAcceleration('Z', robot);
+                              const mx = window.birdbrain.getFinchMagnetometer('X', robot);
+                              const my = window.birdbrain.getFinchMagnetometer('Y', robot);
+                              const mz = window.birdbrain.getFinchMagnetometer('Z', robot);
+
+                              const phi = Math.atan(-ay / az)
+                              const theta = Math.atan(ax / (ay * Math.sin(phi) + az * Math.cos(phi)))
+
+                              const xp = mx
+                              const yp = my * Math.cos(phi) - mz * Math.sin(phi)
+                              const zp = my * Math.sin(phi) + mz * Math.cos(phi)
+
+                              const xpp = xp * Math.cos(theta) + zp * Math.sin(theta)
+                              const ypp = yp
+
+                              const angle = 180.0 + ((Math.atan2(xpp, ypp)) * (180 / Math.PI)) //convert result to degrees
+
+                              return ((Math.round(angle) + 180) % 360) //turn so that beak points north
+                            }
+                          }
+
+                          return window.birdbrain.getFinchCompass('A');
+                        </l>
                     </block>
+                    <list></list>
+                  </block>
                 </block>
             </script>
         </block-definition>
@@ -566,14 +623,18 @@
             <translations>ko:모두 멈추기&#xD;de:stoppe alles&#xD;pt:pare todos&#xD;fr:stop tout&#xD;nl:stop alle&#xD;zh_CN:停止 全部&#xD;zh_TW:停止 全部&#xD;ar:توقف الكل&#xD;dk:stop alle&#xD;he:להפסיק הכל&#xD;es:detener todo&#xD;ca:atura tot&#xD;fi:pysäytä kaikki&#xD;sv:stop allt&#xD;</translations>
             <inputs></inputs>
             <script>
-                <block s="doReport">
-                    <block s="reportURL">
-                        <block s="reportJoinWords">
-                            <list>
-                                <l>http://127.0.0.1:30061/hummingbird/out/stopall</l>
-                            </list>
-                        </block>
-                    </block>
+                <custom-block s="BirdBrain Setup"></custom-block>
+                <block s="doRun">
+                  <block s="reportJSFunction">
+                      <list></list>
+                      <l>
+                        var thisCommand = {
+                          cmd: "stopAll"
+                        }
+                        window.birdbrain.sendCommand(thisCommand)
+                      </l>
+                  </block>
+                  <list></list>
                 </block>
             </script>
         </block-definition>
@@ -588,6 +649,7 @@
                 <input type="%n">50</input>
             </inputs>
             <script>
+                <custom-block s="BirdBrain Setup"></custom-block>
                 <block s="doIf">
                     <block s="reportLessThan">
                         <block var="distance"/>
@@ -641,46 +703,54 @@
                 </block>
                 <block s="doSetVar">
                     <l>isMoving</l>
-                    <block s="reportURL">
-                        <l>http://127.0.0.1:30061/hummingbird/in/finchIsMoving/static/</l>
+                    <block s="evaluate">
+                      <block s="reportJSFunction">
+                        <list></list>
+                        <l> return window.birdbrain.finchIsMoving('A'); </l>
+                      </block>
+                      <list></list>
                     </block>
                 </block>
                 <block s="doSetVar"><l>wasMoving</l><block var="isMoving"/></block>
                 <block s="doRun">
-                    <block s="reifyReporter">
-                        <autolambda>
-                            <block s="reportURL">
-                                <block s="reportJoinWords">
-                                    <list>
-                                        <l>http://127.0.0.1:30061/hummingbird/out/move/A/</l>
-                                        <block var="direction"/>
-                                        <l>/</l>
-                                        <block var="distance"/>
-                                        <l>/</l>
-                                        <block var="speed"/>
-                                    </list>
-                                </block>
-                            </block>
-                        </autolambda>
-                        <list></list>
-                    </block>
-                    <list></list>
+                  <block s="reportJSFunction">
+                      <list>
+                          <l>direction</l>
+                          <l>distance</l>
+                          <l>speed</l>
+                      </list>
+                      <l>
+                        var thisCommand = {
+                          cmd: "move",
+                          direction: direction,
+                          distance: distance,
+                          speed: speed
+                        }
+                        window.birdbrain.sendCommand(thisCommand)
+                      </l>
+                  </block>
+                  <list>
+                      <block var="direction"/>
+                      <block var="distance"/>
+                      <block var="speed"/>
+                  </list>
                 </block>
                 <block s="doUntil">
-                    <block s="reportOr">
-                        <block s="reportAnd">
-                            <block s="reportEquals"><block var="wasMoving"/><l>true</l></block>
-                            <block s="reportEquals"><block var="isMoving"/><l>false</l></block>
-                        </block>
-                        <block s="reportEquals"><block var="isMoving"/><l>Not Connected</l></block>
+                    <block s="reportAnd">
+                      <block var="wasMoving"/>
+                      <block s="reportNot"><block var="isMoving"/></block>
                     </block>
                     <script>
                         <block s="doSetVar"><l>wasMoving</l><block var="isMoving"/></block>
                         <block s="doWait"><l>0.01</l></block>
                         <block s="doSetVar">
                             <l>isMoving</l>
-                            <block s="reportURL">
-                                <l>http://127.0.0.1:30061/hummingbird/in/finchIsMoving/static/</l>
+                            <block s="evaluate">
+                              <block s="reportJSFunction">
+                                <list></list>
+                                <l> return window.birdbrain.finchIsMoving('A'); </l>
+                              </block>
+                              <list></list>
                             </block>
                         </block>
                     </script>
@@ -698,6 +768,7 @@
                 <input type="%n">50</input>
             </inputs>
             <script>
+                <custom-block s="BirdBrain Setup"></custom-block>
                 <block s="doIf">
                     <block s="reportLessThan">
                         <block var="angle"/>
@@ -751,46 +822,54 @@
                 </block>
                 <block s="doSetVar">
                     <l>isMoving</l>
-                    <block s="reportURL">
-                        <l>http://127.0.0.1:30061/hummingbird/in/finchIsMoving/static/</l>
+                    <block s="evaluate">
+                      <block s="reportJSFunction">
+                        <list></list>
+                        <l> return window.birdbrain.finchIsMoving('A'); </l>
+                      </block>
+                      <list></list>
                     </block>
                 </block>
                 <block s="doSetVar"><l>wasMoving</l><block var="isMoving"/></block>
                 <block s="doRun">
-                    <block s="reifyReporter">
-                        <autolambda>
-                            <block s="reportURL">
-                                <block s="reportJoinWords">
-                                    <list>
-                                        <l>http://127.0.0.1:30061/hummingbird/out/turn/A/</l>
-                                        <block var="direction"/>
-                                        <l>/</l>
-                                        <block var="angle"/>
-                                        <l>/</l>
-                                        <block var="speed"/>
-                                    </list>
-                                </block>
-                            </block>
-                        </autolambda>
-                        <list></list>
-                    </block>
-                    <list></list>
+                  <block s="reportJSFunction">
+                      <list>
+                          <l>direction</l>
+                          <l>angle</l>
+                          <l>speed</l>
+                      </list>
+                      <l>
+                        var thisCommand = {
+                          cmd: "turn",
+                          direction: direction,
+                          angle: angle,
+                          speed: speed
+                        }
+                        window.birdbrain.sendCommand(thisCommand)
+                      </l>
+                  </block>
+                  <list>
+                      <block var="direction"/>
+                      <block var="angle"/>
+                      <block var="speed"/>
+                  </list>
                 </block>
                 <block s="doUntil">
-                    <block s="reportOr">
-                        <block s="reportAnd">
-                            <block s="reportEquals"><block var="wasMoving"/><l>true</l></block>
-                            <block s="reportEquals"><block var="isMoving"/><l>false</l></block>
-                        </block>
-                        <block s="reportEquals"><block var="isMoving"/><l>Not Connected</l></block>
+                    <block s="reportAnd">
+                      <block var="wasMoving"/>
+                      <block s="reportNot"><block var="isMoving"/></block>
                     </block>
                     <script>
                         <block s="doSetVar"><l>wasMoving</l><block var="isMoving"/></block>
                         <block s="doWait"><l>0.01</l></block>
                         <block s="doSetVar">
                             <l>isMoving</l>
-                            <block s="reportURL">
-                                <l>http://127.0.0.1:30061/hummingbird/in/finchIsMoving/static/</l>
+                            <block s="evaluate">
+                              <block s="reportJSFunction">
+                                <list></list>
+                                <l> return window.birdbrain.finchIsMoving('A'); </l>
+                              </block>
+                              <list></list>
                             </block>
                         </block>
                     </script>
@@ -806,6 +885,7 @@
                 <input type="%n">0</input>
             </inputs>
             <script>
+                <custom-block s="BirdBrain Setup"></custom-block>
                 <block s="doIf">
                     <block s="reportLessThan">
                         <block var="left"/>
@@ -861,63 +941,12 @@
                             <l>right</l>
                         </list>
                         <l>
-                            ////////////////////////////////////////////////////////////////////////////////
-                            // In order to avoid sending more messages than the app can handle, whenever we
-                            // send a message we also save it in a persistent global variable. When the
-                            // message is processed in the app, the callback checks if the global variable
-                            // still matches what it was changed to. If it was, it deletes the global
-                            // variable. Otherwise the message is resent with new data.
-                            //
-                            // When this block is called it checks if the global value has been set. If it
-                            // has, it sends a message. Otherwise it just updates the value and lets the
-                            // callback handle it.
-                            //
-                            // We can&apos;t run code beforehand to define values so we must check each block
-                            // call if they are set.
-
-                            if (window.birdbrain === undefined || window.birdbrain.wheels === undefined) {
-                            window.birdbrain = window.birdbrain || {};
-                            window.birdbrain.wheels = {
-                            // By attaching this function to a global variable, it is only
-                            // defined once instead of every time this block is called, improving
-                            // performance significantly.
-
-                            setWheels: function (left, right) {
-                            function callback() {
-                            if ((window.birdbrain.wheels.speeds[0] === left) && (window.birdbrain.wheels.speeds[1] === right)) {
-                            delete window.birdbrain.wheels.speeds;
-                            } else {
-                            window.birdbrain.wheels.setWheels(window.birdbrain.wheels.speeds[0], window.birdbrain.wheels.speeds[1]);
-                            }
-                            }
-                            //Create a new XMLHttpRequest object
-                            var xhr = new XMLHttpRequest();
-                            var thisURL = "http://127.0.0.1:30061/hummingbird/out/wheels/A/" + left + "/" + right;
-                            //console.log("thisURL: " + thisURL);
-                            xhr.open("GET", thisURL, true);
-                            xhr.onload = function (e) {
-                            if (xhr.readyState === 4) {
-                            if (xhr.status === 200) {
-                            callback();
-                            } else {
-                            console.error(xhr.statusText);
-                            }
-                            }
-                            };
-
-                            xhr.onerror = function (e) {
-                            console.error(xhr.statusText);
-                            };
-
-                            xhr.send(null);
-                            }
-                            };
-                            }
-
-                            if (window.birdbrain.wheels.speeds === undefined) {
-                            window.birdbrain.wheels.setWheels(left, right);
-                            }
-                            window.birdbrain.wheels.speeds = [left, right];
+                          var thisCommand = {
+                            cmd: "wheels",
+                            speedL: left,
+                            speedR: right
+                          }
+                          window.birdbrain.sendCommand(thisCommand)
                         </l>
                     </block>
                     <list>
@@ -933,23 +962,18 @@
             <translations></translations>
             <inputs></inputs>
             <script>
+                <custom-block s="BirdBrain Setup"></custom-block>
                 <block s="doRun">
-                    <block s="reifyReporter">
-                        <autolambda>
-                            <block s="reportURL">
-                                <block s="reportJoinWords">
-                                    <list>
-                                        <l>http://127.0.0.1:30061/hummingbird/out/stopFinch/A/</l>
-                                    </list>
-                                </block>
-                            </block>
-                        </autolambda>
-                        <list></list>
-                    </block>
-                    <list></list>
-                </block>
-                <block s="doWait">
-                    <l>0</l>
+                  <block s="reportJSFunction">
+                      <list></list>
+                      <l>
+                        var thisCommand = {
+                          cmd: "stopFinch"
+                        }
+                        window.birdbrain.sendCommand(thisCommand)
+                      </l>
+                  </block>
+                  <list></list>
                 </block>
             </script>
         </block-definition>
@@ -965,6 +989,7 @@
                 <input type="%n">0</input>
             </inputs>
             <script>
+                <custom-block s="BirdBrain Setup"></custom-block>
                 <block s="doIf">
                     <block s="reportLessThan">
                         <block var="redLED"/>
@@ -1045,37 +1070,16 @@
                             <l>bluenum</l>
                         </list>
                         <l>
-var realPort = 0;
 
-if (window.birdbrain === undefined || window.birdbrain.triLEDs === undefined) {
-    window.birdbrain = window.birdbrain || {};
-    window.birdbrain.triLEDs = {
-    // By attaching this function to a global variable, it is only
-    // defined once instead of every time this block is called, improving
-    // performance significantly.
-
-        setLEDIntensities: function(port, intensities) {
-
-            var actualPort = port;
-            if (actualPort != "all") { actualPort = parseInt(port) + 1;}
-
-            var realIntensities = intensities.map(function(intensity) {
-                return Math.floor(Math.max(Math.min(intensity*2.55, 255), 0));
-            });
-
-            var thisCommand = {
-              cmd: "triled",
-              port: actualPort,
-              red: realIntensities[0],
-              green: realIntensities[1],
-              blue: realIntensities[2]
-            }
-            window.parent.postMessage(thisCommand, "*");
-        }
-    }
+var thisCommand = {
+  cmd: "triled",
+  port: 1,
+  red: Math.floor(Math.max(Math.min(rednum*2.55, 255), 0)),
+  green: Math.floor(Math.max(Math.min(greennum*2.55, 255), 0)),
+  blue: Math.floor(Math.max(Math.min(bluenum*2.55, 255), 0))
 }
-window.birdbrain.triLEDs.setLEDIntensities(realPort, [rednum, greennum, bluenum]);
 
+window.birdbrain.sendCommand(thisCommand);
 
                         </l>
                     </block>
@@ -1103,6 +1107,7 @@ window.birdbrain.triLEDs.setLEDIntensities(realPort, [rednum, greennum, bluenum]
                 <input type="%n">0</input>
             </inputs>
             <script>
+                <custom-block s="BirdBrain Setup"></custom-block>
                 <block s="doIf">
                     <block s="reportLessThan">
                         <block var="redLED"/>
@@ -1184,38 +1189,19 @@ window.birdbrain.triLEDs.setLEDIntensities(realPort, [rednum, greennum, bluenum]
                             <l>bluenum</l>
                         </list>
                         <l>
-var realPort = port;
 
-if (window.birdbrain === undefined || window.birdbrain.triLEDs === undefined) {
-    window.birdbrain = window.birdbrain || {};
-    window.birdbrain.triLEDs = {
-    // By attaching this function to a global variable, it is only
-    // defined once instead of every time this block is called, improving
-    // performance significantly.
+var actualPort = port;
+if (actualPort != "all") { actualPort = parseInt(port) + 1;}
 
-        setLEDIntensities: function(port, intensities) {
-
-            var actualPort = port;
-            if (actualPort != "all") { actualPort = parseInt(port) + 1;}
-
-            var realIntensities = intensities.map(function(intensity) {
-                return Math.floor(Math.max(Math.min(intensity*2.55, 255), 0));
-            });
-
-            var thisCommand = {
-              cmd: "triled",
-              port: actualPort,
-              red: realIntensities[0],
-              green: realIntensities[1],
-              blue: realIntensities[2]
-            }
-            window.parent.postMessage(thisCommand, "*");
-        }
-    }
+var thisCommand = {
+  cmd: "triled",
+  port: actualPort,
+  red: Math.floor(Math.max(Math.min(rednum*2.55, 255), 0)),
+  green: Math.floor(Math.max(Math.min(greennum*2.55, 255), 0)),
+  blue: Math.floor(Math.max(Math.min(bluenum*2.55, 255), 0))
 }
 
-window.birdbrain.triLEDs.setLEDIntensities(realPort, [rednum, greennum, bluenum]);
-
+window.birdbrain.sendCommand(thisCommand);
 
                         </l>
                     </block>
@@ -1239,102 +1225,26 @@ window.birdbrain.triLEDs.setLEDIntensities(realPort, [rednum, greennum, bluenum]
                 <input type="%txt">Hello</input>
             </inputs>
             <script>
+                <custom-block s="BirdBrain Setup"></custom-block>
                 <block s="doRun">
                     <block s="reportJSFunction">
                         <list>
                             <l>string</l>
                         </list>
-                        <l>////////////////////////////////////////////////////////////////////////////////
-                            // In order to avoid sending more messages than the app can handle, whenever we
-                            // send a message we also save it in a persistent global variable. When the
-                            // message is processed in the app, the callback checks if the global variable
-                            // still matches what it was changed to. If it was, it deletes the global
-                            // variable. Otherwise the message is resent with new data.
-                            //
-                            // When this block is called it checks if the global value has been set. If it
-                            // has, it sends a message. Otherwise it just updates the value and lets the
-                            // callback handle it.
-                            // Encode any special characters in the URL string = encodeURIComponent(string);
-                            //
-                            // We can&apos;t run code beforehand to define values so we must check each block
-                            // call if they are set.
-
-                            if (window.birdbrain === undefined || window.birdbrain.printObj === undefined) {
-                                window.birdbrain = window.birdbrain || {};
-                                window.birdbrain.printObj = {
-                                    // By attaching this function to a global variable, it is only
-                                    // defined once instead of every time this block is called, improving
-                                    // performance significantly.
-
-                                    printString: function(string) {
-                                        function callback() {
-                                            if (window.birdbrain.printObj.stringToPrint === string) {
-                                                delete window.birdbrain.printObj.stringToPrint;
-                                            } else {
-                                                window.birdbrain.printObj.printString(window.birdbrain.printObj.stringToPrint);
-                                            }
-                                        }
-                                        /*
-                                        var report = {
-                                        message:"L".charCodeAt(0),
-                                        port: port.toString().charCodeAt(0),
-                                        intensity: intensity
-                                        };
-
-                                        chrome.runtime.sendMessage(hummingbirdAppID, report, callback);
-                                        */
-                                        //Create a new XMLHttpRequest object
-                                        var xhr = new XMLHttpRequest();
-                                        var printURL = "http://127.0.0.1:30061/hummingbird/out/print/" + string;
-                                        xhr.open("GET", printURL, true);
-                                        xhr.onload = function (e) {
-                                            if (xhr.readyState === 4) {
-                                                if (xhr.status === 200) {
-                                                    callback();
-                                                } else {
-                                                    console.error(xhr.statusText);
-                                                }
-                                            }
-                                        };
-                                        xhr.onerror = function (e) {
-                                            console.error(xhr.statusText);
-                                        };
-                                        xhr.send(null);
-                                    }
-                                }
+                        <l>
+                            var thisCommand = {
+                              cmd: "print",
+                              printString: string
                             }
-                            //TODO Turn &apos;/&apos; chars into %
-                            if (window.birdbrain.printObj.stringToPrint === undefined) {
-                                window.birdbrain.printObj.printString(string);
-                            }
-                            window.birdbrain.printObj.stringToPrint = string;
+
+                            window.birdbrain.sendCommand(thisCommand);
                         </l>
                     </block>
                     <list>
                         <block var="string"/>
                     </list>
                 </block>
-                <block s="doWait">
-                    <l>0</l>
-                </block>
             </script>
-            <scripts>
-                <script x="310.9999990000001" y="47">
-                    <block s="doReport">
-                        <block s="reportURL">
-                            <block s="reportJoinWords">
-                                <list>
-                                    <l>http://127.0.0.1:30061/hummingbird/out/print/</l>
-                                    <block var="string"/>
-                                </list>
-                            </block>
-                        </block>
-                    </block>
-                </script>
-                <script x="335" y="1024.8333343333334">
-                    <block var="intensity"/>
-                </script>
-            </scripts>
         </block-definition>
         <block-definition
                 s="micro:bit Display $nl %&apos;r1c1&apos; %&apos;r1c2&apos; %&apos;r1c3&apos; %&apos;r1c4&apos; %&apos;r1c5&apos; $nl %&apos;r2c1&apos; %&apos;r2c2&apos; %&apos;r2c3&apos; %&apos;r2c4&apos; %&apos;r2c5&apos; $nl %&apos;r3c1&apos; %&apos;r3c2&apos; %&apos;r3c3&apos; %&apos;r3c4&apos; %&apos;r3c5&apos; $nl %&apos;r4c1&apos; %&apos;r4c2&apos; %&apos;r4c3&apos; %&apos;r4c4&apos; %&apos;r4c5&apos; $nl %&apos;r5c1&apos; %&apos;r5c2&apos; %&apos;r5c3&apos; %&apos;r5c4&apos; %&apos;r5c5&apos;"
@@ -1370,6 +1280,7 @@ window.birdbrain.triLEDs.setLEDIntensities(realPort, [rednum, greennum, bluenum]
                 <input type="%b">false</input>
             </inputs>
             <script>
+                <custom-block s="BirdBrain Setup"></custom-block>
                 <block s="doRun">
                     <block s="reportJSFunction">
                         <list>
@@ -1385,22 +1296,12 @@ window.birdbrain.triLEDs.setLEDIntensities(realPort, [rednum, greennum, bluenum]
                              r4c1 + "\/"+ r4c2 + "\/"+ r4c3 + "\/"+ r4c4 + "\/"+ r4c5 + "\/" +
                              r5c1 + "\/"+ r5c2 + "\/"+ r5c3 + "\/"+ r5c4 + "\/"+ r5c5 ;
 
+                             var thisCommand = {
+                               cmd: "symbol",
+                               symbolString: symbolString
+                             }
 
-                            // We can&apos;t run code beforehand to define values so we must check each block
-                            // call if they are set.
-                            if (window.birdbrain === undefined || window.birdbrain.setSymbol === undefined) {
-                                window.birdbrain = window.birdbrain || {};
-                                window.birdbrain.setSymbol = function (symbolString) {
-                                    var thisCommand = {
-                                      cmd: "symbol",
-                                      symbolString: symbolString
-                                    }
-
-                                    window.parent.postMessage(thisCommand, "*");
-                                }
-                            }
-
-                            window.birdbrain.setSymbol(symbolString);
+                            window.birdbrain.sendCommand(thisCommand);
                         </l>
                     </block>
                     <list>
@@ -1431,72 +1332,7 @@ window.birdbrain.triLEDs.setLEDIntensities(realPort, [rednum, greennum, bluenum]
                         <block var="r5c5"/>
                     </list>
                 </block>
-                <block s="doWait">
-                    <l></l>
-                </block>
             </script>
-            <scripts>
-                <script x="731" y="16">
-                    <block s="doReport">
-                        <block s="reportURL">
-                            <block s="reportJoinWords">
-                                <list>
-                                    <l>http://127.0.0.1:30061/hummingbird/out/symbol/A/</l>
-                                    <block var="11"/>
-                                    <l>/</l>
-                                    <block var="12"/>
-                                    <l>/</l>
-                                    <block var="r1c3"/>
-                                    <l>/</l>
-                                    <block var="r1c4"/>
-                                    <l>/</l>
-                                    <block var="r1c5"/>
-                                    <l>/</l>
-                                    <block var="r2c1"/>
-                                    <l>/</l>
-                                    <block var="r2c2"/>
-                                    <l>/</l>
-                                    <block var="r2c3"/>
-                                    <l>/</l>
-                                    <block var="r2c4"/>
-                                    <l>/</l>
-                                    <block var="25"/>
-                                    <l>/</l>
-                                    <block var="31"/>
-                                    <l>/</l>
-                                    <block var="r3c2"/>
-                                    <l>/</l>
-                                    <block var="33"/>
-                                    <l>/</l>
-                                    <block var="34"/>
-                                    <l>/</l>
-                                    <block var="35"/>
-                                    <l>/</l>
-                                    <block var="41"/>
-                                    <l>/</l>
-                                    <block var="42"/>
-                                    <l>/</l>
-                                    <block var="43"/>
-                                    <l>/</l>
-                                    <block var="44"/>
-                                    <l>/</l>
-                                    <block var="45"/>
-                                    <l>/</l>
-                                    <block var="51"/>
-                                    <l>/</l>
-                                    <block var="52"/>
-                                    <l>/</l>
-                                    <block var="53"/>
-                                    <l>/</l>
-                                    <block var="54"/>
-                                    <l>/</l>
-                                    <block var="55"/>
-                                </list>
-                            </block>
-                        </block>
-                    </block>
-                </script>
-            </scripts>
         </block-definition>
     </blocks>
     <variables></variables>

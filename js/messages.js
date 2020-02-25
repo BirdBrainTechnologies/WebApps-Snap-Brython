@@ -34,7 +34,6 @@ function parseMessage(message) {
         robot.setTriLED(message.port, message.red, message.green, message.blue);
       }
 
-      //robot.write(robot.setAllData);
       break;
     case "playNote":
       robot.setBuzzer(message.note, message.duration)
@@ -43,6 +42,44 @@ function parseMessage(message) {
     case "symbol":
       robot.setSymbol(message.symbolString)
 
+      break;
+    case "print":
+      robot.setPrint(message.printString.split(""))
+
+      break;
+    case "wheels":
+      robot.setMotors(message.speedL, 0, message.speedR, 0);
+
+      break;
+    case "turn":
+      const turnTicks = message.angle * FINCH_TICKS_PER_DEGREE;
+      switch(message.direction) {
+        case "Right":
+          robot.setMotors(message.speed, turnTicks, -message.speed, turnTicks);
+          break;
+        case "Left":
+          robot.setMotors(-message.speed, turnTicks, message.speed, turnTicks);
+      }
+      break;
+    case "move":
+      const moveTicks = message.distance * FINCH_TICKS_PER_CM;
+      switch(message.direction) {
+        case "Forward":
+          robot.setMotors(message.speed, moveTicks, message.speed, moveTicks);
+        break;
+        case "Backward":
+          robot.setMotors(-message.speed, moveTicks, -message.speed, moveTicks);
+        break;
+      }
+      break;
+    case "stopFinch":
+      robot.setMotors(0, 0, 0, 0);
+      break;
+    case "resetEncoders":
+      robot.resetEncoders();
+      break;
+    case "stopAll":
+      robot.stopAll();
       break;
     default:
       console.log("Command not implemented: " + message.cmd);
