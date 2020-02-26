@@ -4,6 +4,8 @@ const MAX_LED_PRINT_WORD_LEN = 10;
 //Finch constants
 const FINCH_TICKS_PER_CM = 49.7;
 const FINCH_TICKS_PER_DEGREE = 4.335;
+//This array tells the motors to keep doing what they are doing
+const FINCH_INITIAL_MOTOR_ARRAY = new Uint8Array([0, 0, 0, 1, 0, 0, 0, 1]);
 
 function Robot(device, devLetter) {
   this.device = device;
@@ -82,6 +84,15 @@ Robot.initialSetAllFor = function(type) {
   }
   return array;
 }
+Robot.dataIsEqual = function(data1, data2) {
+  if (data1.length != data2.length) { return false; }
+
+  var equal = true;
+  for (var i = 0; i < data1.length; i++) {
+    if (data1[i] != data2[i]) { equal = false; }
+  }
+  return equal;
+}
 
 Robot.prototype.initializeDataArrays = function() {
   this.setAllData = Robot.initialSetAllFor(this.type);
@@ -89,8 +100,8 @@ Robot.prototype.initializeDataArrays = function() {
   this.ledDisplayData = new Uint8Array(8);
   this.oldLedDisplayData = this.ledDisplayData.slice();
   if (this.isA(Robot.ofType.FINCH)) {
-    this.motorsData = new Uint8Array(8);
-    this.oldMotorsData = this.motorsData.slice();
+    this.motorsData = FINCH_INITIAL_MOTOR_ARRAY.slice();
+    this.oldMotorsData = FINCH_INITIAL_MOTOR_ARRAY.slice();
   }
 }
 
@@ -145,29 +156,38 @@ Robot.prototype.write = function(data) {
 }
 //TODO: Make sure updates don't get skipped
 //TODO: Update group of data at once (eg entire buzzer command)
-Robot.updateData = function(data, index, value) {
+Robot.prototype.updateData = function(data, startIndex, valueArray) {
   //values must be between 0 and 255
-  if (value < 0 || value > 255) {
-    console.log("updateData invalid value: " + value);
-    return;
+  for(let i = 0; i < valueArray.length; i++) {
+    if (valueArray[i] < 0 || valueArray[i] > 255) {
+      console.log("updateData invalid value: " + value);
+      return;
+    }
   }
+
   //make sure the index is not out of bounds
-  if (index < 0 || index >= data.length) {
+  if (startIndex < 0 || (startIndex + valueArray.length) > data.length) {
     console.log("updateData invalid index: " + index);
     return;
   }
-  data[index] = value;
-}
 
-Robot.dataIsEqual = function(data1, data2) {
-  if (data1.length != data2.length) { return false; }
-
-  var equal = true;
-  for (var i = 0; i < data1.length; i++) {
-    if (data1[i] != data2[i]) { equal = false; }
+  let newData = data.slice();
+  for(let i = 0; i < valueArray.length; i++) {
+    newData[startIndex + i] = valueArray[i];
   }
-  return equal;
+
+  if (data === this.setAllData) {
+    this.setAllData = newData;
+  } else if (data === this.motorsData) {
+    this.motorsData = newData;
+  } else if (data === this.ledDisplayData) {
+    this.ledDisplayData = newData;
+  } else {
+    console.log("NOT FOUND " + data)
+  }
 }
+
+
 
 Robot.prototype.sendSetAll = function() {
   var setAllChanged = !Robot.dataIsEqual(this.setAllData, this.oldSetAllData);
@@ -199,6 +219,7 @@ Robot.prototype.sendSetAll = function() {
       let motorArray = []
       if (motorsChanged) {
         motorArray = Array.prototype.slice.call(this.motorsData);
+        this.motorsData = FINCH_INITIAL_MOTOR_ARRAY.slice();
       }
 
       let mode = 0x00
@@ -252,7 +273,7 @@ Robot.prototype.setLED = function(port, intensity) {
       return;
   }
 
-  Robot.updateData(this.setAllData, index, intensity);
+  this.updateData(this.setAllData, index, [intensity]);
 }
 
 Robot.prototype.setTriLED = function(port, red, green, blue) {
@@ -279,9 +300,7 @@ Robot.prototype.setTriLED = function(port, red, green, blue) {
       return;
   }
 
-  Robot.updateData(this.setAllData, index, red);
-  Robot.updateData(this.setAllData, index + 1, green);
-  Robot.updateData(this.setAllData, index + 2, blue);
+  this.updateData(this.setAllData, index, [red, green, blue]);
 }
 
 Robot.prototype.setServo = function(port, value) {
@@ -292,7 +311,7 @@ Robot.prototype.setServo = function(port, value) {
   if (port < 1 || port > 4) {
     console.log("setServo invalid port: " + port);
   }
-  Robot.updateData(this.setAllData, port + 8, value);
+  this.updateData(this.setAllData, port + 8, [value]);
 }
 
 Robot.prototype.setMotors = function(speedL, ticksL, speedR, ticksR) {
@@ -326,7 +345,7 @@ Robot.prototype.setMotors = function(speedL, ticksL, speedR, ticksR) {
       return 0;
     }
   }
-
+/*
   this.motorsData[0] = scaledVelocity(speedL)
   this.motorsData[1] = ((ticksL & 0x00ff0000) >> 16)
   this.motorsData[2] = ((ticksL & 0x0000ff00) >> 8)
@@ -340,6 +359,13 @@ Robot.prototype.setMotors = function(speedL, ticksL, speedR, ticksR) {
   console.log((ticksL & 0xff0000 >> 16) + " " + (ticksL & 0xff00 >> 8) + " " + (ticksL & 0xff));
   console.log((ticksL >> 16) + " " + (ticksL >> 8) + " " + (ticksL));
   console.log(((ticksL >> 16) & 0xff) + " " + ((ticksL >> 8) & 0xff) + " " + (ticksL & 0xff));
+*/
+  this.updateData(this.motorsData, 0, [
+    scaledVelocity(speedL), ((ticksL & 0x00ff0000) >> 16),
+    ((ticksL & 0x0000ff00) >> 8), (ticksL & 0x000000ff),
+    scaledVelocity(speedR), ((ticksR & 0x00ff0000) >> 16),
+    ((ticksR & 0x0000ff00) >> 8), (ticksR & 0x000000ff)
+  ])
 }
 
 Robot.prototype.setBuzzer = function(note, duration) {
@@ -353,10 +379,9 @@ Robot.prototype.setBuzzer = function(note, duration) {
   let period = (1/frequency) * 1000000
   //TODO: check if period is in range?
 
-  Robot.updateData(this.setAllData, index, period >> 8)
-  Robot.updateData(this.setAllData, index + 1, period & 0x00ff)
-  Robot.updateData(this.setAllData, index + 2, duration >> 8)
-  Robot.updateData(this.setAllData, index + 3, duration & 0x00ff)
+  this.updateData(this.setAllData, index, [
+    period >> 8, period & 0x00ff, duration >> 8, duration & 0x00ff
+  ])
 }
 
 Robot.prototype.clearBuzzerBytes = function() {
@@ -366,16 +391,13 @@ Robot.prototype.clearBuzzerBytes = function() {
     return;
   }
 
-  Robot.updateData(this.setAllData, index, 0)
-  Robot.updateData(this.setAllData, index + 1, 0)
-  Robot.updateData(this.setAllData, index + 2, 0)
-  Robot.updateData(this.setAllData, index + 3, 0)
+  this.updateData(this.setAllData, index, [0, 0, 0, 0])
 }
 
 Robot.prototype.setSymbol = function(symbolString) {
   if (this.printTimer !== null) { clearTimeout(this.printTimer); }
 
-  let data = new Uint8Array(6);
+  let data = [];
   data[0] = 0xCC
   data[1] = 0x80 //set symbol
   const sa = symbolString.split("/")
@@ -392,7 +414,7 @@ Robot.prototype.setSymbol = function(symbolString) {
       shift -= 1
     }
   }
-  this.ledDisplayData = data;
+  this.updateData(this.ledDisplayData, 0, data);
   console.log("processed symbol:")
   console.log(this.ledDisplayData)
 
@@ -410,7 +432,8 @@ Robot.prototype.setPrint = function(printChars) {
     printChars = printChars.slice(0, MAX_LED_PRINT_WORD_LEN);
   }
 
-  let data = new Uint8Array(printChars.length + 2);
+  //let data = new Uint8Array(printChars.length + 2);
+  let data = [];
   data[0] = 0xCC
   data[1] = printChars.length | 0x40;
 
@@ -418,7 +441,7 @@ Robot.prototype.setPrint = function(printChars) {
     data[i+2] = printChars[i].charCodeAt(0);
   }
 
-  this.ledDisplayData = data;
+  this.updateData(this.ledDisplayData, 0, data);
 }
 
 Robot.prototype.stopAll = function() {

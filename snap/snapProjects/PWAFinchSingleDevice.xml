@@ -80,17 +80,25 @@
                           return (window.birdbrain.sensorData[finch][4] > 127);
                         }
 
+                        //  Converts byte range 0 - 255 to -127 - 127 represented as a 32 bit signe int
+                        function byteToSignedInt8 (byte) {
+                          var sign = (byte & (1 &lt;&lt; 7));
+                          var value = byte & 0x7F;
+                          if (sign) { value  = byte | 0xFFFFFF00; }
+                          return value;
+                        }
+
                         window.birdbrain.getFinchAcceleration = function(axis, finch) {
                           let sensorData = window.birdbrain.sensorData[finch];
                           let accVal = 0;
                           switch (axis) {
                             case 'X':
-                              accVal = sensorData[13];
+                              accVal = byteToSignedInt8(sensorData[13]);
                               break;
                             case 'Y':
                             case 'Z':
-                              const rawY = sensorData[14];
-                              const rawZ = sensorData[15];
+                              const rawY = byteToSignedInt8(sensorData[14]);
+                              const rawZ = byteToSignedInt8(sensorData[15]);
                               const rad = 40 * Math.PI / 180; //40° in radians
 
                               switch(axis) {
@@ -109,11 +117,11 @@
                           let sensorData = window.birdbrain.sensorData[finch];
                           switch (axis) {
                             case 'X':
-                              return sensorData[17];
+                              return byteToSignedInt8(sensorData[17]);
                             case 'Y':
                             case 'Z':
-                              const rawY = sensorData[18];
-                              const rawZ = sensorData[19];
+                              const rawY = byteToSignedInt8(sensorData[18]);
+                              const rawZ = byteToSignedInt8(sensorData[19]);
                               const rad = 40 * Math.PI / 180 //40° in radians
 
                               let magVal = 0;
@@ -489,7 +497,7 @@
                             window.birdbrain.finchOrientation = function (dim, robot) {
                               if (dim == "Shake") {
                                 let shake = window.birdbrain.sensorData.A[16];
-                                return (shake & 0x01 &gt; 0)
+                                return ((shake & 0x01) &gt; 0);
                               }
                               const threshold = 7.848;
                               let acceleration = 0;
@@ -507,7 +515,6 @@
                                   acceleration = window.birdbrain.getFinchAcceleration('Z', robot);
                                   break;
                               }
-                              console.log("finchOrientation " + dim + " a=" + acceleration);
                               switch(dim) {
                                 case "Tilt Right":
                                 case "Beak Up":
