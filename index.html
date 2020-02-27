@@ -37,10 +37,15 @@
 						<i class="dot fas fa-circle fa-stack-1x"></i>-->
 					<!--	<i class="dot dot-spin fas fa-sync-alt fa-spin fa-stack-2x"></i> -->
 					<!--</div>-->
-					<div>
+					<!--<div>
 						<button id="butInstall" aria-label="Install" hidden>
 							<i class="fas fa-download"></i>
 						</button>
+					</div>-->
+					<div id="butInstall" class="fa-stack" aria-label="Install" hidden>
+						<a id="btn-install" class="btn btn-orange">
+							<i class="fas fa-download fa-lg"></i>
+						</a>
 					</div>
 				</div>
 			</div>
@@ -68,15 +73,22 @@
 		<section id="connected">
 			<div class="container">
 				<div class="row">
-					<div class="col-xs-12 text-center">
+					<div class="col-xs-2"></div>
+					<div class="col-xs-8 text-center">
 					    <h1 id="connection-state" style="visibility:hidden">Connected</h1>
+					</div>
+					<div id="btn-collapse-section" class="col-xs-2" style="visibility:hidden">
+						<a id="btn-collapse" class="btn btn-lg btn-orange">
+							<i class="fas fa-compress-arrows-alt"></i>
+						</a>
 					</div>
 					<i id="startupState" class="dot dot-spin fas fa-sync-alt fa-spin fa-stack-2x"></i>
 					<div class="col-xs-12">
 						<div id="robots-connected" class="robot-list">
-
+							<!-- connected robots will be added here -->
 						</div>
 					</div>
+
 					<div id="startProgramming" style="visibility:hidden">
   					<div class="col-xs-12 text-center"><h1><span id="start_programming">Start Programming</span></h1></div>
 
@@ -84,6 +96,27 @@
   						<a id="open-snap" class="btn btn-lg btn-orange launch-snap-btn"><img src="img/logo-snap.svg" alt="Snap!" /></a>
   					</div>
   				</div>
+				</div>
+
+			</div>
+		</section>
+
+		<section id="connected-expanded" style="visibility:hidden">
+			<div class="container">
+				<div class="row">
+					<div id="logo-section" class="col-xs-2"><img id="hummingbird-only-logo" src="img/hummingbird-only-logo.svg" alt="BirdBrain Technologies LLC" /></div>
+					<div class="col-xs-8">
+						<div id="robots-connected-snap" class="robot-list">
+							<!-- connected robots will be added here when snap is open -->
+						</div>
+					</div>
+					<div id="btn-expand-section" class="col-xs-2"><a id="btn-expand" class="btn btn-lg btn-orange"><i class="fas fa-expand-arrows-alt"></i></a></div>
+				</div>
+
+				<div class="row">
+					<div class="col-xs-12" id="snap-div">
+						<!-- snap iframe will be added here -->
+					</div>
 				</div>
 			</div>
 		</section>
@@ -96,7 +129,7 @@
 		<script src="js/messages.js"></script>
 		<script src="js/ble.js"></script>
 		<script src="js/gui.js"></script>
-<!--
+
 		<script>
 	    // Register service worker.
 	    if ('serviceWorker' in navigator) {
@@ -108,6 +141,6 @@
 	      });
 	    }
   	</script>
--->
+
 	</body>
 </html>

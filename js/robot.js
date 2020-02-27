@@ -115,11 +115,12 @@ Robot.prototype.disconnect = function() {
   var index = robots.indexOf(this);
   if (index !== -1) robots.splice(index, 1);
   console.log("after disconnect: " + robots.length);
-  this.displayElement.remove();
-  if (robots.length == 0) {
-    $('#connection-state').css("visibility", "hidden");
-    $('#startProgramming').css("visibility", "hidden");
-  }
+  //this.displayElement.remove();
+  //if (robots.length == 0) {
+  //  $('#connection-state').css("visibility", "hidden");
+  //  $('#startProgramming').css("visibility", "hidden");
+  //}
+  updateConnectedDevices();
 }
 
 Robot.prototype.write = function(data) {

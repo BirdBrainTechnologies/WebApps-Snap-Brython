@@ -1,3 +1,11 @@
+const header = document.getElementById('main-header');
+const finder = document.getElementById('finder');
+const connected = document.getElementById('connected');
+var snapExpanded = false;
+var internetIsConnected = false;
+updateInternetStatus();
+setInterval(updateInternetStatus, 5000);
+
 $('#finder').css("display", "block");
 
 //TODO: this is the spinner that you see instead of the connected robots list. Do we ever want this?
@@ -15,6 +23,8 @@ $('#find-button').on('click', function(e) {
 
 function updateConnectedDevices() {
   $('#robots-connected').empty();
+  $('#robots-connected-snap').empty();
+
   if (robots.length == 0) {
     $('#connection-state').css("visibility", "hidden");
     $('#startProgramming').css("visibility", "hidden");
@@ -22,6 +32,8 @@ function updateConnectedDevices() {
     $('#connection-state').css("visibility", "visible");
     if (iframe == null) {
       $('#startProgramming').css("visibility", "visible");
+    } else {
+      $('#startProgramming').css("visibility", "hidden");
     }
 
     robots.forEach(robot => {
@@ -87,22 +99,72 @@ function displayConnectedDevice(robot) {
 
   robot.displayElement = el; //TODO: need this?
 
-  $('#robots-connected').append(el);
+  if (snapExpanded) {
+    $('#robots-connected-snap').append(el);
+  } else {
+    $('#robots-connected').append(el);
+  }
   updateBatteryStatus();
 }
 
 
 $('#startProgramming').on('click', function(e) {
-  $('#startProgramming').css("visibility", "hidden");
+  updateInternetStatus();
+  //$('#startProgramming').css("visibility", "hidden");
+  //$('#main-header').css("visibility", "hidden");
+  //$('#finder').css("visibility", "hidden");
+  //header.remove();
+  //finder.remove();
+  //connected.remove();
 
+  //snapExpanded = true;
+  //updateConnectedDevices();
+
+  //const connectedRobotsHeight = document.getElementById('robots-connected-snap').offsetHeight;
+  //const snapHeight = window.innerHeight - connectedRobotsHeight;
+  //console.log("crh " + connectedRobotsHeight + " sh " + snapHeight);
   //<iframe src="https://snap.berkeley.edu/snap/snap.html" width="100%" height="600">blabla</iframe>
   iframe = document.createElement("iframe");
-  iframe.src = "https://snap.berkeley.edu/snap/snap.html";
-  iframe.width = "100%";
-  iframe.height = "600";
+  if (internetIsConnected) {
+    iframe.src = "https://snap.berkeley.edu/snap/snap.html";
+  } else {
+    iframe.src = "https://snap.berkeley.edu/snap/snap.html";
+  }
+  
+  //iframe.width = "100%";
+  //iframe.height = "500";
 
-  document.body.appendChild(iframe);
+  let div = document.getElementById('snap-div');
+  div.appendChild(iframe);
+
+  //document.body.appendChild(iframe);
+  //$('#connected-expanded').css("visibility", "visible");
+  expandSnap();
 })
+
+$('#btn-expand-section').on('click', function(e) {
+  snapExpanded = false;
+  $('#connected-expanded').css("visibility", "hidden");
+  document.body.insertBefore(connected, document.body.childNodes[0]);
+  document.body.insertBefore(finder, document.body.childNodes[0]);
+  document.body.insertBefore(header, document.body.childNodes[0]);
+  updateConnectedDevices();
+  $('#btn-collapse-section').css("visibility", "visible");
+})
+
+$('#btn-collapse-section').on('click', function(e) {
+  expandSnap();
+})
+
+function expandSnap() {
+  header.remove();
+  finder.remove();
+  connected.remove();
+
+  snapExpanded = true;
+  updateConnectedDevices();
+  $('#connected-expanded').css("visibility", "visible");
+}
 
 function updateBatteryStatus() {
   //For some reason, all battery icons have their classes removed
@@ -130,4 +192,18 @@ function updateBatteryStatus() {
       default: //UNKNOWN
     }
   })
+}
+
+function updateInternetStatus() {
+  const connected = navigator.onLine;
+  if (connected === internetIsConnected) {
+    return;
+  }
+  internetIsConnected = connected;
+
+  if (connected) {
+    $('#indicator-wifi').addClass("indicator-on");
+  } else {
+    $('#indicator-wifi').removeClass("indicator-on");
+  }
 }

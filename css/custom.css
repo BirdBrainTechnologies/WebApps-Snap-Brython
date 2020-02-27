@@ -157,8 +157,11 @@ h1 { font-family: 'Raleway', Helvetica, Arial, sans-serif; font-size: 1.75em; te
 #connected-expanded .container { width: 100%; padding-top: 6px; }
 #logo-section { padding-left: 1.5em; }
 #hummingbird-only-logo { margin-top: 4px; height: 54px; width: auto; }
-#connected-expanded #robots-connected.robot-list { font-size: 0.8em; margin-bottom: 1em; }
-#connected-expanded #robots-connected.robot-list .img img { height: 27px; }
+#connected-expanded #robots-connected-snap.robot-list { font-size: 0.8em; margin-bottom: 1em; }
+#connected-expanded #robots-connected-snap.robot-list .img img { height: 27px; }
 #btn-expand { margin-top: 4px; padding: 0.275em 0.5em; font-size: 2em; line-height: 1em; }
 #btn-expand-section { padding-right: 1.5em; text-align: right; }
-#connected-expanded iframe { width: 100%; height: 95vh; }
+/*#connected-expanded iframe { width: 100%; height: 95vh; }*/
+#connected-expanded iframe { width: 100%; height: 88vh; }
+#btn-collapse { margin-top: 4px; padding: 0.275em 0.5em; font-size: 2em; line-height: 1em; }
+#btn-collapse-section { padding-right: 1.5em; text-align: right; }
