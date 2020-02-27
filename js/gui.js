@@ -130,8 +130,8 @@ $('#startProgramming').on('click', function(e) {
   if (internetIsConnected) {
     iframe.src = "https://snap.berkeley.edu/snap/snap.html";
   } else {
-    iframe.src = "snap/snap.html";
-    //iframe.src = "snap/snap.html#open:/snap/snapProjects/" + projectName + ".xml&editMode&noRun&lang=" + language;
+    //iframe.src = "snap/snap.html";
+    iframe.src = "snap/snap.html#open:/snap/snapProjects/" + projectName + ".xml&editMode&noRun&lang=" + language;
   }
 
   //iframe.width = "100%";
