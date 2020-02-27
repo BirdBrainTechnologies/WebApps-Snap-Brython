@@ -212,7 +212,7 @@ function translateStrings(table) {
 }
 
 function setLanguage() {
-  var language = window.navigator.language;
+  language = window.navigator.language;
   console.log("window.navigator.language = " + language);
 
   if (language.startsWith("zh")) {

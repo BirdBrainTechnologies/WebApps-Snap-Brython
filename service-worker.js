@@ -4,16 +4,19 @@
 'use strict';
 
 // Update cache names any time any of the cached files change.
-const CACHE_NAME = 'static-cache-v7';
+const CACHE_NAME = 'static-cache-v8';
 
 // CODELAB: Add list of files to cache here.
 const FILES_TO_CACHE = [
   '/',
   '/index.html',
+  //css files
   '/css/bootstrap.min.css',
   '/css/custom.css',
+  //fontawesome files
   '/fontawesome/css/all.min.css',
   '/fontawesome/webfonts/', //todo:figure out what we need here
+  //image files
   '/img/birdbrain-technologies-logo.svg',
   '/img/icon_128x128.png',
   '/img/icon_152x152.png',
@@ -25,6 +28,7 @@ const FILES_TO_CACHE = [
   '/img/img-hummingbird-bit.svg',
   '/img/logo-snap.svg',
   '/img/pattern-blue-circuitry.svg',
+  //javascript
   '/js/ble.js',
   '/js/fancyNames.js',
   '/js/gui.js',
@@ -32,7 +36,9 @@ const FILES_TO_CACHE = [
   '/js/jquery.js',
   '/js/messages.js',
   '/js/robot.js',
-  '/js/translations.js'
+  '/js/translations.js',
+  //snap
+  '/snap/'
 ];
 
 //The install event is called once per service worker.

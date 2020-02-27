@@ -11,6 +11,7 @@ $('#finder').css("display", "block");
 //TODO: this is the spinner that you see instead of the connected robots list. Do we ever want this?
 $('#startupState').css("display", "none");
 
+var language = "en"
 setLanguage();
 
 var iframe = null; //a frame for snap
@@ -124,16 +125,18 @@ $('#startProgramming').on('click', function(e) {
   //const snapHeight = window.innerHeight - connectedRobotsHeight;
   //console.log("crh " + connectedRobotsHeight + " sh " + snapHeight);
   //<iframe src="https://snap.berkeley.edu/snap/snap.html" width="100%" height="600">blabla</iframe>
+  let projectName = "PWAFinchSingleDevice";
   iframe = document.createElement("iframe");
   if (internetIsConnected) {
     iframe.src = "https://snap.berkeley.edu/snap/snap.html";
   } else {
-    iframe.src = "https://snap.berkeley.edu/snap/snap.html";
+    iframe.src = "snap/snap.html";
+    //iframe.src = "snap/snap.html#open:/snap/snapProjects/" + projectName + ".xml&editMode&noRun&lang=" + language;
   }
-  
+
   //iframe.width = "100%";
   //iframe.height = "500";
-
+  console.log("opening iframe with src=" + iframe.src);
   let div = document.getElementById('snap-div');
   div.appendChild(iframe);
 
