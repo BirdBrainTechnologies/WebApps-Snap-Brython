@@ -283,25 +283,36 @@ Robot.prototype.setTriLED = function(port, red, green, blue) {
     console.log("setTriLED called on a robot of type microbit");
     return;
   }
-  if (port < 1 || port > Robot.propertiesFor[this.type].triLedCount){
-    console.log("setTriLED invalid port: " + port);
-    return;
-  }
-  var index;
-  const portAdjust = (port - 1) * 3;
-  switch(this.type) {
-    case Robot.ofType.HUMMINGBIRDBIT:
-      index = 3 + portAdjust;
-      break;
-    case Robot.ofType.FINCH:
-      index = 1 + portAdjust;
-      break;
-    default:
-      console.log("setTriLED invalid robot type: " + this.type);
+  if (port == "all") { //finch tail requests only
+    if (this.type != Robot.ofType.FINCH) {
+      console.log("setTriLED port=all only for finch tail leds.");
       return;
-  }
+    }
 
-  this.updateData(this.setAllData, index, [red, green, blue]);
+    this.updateData(this.setAllData, 4, [red, green, blue,
+      red, green, blue, red, green, blue, red, green, blue]);
+
+  } else {
+    if (port < 1 || port > Robot.propertiesFor[this.type].triLedCount){
+      console.log("setTriLED invalid port: " + port);
+      return;
+    }
+    var index;
+    const portAdjust = (port - 1) * 3;
+    switch(this.type) {
+      case Robot.ofType.HUMMINGBIRDBIT:
+        index = 3 + portAdjust;
+        break;
+      case Robot.ofType.FINCH:
+        index = 1 + portAdjust;
+        break;
+      default:
+        console.log("setTriLED invalid robot type: " + this.type);
+        return;
+    }
+
+    this.updateData(this.setAllData, index, [red, green, blue]);
+  }
 }
 
 Robot.prototype.setServo = function(port, value) {
@@ -321,18 +332,11 @@ Robot.prototype.setMotors = function(speedL, ticksL, speedR, ticksR) {
     return
   }
 
-  //const ticksPerCM = 49.7;
-
 	//Make sure speeds do not exceed 100%
 	if (speedL > 100) { speedL = 100; }
 	if (speedL < -100) { speedL = -100; }
 	if (speedR > 100) { speedR = 100; }
 	if (speedR < -100) { speedR = -100; }
-
-	//let ticksL = Math.round(distL * ticksPerCM);
-	//let ticksR = Math.round(distR * ticksPerCM);
-  //let velL = Math.round(speedL * speedScaling));
-  //let velR = Math.round(speedR * speedScaling));
 
   let scaledVelocity = function(speed) {
     const speedScaling = 36/100;
@@ -346,21 +350,7 @@ Robot.prototype.setMotors = function(speedL, ticksL, speedR, ticksR) {
       return 0;
     }
   }
-/*
-  this.motorsData[0] = scaledVelocity(speedL)
-  this.motorsData[1] = ((ticksL & 0x00ff0000) >> 16)
-  this.motorsData[2] = ((ticksL & 0x0000ff00) >> 8)
-  this.motorsData[3] = (ticksL & 0x000000ff)
-  this.motorsData[4] = scaledVelocity(speedR)
-  this.motorsData[5] = ((ticksR & 0x00ff0000) >> 16)
-  this.motorsData[6] = ((ticksR & 0x0000ff00) >> 8)
-  this.motorsData[7] = (ticksR & 0x000000ff)
-  console.log("setMotors " + ticksL + " array " + this.motorsData);
-  console.log((ticksL & 0x00ff0000 >> 16) + " " + (ticksL & 0x0000ff00 >> 8) + " " + (ticksL & 0x000000ff));
-  console.log((ticksL & 0xff0000 >> 16) + " " + (ticksL & 0xff00 >> 8) + " " + (ticksL & 0xff));
-  console.log((ticksL >> 16) + " " + (ticksL >> 8) + " " + (ticksL));
-  console.log(((ticksL >> 16) & 0xff) + " " + ((ticksL >> 8) & 0xff) + " " + (ticksL & 0xff));
-*/
+
   this.updateData(this.motorsData, 0, [
     scaledVelocity(speedL), ((ticksL & 0x00ff0000) >> 16),
     ((ticksL & 0x0000ff00) >> 8), (ticksL & 0x000000ff),

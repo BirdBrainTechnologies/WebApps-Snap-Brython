@@ -124,6 +124,7 @@ function onCharacteristicValueChanged(event) {
     robot.receiveSensorData(dataArray)
     sendMessage({
       robot: robot.devLetter,
+      robotType: robot.type,
       sensorData: dataArray
     });
   }
@@ -132,6 +133,15 @@ function onCharacteristicValueChanged(event) {
 function getRobotByName(name) {
   for (let i = 0; i < robots.length; i++) {
     if (robots[i].device.name === name) {
+      return robots[i]
+    }
+  }
+  return null
+}
+
+function getRobotByLetter(letter) {
+  for (let i = 0; i < robots.length; i++) {
+    if (robots[i].devLetter === letter) {
       return robots[i]
     }
   }

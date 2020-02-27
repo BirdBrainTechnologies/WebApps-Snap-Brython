@@ -1420,6 +1420,8 @@ self.addEventListener('install', (evt) => {
     caches.open(CACHE_NAME).then((cache) => {
       console.log('[ServiceWorker] Pre-caching...');
       return cache.addAll(FILES_TO_CACHE);
+    }).catch(error => {
+          console.log(error);
     })
   );
   self.skipWaiting();
@@ -1437,6 +1439,8 @@ self.addEventListener('activate', (evt) => {
           return caches.delete(key);
         }
       }));
+    }).catch(error => {
+          console.log(error);
     })
   );
   self.clients.claim();
@@ -1474,7 +1478,11 @@ self.addEventListener('fetch', (evt) => {
               console.log(response);
               //return the cached page if possible otherwise get from network
               return response || fetch(evt.request);
+            }).catch(error => {
+              console.log(error);
             });
+      }).catch(error => {
+            console.log(error);
       })
   );
 });

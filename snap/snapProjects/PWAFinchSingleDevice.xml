@@ -25,6 +25,10 @@
                 </block>
                 <custom-block s="stop all"></custom-block>
             </script>
+            <script x="152" y="13">
+              <block s="receiveGo"></block>
+              <custom-block s="BirdBrain Setup"></custom-block>
+            </script>
         </scripts>
         <sprites>
             <sprite name="Sprite" idx="1" x="0" y="0" heading="90" scale="1" rotation="1" draggable="true" costume="0"
@@ -60,14 +64,21 @@
                         window.birdbrain.sensorData.A = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
                         window.birdbrain.sensorData.B = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
                         window.birdbrain.sensorData.C = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
+                        window.birdbrain.robotType = {
+                          FINCH: 1,
+                          HUMMINGBIRDBIT: 2,
+                          MICROBIT: 3
+                        };
 
                         console.log("setting up message channel")
                         window.birdbrain.messageChannel = new MessageChannel();
                         window.birdbrain.messageChannel.port1.onmessage = function (e) {
                             //console.log("Got a message: ");
                             //console.log(e.data);
-                            if (e.data.sensorData != null) {
-                              window.birdbrain.sensorData.A = e.data.sensorData;
+                            if (e.data.sensorData != null && e.data.robot != null) {
+                              let robot = e.data.robot;
+                              window.birdbrain.sensorData[robot] = e.data.sensorData;
+                              window.birdbrain.robotType[robot] = e.data.robotType;
                             }
                         }
                         window.parent.postMessage("hello from snap", "*", [window.birdbrain.messageChannel.port2]);
@@ -156,18 +167,18 @@
                     <block s="reportJSFunction">
                         <list></list>
                         <l>
-                          if (window.birdbrain.getDistance === undefined) {
-                            window.birdbrain.getDistance = function (port, robot) {
+                          if (window.birdbrain.getFinchDistance === undefined) {
+                            window.birdbrain.getFinchDistance = function (robot) {
                               const cmPerDistance = 0.0919;
-                              const msb = window.birdbrain.sensorData.A[0];
-                              const lsb = window.birdbrain.sensorData.A[1];
+                              const msb = window.birdbrain.sensorData[robot][0];
+                              const lsb = window.birdbrain.sensorData[robot][1];
 
                               const distance = msb &lt;&lt; 8 | lsb;
                               return Math.round(distance * cmPerDistance);
                             }
                           }
 
-                          return window.birdbrain.getDistance('A');
+                          return window.birdbrain.getFinchDistance('A');
                         </l>
                     </block>
                     <list></list>
@@ -191,13 +202,13 @@
                           <l>port</l>
                       </list>
                       <l>
-                        if (window.birdbrain.getLight === undefined) {
-                          window.birdbrain.getLight = function (port, robot) {
+                        if (window.birdbrain.getFinchLight === undefined) {
+                          window.birdbrain.getFinchLight = function (port, robot) {
                             switch (port) {
                               case 'Right':
-                                return window.birdbrain.sensorData.A[3];
+                                return window.birdbrain.sensorData[robot][3];
                               case 'Left':
-                                return window.birdbrain.sensorData.A[2];
+                                return window.birdbrain.sensorData[robot][2];
                               default:
                                 console.log("unknown light port " + port);
                                 return 0;
@@ -205,7 +216,7 @@
                           }
                         }
 
-                        return window.birdbrain.getLight(port, 'A');
+                        return window.birdbrain.getFinchLight(port, 'A');
                       </l>
                   </block>
                   <list>
@@ -231,15 +242,15 @@
                             <l>port</l>
                         </list>
                         <l>
-                          if (window.birdbrain.getLine === undefined) {
-                            window.birdbrain.getLine = function (port, robot) {
+                          if (window.birdbrain.getFinchLine === undefined) {
+                            window.birdbrain.getFinchLine = function (port, robot) {
                               var returnVal = 0;
                               switch (port) {
                                 case 'Right':
-                                  returnVal = window.birdbrain.sensorData.A[5];
+                                  returnVal = window.birdbrain.sensorData[robot][5];
                                   break;
                                 case 'Left':
-                                  returnVal = window.birdbrain.sensorData.A[4];
+                                  returnVal = window.birdbrain.sensorData[robot][4];
                                   //first bit is for position control
                                   returnVal = (0x7F & returnVal)
                                   break;
@@ -250,7 +261,7 @@
                             }
                           }
 
-                          return window.birdbrain.getLine(port, 'A');
+                          return window.birdbrain.getFinchLine(port, 'A');
                         </l>
                     </block>
                     <list>
@@ -276,22 +287,22 @@
                           <l>port</l>
                       </list>
                       <l>
-                        if (window.birdbrain.getEncoder === undefined) {
-                          window.birdbrain.getEncoder = function (port, robot) {
+                        if (window.birdbrain.getFinchEncoder === undefined) {
+                          window.birdbrain.getFinchEncoder = function (port, robot) {
                             let TICKS_PER_ROTATION = 792
                             var msb = 0;
                             var ssb = 0;
                             var lsb = 0;
                             switch (port) {
                               case 'Right':
-                                msb = window.birdbrain.sensorData.A[10];
-                                ssb = window.birdbrain.sensorData.A[11];
-                                lsb = window.birdbrain.sensorData.A[12];
+                                msb = window.birdbrain.sensorData[robot][10];
+                                ssb = window.birdbrain.sensorData[robot][11];
+                                lsb = window.birdbrain.sensorData[robot][12];
                                 break;
                               case 'Left':
-                                msb = window.birdbrain.sensorData.A[7];
-                                ssb = window.birdbrain.sensorData.A[8];
-                                lsb = window.birdbrain.sensorData.A[9];
+                                msb = window.birdbrain.sensorData[robot][7];
+                                ssb = window.birdbrain.sensorData[robot][8];
+                                lsb = window.birdbrain.sensorData[robot][9];
                                 break;
                               default:
                                 console.log("unknown encoder port " + port);
@@ -301,7 +312,7 @@
                           }
                         }
 
-                        return window.birdbrain.getEncoder(port, 'A');
+                        return window.birdbrain.getFinchEncoder(port, 'A');
                       </l>
                   </block>
                   <list>
@@ -323,6 +334,7 @@
                       <list></list>
                       <l>
                         var thisCommand = {
+                          robot: 'A',
                           cmd: "resetEncoders"
                         }
                         window.birdbrain.sendCommand(thisCommand)
@@ -414,6 +426,7 @@
                       </list>
                       <l>
                         var thisCommand = {
+                          robot: 'A',
                           cmd: "playNote",
                           note: note,
                           duration: duration
@@ -453,7 +466,7 @@
                         <l>
                           if (window.birdbrain.getButton === undefined) {
                             window.birdbrain.getButton = function (button, robot) {
-                              var buttonState = window.birdbrain.sensorData.A[16] & 0xF0; //Button Byte position = 7, clear LS Bits as it is for shake and calibrate
+                              var buttonState = window.birdbrain.sensorData[robot][16] & 0xF0; //Button Byte position = 7, clear LS Bits as it is for shake and calibrate
 
                               switch (button) {
                                 case 'A':
@@ -496,7 +509,7 @@
                           if (window.birdbrain.finchOrientation === undefined) {
                             window.birdbrain.finchOrientation = function (dim, robot) {
                               if (dim == "Shake") {
-                                let shake = window.birdbrain.sensorData.A[16];
+                                let shake = window.birdbrain.sensorData[robot][16];
                                 return ((shake & 0x01) &gt; 0);
                               }
                               const threshold = 7.848;
@@ -636,6 +649,7 @@
                       <list></list>
                       <l>
                         var thisCommand = {
+                          robot: 'A',
                           cmd: "stopAll"
                         }
                         window.birdbrain.sendCommand(thisCommand)
@@ -728,6 +742,7 @@
                       </list>
                       <l>
                         var thisCommand = {
+                          robot: 'A',
                           cmd: "move",
                           direction: direction,
                           distance: distance,
@@ -847,6 +862,7 @@
                       </list>
                       <l>
                         var thisCommand = {
+                          robot: 'A',
                           cmd: "turn",
                           direction: direction,
                           angle: angle,
@@ -949,6 +965,7 @@
                         </list>
                         <l>
                           var thisCommand = {
+                            robot: 'A',
                             cmd: "wheels",
                             speedL: left,
                             speedR: right
@@ -975,6 +992,7 @@
                       <list></list>
                       <l>
                         var thisCommand = {
+                          robot: 'A',
                           cmd: "stopFinch"
                         }
                         window.birdbrain.sendCommand(thisCommand)
@@ -1079,6 +1097,7 @@
                         <l>
 
 var thisCommand = {
+  robot: 'A',
   cmd: "triled",
   port: 1,
   red: Math.floor(Math.max(Math.min(rednum*2.55, 255), 0)),
@@ -1201,6 +1220,7 @@ var actualPort = port;
 if (actualPort != "all") { actualPort = parseInt(port) + 1;}
 
 var thisCommand = {
+  robot: 'A',
   cmd: "triled",
   port: actualPort,
   red: Math.floor(Math.max(Math.min(rednum*2.55, 255), 0)),
@@ -1240,6 +1260,7 @@ window.birdbrain.sendCommand(thisCommand);
                         </list>
                         <l>
                             var thisCommand = {
+                              robot: 'A',
                               cmd: "print",
                               printString: string
                             }
@@ -1304,6 +1325,7 @@ window.birdbrain.sendCommand(thisCommand);
                              r5c1 + "\/"+ r5c2 + "\/"+ r5c3 + "\/"+ r5c4 + "\/"+ r5c5 ;
 
                              var thisCommand = {
+                               robot: 'A',
                                cmd: "symbol",
                                symbolString: symbolString
                              }

@@ -57,6 +57,8 @@ function installPWA(evt) {
           console.log('User dismissed the A2HS prompt', choice);
         }
         deferredInstallPrompt = null;
+      }).catch(error => {
+            console.log(error);
       });
 }
 
