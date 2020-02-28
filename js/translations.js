@@ -196,8 +196,11 @@ const fullTranslationTable = {
   }
 };
 
-function translateStrings(table) {
-  var translationTable = table;
+var thisLocaleTable = null;
+
+function translateStrings() {
+  if (thisLocaleTable == null) { return; }
+  var translationTable = thisLocaleTable;
   // Set up defaults
   //$('#findBtnText').text(" "+translationTable["finding_robots"]);
   $('#connection-state').html(translationTable["connected"]);
@@ -226,7 +229,7 @@ function setLanguage() {
 
   console.log("Language code used: " + language);
 
-  var thisLocaleTable = fullTranslationTable[language];
+  thisLocaleTable = fullTranslationTable[language];
   if (thisLocaleTable === null) {
     console.log("Language unsupported. Defaulting to English (en)");
     language = "en";
@@ -236,5 +239,5 @@ function setLanguage() {
   console.log("thisLocaleTable:");
   console.log(thisLocaleTable);
 
-  translateStrings(thisLocaleTable);
+  translateStrings();
 }

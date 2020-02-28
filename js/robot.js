@@ -20,6 +20,7 @@ function Robot(device, devLetter) {
   this.writeInProgress = false;
   this.dataQueue = [];
   this.printTimer = null;
+  this.isCalibrating = false;
 
   //Robot state arrays
   this.initializeDataArrays();
@@ -39,7 +40,9 @@ Robot.propertiesFor = {
     setAllLength: 20,
     triLedCount: 5,
     buzzerIndex: 16,
-    stopCommand: new Uint8Array([0xDF])
+    stopCommand: new Uint8Array([0xDF]),
+    calibrationCommand: new Uint8Array([0xCE, 0xFF, 0xFF, 0xFF]),
+    calibrationIndex: 16
   },
   //hummingbird bit
   2: {
@@ -47,7 +50,9 @@ Robot.propertiesFor = {
     setAllLength: 19,
     triLedCount: 2,
     buzzerIndex: 15,
-    stopCommand: new Uint8Array([0xCB, 0xFF, 0xFF, 0xFF])
+    stopCommand: new Uint8Array([0xCB, 0xFF, 0xFF, 0xFF]),
+    calibrationCommand: new Uint8Array([0xCE, 0xFF, 0xFF, 0xFF]),
+    calibrationIndex: 7
   },
   //micro:bit
   3: {
@@ -55,7 +60,9 @@ Robot.propertiesFor = {
     setAllLength: 8,
     triLedCount: 0,
     buzzerIndex: null, //no buzzer on the micro:bit
-    stopCommand: new Uint8Array([144, 0, 0, 0, 0, 0, 0, 0])
+    stopCommand: new Uint8Array([144, 0, 0, 0, 0, 0, 0, 0]),
+    calibrationCommand: new Uint8Array([0xCE, 0xFF, 0xFF, 0xFF]),
+    calibrationIndex: 7
   }
 }
 Robot.batteryLevel = {
@@ -450,6 +457,12 @@ Robot.prototype.resetEncoders = function() {
   this.write(new Uint8Array([0xD5]));
 }
 
+Robot.prototype.startCalibration = function() {
+  this.write(Robot.propertiesFor[this.type].calibrationCommand);
+  //It takes a bit for the robot to start calibrating
+  setTimeout(() => { this.isCalibrating = true; }, 200);
+}
+
 Robot.prototype.receiveSensorData = function(data) {
   var batteryIndex = null;
   var batteryFactor = 0;
@@ -485,6 +498,19 @@ Robot.prototype.receiveSensorData = function(data) {
     if (newLevel != this.batteryLevel) {
       this.batteryLevel = newLevel
       updateBatteryStatus(this)
+    }
+  }
+
+  if (this.isCalibrating) {
+    const calibrationByte = data[Robot.propertiesFor[this.type].calibrationIndex];
+    switch(calibrationByte & 0x0C) { //0x0C = 0000 1100
+      case 4: //calibration success
+        this.isCalibrating = false;
+        updateCalibrationStatus(true);
+        break;
+      case 8: //calibration failure
+        this.isCalibrating = false;
+        updateCalibrationStatus(false);
     }
   }
 }

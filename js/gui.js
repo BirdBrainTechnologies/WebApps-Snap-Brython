@@ -21,20 +21,26 @@ $('#find-button').on('click', function(e) {
 });
 
 
-
 function updateConnectedDevices() {
   $('#robots-connected').empty();
   $('#robots-connected-snap').empty();
 
+  //hide the find robots button if we are already connected to the max.
+  if (robots.length == MAX_CONNECTIONS) {
+    $('#find-button').hide();
+  } else {
+    $('#find-button').show();
+  }
+
   if (robots.length == 0) {
     $('#connection-state').css("visibility", "hidden");
-    $('#startProgramming').css("visibility", "hidden");
+    $('#startProgramming').hide();
   } else {
     $('#connection-state').css("visibility", "visible");
     if (iframe == null) {
-      $('#startProgramming').css("visibility", "visible");
+      $('#startProgramming').show();
     } else {
-      $('#startProgramming').css("visibility", "hidden");
+      $('#startProgramming').hide();
     }
 
     robots.forEach(robot => {
@@ -95,7 +101,8 @@ function displayConnectedDevice(robot) {
 
   el.find('.button-calibrate').click(function() {
     console.log("button-calibrate");
-
+    robot.startCalibration();
+    showCalibrationModal(robot.type);
   });
 
   robot.displayElement = el; //TODO: need this?
@@ -128,7 +135,7 @@ $('#startProgramming').on('click', function(e) {
   let projectName = "PWAFinchSingleDevice";
   iframe = document.createElement("iframe");
   if (internetIsConnected) {
-    iframe.src = "https://snap.berkeley.edu/snap/snap.html";
+    iframe.src = "https://snap.berkeley.edu/snap/snap.html#present:Username=birdbraintech&ProjectName=" + projectName + "&editMode&lang=" + language;
   } else {
     //iframe.src = "snap/snap.html";
     iframe.src = "snap/snap.html#open:/snap/snapProjects/" + projectName + ".xml&editMode&noRun&lang=" + language;
@@ -146,6 +153,7 @@ $('#startProgramming').on('click', function(e) {
 })
 
 $('#btn-expand-section').on('click', function(e) {
+  $(this).hide();
   snapExpanded = false;
   $('#connected-expanded').css("visibility", "hidden");
   document.body.insertBefore(connected, document.body.childNodes[0]);
@@ -157,6 +165,7 @@ $('#btn-expand-section').on('click', function(e) {
 
 $('#btn-collapse-section').on('click', function(e) {
   expandSnap();
+  $('#btn-expand-section').show();
 })
 
 function expandSnap() {
@@ -208,5 +217,132 @@ function updateInternetStatus() {
     $('#indicator-wifi').addClass("indicator-on");
   } else {
     $('#indicator-wifi').removeClass("indicator-on");
+  }
+}
+
+function showCalibrationModal(robotType) {
+  /* basic modal setup */
+  const section = document.createElement('section');
+  section.setAttribute("class", "modal");
+  section.setAttribute("style", "display: none;")
+  //Make a container to hold everything
+  const container = document.createElement('div');
+  container.setAttribute("class", "container")
+  container.setAttribute("style", "position: relative; margin: 0 auto; height: auto; width: 95%; top: 50%; transform: translateY(-50%);");
+  //Create the parts
+  const header = document.createElement('h2');
+  var icon = document.createElement('i');
+  const span = document.createElement('span');
+  //Make a container for the video and any other animations
+  const animation = document.createElement('div');
+  animation.setAttribute("class", "animation");
+  /* end basic modal setup */
+
+  let videoName = null;
+  switch (robotType) {
+    case Robot.ofType.FINCH:
+      videoName = "Finch_Calibration";
+      break;
+    case Robot.ofType.HUMMINGBIRDBIT:
+      videoName = "HummBit_Calibration";
+      break;
+    case Robot.ofType.MICROBIT:
+      videoName = "MicroBit_Calibration";
+      break;
+  }
+
+  //calibration specific settings
+  section.setAttribute("id", "calibrate-modal");
+  icon.setAttribute("class", "fas fa-compass");
+  span.setAttribute("id", "CompassCalibrate");
+  span.textContent = " " + thisLocaleTable["CompassCalibrate"] + " ";
+
+  //create checkmark and x to show the status when calibration is complete
+  const status = document.createElement('div');
+  status.setAttribute("class", "status /*status-success*/ /*status-fail*/");
+  const check = document.createElement('i');
+  check.setAttribute("class", "fas fa-check bounce");
+  status.appendChild(check);
+  const times = document.createElement('i');
+  times.setAttribute("class", "fas fa-times bounce");
+  status.appendChild(times);
+  animation.appendChild(status);
+
+  //Make a button to close the calibration modal
+  var onClickCloseBtn = "return closeVideoModals();";
+  const closeBtn = document.createElement('a');
+  closeBtn.setAttribute("href", "#");
+  closeBtn.setAttribute("onclick", onClickCloseBtn);
+  closeBtn.setAttribute("class", "close btn btn-modal");
+  const btnIcon = document.createElement('i');
+  btnIcon.setAttribute("class", "fas fa-times");
+  closeBtn.appendChild(btnIcon);
+  container.appendChild(closeBtn);
+
+  //Make the video element
+  const videoElement = document.createElement('video');
+  videoElement.setAttribute("type", "video/mp4");
+  videoElement.setAttribute("id", "video" + videoName);
+  videoElement.setAttribute("loop", "loop");
+  videoElement.src = "vid/" + videoName + ".mp4";
+  videoElement.muted = true; //video must be muted to autoplay on Android.
+  //Wait until the video is ready to play to display it.
+  videoElement.addEventListener('canplay', function() {
+    section.setAttribute("style", "display: block;");
+    videoElement.play();
+  }, false);
+
+  //connect up the finished parts
+  header.appendChild(icon);
+  header.appendChild(span);
+  container.appendChild(header);
+  animation.appendChild(videoElement);
+  container.appendChild(animation);
+  section.appendChild(container);
+  document.body.appendChild(section);
+
+  /* If overlay of modal window is clicked, close calibration window */
+  $(".modal").click(function() {
+    closeVideoModals();
+  }).children().click(function(e) {
+    return false;
+  });
+}
+
+function updateCalibrationStatus(success) {
+  var ha = $('#calibrate-modal .animation').height();
+  var hi = $('#calibrate-modal .animation i').height();
+  $('#calibrate-modal .animation i').css('marginTop', ((ha - hi) / 2) + 'px');
+  if (success) {
+    $('#calibrate-modal .status').addClass('status-success');
+    setTimeout(function() {
+      closeVideoModals();
+    }, 3000);
+  } else {
+    $('#calibrate-modal .status').addClass('status-fail');
+  }
+}
+
+function closeVideoModals() {
+  const videosOpen = document.getElementsByTagName("video").length;
+  if (videosOpen > 0) {
+    for (var i = 0; i < videosOpen; i++) {
+      const videoElement = document.getElementsByTagName("video")[i];
+      console.log("removing video " + videoElement.id);
+      //Fully unload the video.
+      //see https://stackoverflow.com/questions/3258587/how-to-properly-unload-destroy-a-video-element
+      videoElement.pause();
+      videoElement.removeAttribute('src'); // empty source
+      videoElement.load();
+
+      //Remove the whole modal.
+      //Each video is presented inside a div element inside a div element
+      //inside a section. This is what must be removed.
+      const animation = videoElement.parentNode;
+      const container = animation.parentNode;
+      const section = container.parentNode
+
+      section.parentNode.removeChild(section);
+    }
   }
 }
