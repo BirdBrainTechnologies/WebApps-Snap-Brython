@@ -37,6 +37,10 @@ const FILES_TO_CACHE = [
   '/js/messages.js',
   '/js/robot.js',
   '/js/translations.js',
+  //videos
+  '/vid/Finch_Calibration.mp4',
+  '/vid/HummBit_Calibration.mp4',
+  '/vid/MicroBit_Calibration.mp4',
   //snap
   '/snap/',
   '/snap/API.md',
@@ -1408,7 +1412,8 @@ const FILES_TO_CACHE = [
   '/snap/src/xml.js',
   '/snap/src/ypr.js',
   //snap projects
-  '/snap/snapProjects/PWAFinchSingleDevice.xml'
+  '/snap/snapProjects/PWAFinchSingleDevice.xml',
+  '/snap/snapProjects/PWAHummingbirdSingleDevice.xml'
 ];
 
 //The install event is called once per service worker.

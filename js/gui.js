@@ -118,37 +118,25 @@ function displayConnectedDevice(robot) {
 
 $('#startProgramming').on('click', function(e) {
   updateInternetStatus();
-  //$('#startProgramming').css("visibility", "hidden");
-  //$('#main-header').css("visibility", "hidden");
-  //$('#finder').css("visibility", "hidden");
-  //header.remove();
-  //finder.remove();
-  //connected.remove();
 
-  //snapExpanded = true;
-  //updateConnectedDevices();
-
-  //const connectedRobotsHeight = document.getElementById('robots-connected-snap').offsetHeight;
-  //const snapHeight = window.innerHeight - connectedRobotsHeight;
-  //console.log("crh " + connectedRobotsHeight + " sh " + snapHeight);
-  //<iframe src="https://snap.berkeley.edu/snap/snap.html" width="100%" height="600">blabla</iframe>
   let projectName = "PWAFinchSingleDevice";
+  if (robots.length == 1 && (robots[0].type == Robot.ofType.HUMMINGBIRDBIT ||
+    robots[0].type == Robot.ofType.MICROBIT)) {
+      projectName = "PWAHummingbirdSingleDevice";
+  }
+  
   iframe = document.createElement("iframe");
   if (internetIsConnected) {
     iframe.src = "https://snap.berkeley.edu/snap/snap.html#present:Username=birdbraintech&ProjectName=" + projectName + "&editMode&lang=" + language;
   } else {
     //iframe.src = "snap/snap.html";
-    iframe.src = "snap/snap.html#open:/snap/snapProjects/" + projectName + ".xml&editMode&noRun&lang=" + language;
+    iframe.src = "snap/snap.html#open:/snap/snapProjects/" + projectName + ".xml&editMode&lang=" + language;
   }
 
-  //iframe.width = "100%";
-  //iframe.height = "500";
   console.log("opening iframe with src=" + iframe.src);
   let div = document.getElementById('snap-div');
   div.appendChild(iframe);
 
-  //document.body.appendChild(iframe);
-  //$('#connected-expanded').css("visibility", "visible");
   expandSnap();
 })
 

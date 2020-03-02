@@ -78,6 +78,12 @@ function parseMessage(message) {
     case "stopAll":
       robot.stopAll();
       break;
+    case "servo":
+      robot.setServo(message.port, message.value);
+      break;
+    case "led":
+      robot.setLED(message.port, message.intensity);
+      break;
     default:
       console.log("Command not implemented: " + message.cmd);
   }

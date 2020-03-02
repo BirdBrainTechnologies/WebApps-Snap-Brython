@@ -67,7 +67,11 @@
                         window.birdbrain.robotType = {
                           FINCH: 1,
                           HUMMINGBIRDBIT: 2,
-                          MICROBIT: 3
+                          MICROBIT: 3,
+                          //connected robots default to type MICROBIT
+                          A: 3,
+                          B: 3,
+                          C: 3
                         };
 
                         console.log("setting up message channel")
@@ -466,7 +470,9 @@
                         <l>
                           if (window.birdbrain.getButton === undefined) {
                             window.birdbrain.getButton = function (button, robot) {
-                              var buttonState = window.birdbrain.sensorData[robot][16] & 0xF0; //Button Byte position = 7, clear LS Bits as it is for shake and calibrate
+                              const type = window.birdbrain.robotType[robot];
+                              const index = (type == window.birdbrain.robotType.FINCH) ? 16 : 7;
+                              var buttonState = window.birdbrain.sensorData[robot][index] & 0xF0; //Button Byte position = 7, clear LS Bits as it is for shake and calibrate
 
                               switch (button) {
                                 case 'A':
@@ -569,8 +575,8 @@
                             <l>dim</l>
                         </list>
                         <l>
-                          if (window.birdbrain.getAorM === undefined) {
-                            window.birdbrain.getAorM = function (device, dim, robot) {
+                          if (window.birdbrain.getFinchAorM === undefined) {
+                            window.birdbrain.getFinchAorM = function (device, dim, robot) {
                               switch(device) {
                                 case "Accelerometer (m/s²)":
                                   let acc = window.birdbrain.getFinchAcceleration(dim, robot);
@@ -581,7 +587,7 @@
                             }
                           }
 
-                          return window.birdbrain.getAorM(device, dim, 'A');
+                          return window.birdbrain.getFinchAorM(device, dim, 'A');
                         </l>
                     </block>
                     <list>
