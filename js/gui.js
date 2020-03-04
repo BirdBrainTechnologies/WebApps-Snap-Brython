@@ -119,12 +119,23 @@ function displayConnectedDevice(robot) {
 $('#startProgramming').on('click', function(e) {
   updateInternetStatus();
 
-  let projectName = "PWAFinchSingleDevice";
-  if (robots.length == 1 && (robots[0].type == Robot.ofType.HUMMINGBIRDBIT ||
-    robots[0].type == Robot.ofType.MICROBIT)) {
+  let projectName = "";
+  if (robots.length == 1) {
+    if (robots[0].type == Robot.ofType.FINCH) {
+      projectName = "PWAFinchSingleDevice";
+    } else {
       projectName = "PWAHummingbirdSingleDevice";
+    }
+  } else {
+    if (allRobotsAreFinches()) {
+      projectName = "PWAFinchMultiDevice";
+    } else if (noRobotsAreFinches()) {
+      projectName = "PWAHummingbirdMultiDevice";
+    } else {
+      projectName = "PWAMixedMultiDevice";
+    }
   }
-  
+
   iframe = document.createElement("iframe");
   if (internetIsConnected) {
     iframe.src = "https://snap.berkeley.edu/snap/snap.html#present:Username=birdbraintech&ProjectName=" + projectName + "&editMode&lang=" + language;

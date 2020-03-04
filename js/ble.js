@@ -62,7 +62,7 @@ function findAndConnect() {
           }
         })
         .catch(error => {
-          console.log(error);
+          console.log(error.message);
         });
 
       // Get sending Characteristics
@@ -74,12 +74,12 @@ function findAndConnect() {
           }
         })
         .catch(error => {
-          console.log(error);
+          console.log(error.message);
         });
 
     })
     .catch(error => {
-      console.log(error);
+      console.log(error.message);
     });
 }
 
@@ -112,6 +112,14 @@ function onConnectionComplete() {
 function onDisconnected(event) {
   let device = event.target;
   console.log('Device ' + device.name + ' is disconnected.');
+  for (let i = 0; i < robots.length; i++) {
+    if (robots[i].device.name == device.name) {
+      robots.splice(i, 1);
+      updateConnectedDevices();
+      //In the case that the robot is still in the list, it has disconnected
+      // from outside the app. Start some sort of auto reconnect here?
+    }
+  }
 }
 
 function onCharacteristicValueChanged(event) {
@@ -168,9 +176,25 @@ function getNextDevLetter() {
 }
 
 function devLetterUsed(letter) {
-  var letterFound = false;
+  let letterFound = false;
   for (let i = 0; i < robots.length; i++) {
     if (robots[i].devLetter == letter) { letterFound = true; }
   }
-  return letterFound
+  return letterFound;
+}
+
+function allRobotsAreFinches() {
+  let onlyFinches = true;
+  for (let i = 0; i < robots.length; i++) {
+    if (robots[i].type != Robot.ofType.FINCH) { onlyFinches = false; }
+  }
+  return onlyFinches;
+}
+
+function noRobotsAreFinches() {
+  let noFinches = true;
+  for (let i = 0; i < robots.length; i++) {
+    if (robots[i].type == Robot.ofType.FINCH) { noFinches = false; }
+  }
+  return noFinches;
 }

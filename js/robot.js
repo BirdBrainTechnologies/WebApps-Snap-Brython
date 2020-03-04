@@ -118,15 +118,10 @@ Robot.prototype.isA = function(type) {
 }
 
 Robot.prototype.disconnect = function() {
-  this.device.gatt.disconnect();
   var index = robots.indexOf(this);
   if (index !== -1) robots.splice(index, 1);
   console.log("after disconnect: " + robots.length);
-  //this.displayElement.remove();
-  //if (robots.length == 0) {
-  //  $('#connection-state').css("visibility", "hidden");
-  //  $('#startProgramming').css("visibility", "hidden");
-  //}
+  this.device.gatt.disconnect();
   updateConnectedDevices();
 }
 

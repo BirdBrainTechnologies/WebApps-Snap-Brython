@@ -346,6 +346,10 @@
                   </block>
                   <list></list>
                 </block>
+                <block s="doWait">
+                  <l>0.1</l>
+                  <comment w="205" collapsed="false">block until reset happens</comment>
+                </block>
             </script>
         </block-definition>
         <block-definition s="Finch Play Note %&apos;note&apos; for %&apos;beats&apos; beats" type="command"
@@ -1101,18 +1105,16 @@
                             <l>bluenum</l>
                         </list>
                         <l>
+                          var thisCommand = {
+                            robot: 'A',
+                            cmd: "triled",
+                            port: 1,
+                            red: Math.floor(Math.max(Math.min(rednum*2.55, 255), 0)),
+                            green: Math.floor(Math.max(Math.min(greennum*2.55, 255), 0)),
+                            blue: Math.floor(Math.max(Math.min(bluenum*2.55, 255), 0))
+                          }
 
-var thisCommand = {
-  robot: 'A',
-  cmd: "triled",
-  port: 1,
-  red: Math.floor(Math.max(Math.min(rednum*2.55, 255), 0)),
-  green: Math.floor(Math.max(Math.min(greennum*2.55, 255), 0)),
-  blue: Math.floor(Math.max(Math.min(bluenum*2.55, 255), 0))
-}
-
-window.birdbrain.sendCommand(thisCommand);
-
+                          window.birdbrain.sendCommand(thisCommand);
                         </l>
                     </block>
                     <list>
@@ -1221,21 +1223,19 @@ window.birdbrain.sendCommand(thisCommand);
                             <l>bluenum</l>
                         </list>
                         <l>
+                          var actualPort = port;
+                          if (actualPort != "all") { actualPort = parseInt(port) + 1;}
 
-var actualPort = port;
-if (actualPort != "all") { actualPort = parseInt(port) + 1;}
+                          var thisCommand = {
+                            robot: 'A',
+                            cmd: "triled",
+                            port: actualPort,
+                            red: Math.floor(Math.max(Math.min(rednum*2.55, 255), 0)),
+                            green: Math.floor(Math.max(Math.min(greennum*2.55, 255), 0)),
+                            blue: Math.floor(Math.max(Math.min(bluenum*2.55, 255), 0))
+                          }
 
-var thisCommand = {
-  robot: 'A',
-  cmd: "triled",
-  port: actualPort,
-  red: Math.floor(Math.max(Math.min(rednum*2.55, 255), 0)),
-  green: Math.floor(Math.max(Math.min(greennum*2.55, 255), 0)),
-  blue: Math.floor(Math.max(Math.min(bluenum*2.55, 255), 0))
-}
-
-window.birdbrain.sendCommand(thisCommand);
-
+                          window.birdbrain.sendCommand(thisCommand);
                         </l>
                     </block>
                     <list>
@@ -1244,9 +1244,6 @@ window.birdbrain.sendCommand(thisCommand);
                         <block var="greenLED"/>
                         <block var="blueLED"/>
                     </list>
-                </block>
-                <block s="doWait">
-                    <l>0</l>
                 </block>
             </script>
         </block-definition>

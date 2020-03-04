@@ -58,7 +58,7 @@ function installPWA(evt) {
         }
         deferredInstallPrompt = null;
       }).catch(error => {
-            console.log(error);
+            console.log(error.message);
       });
 }
 
