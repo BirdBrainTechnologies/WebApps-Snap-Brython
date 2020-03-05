@@ -708,28 +708,6 @@
       </inputs>
       <script>
         <custom-block s="BirdBrain Setup"></custom-block>
-        <block s="doIf">
-          <block s="reportLessThan"><block var="intensity"/>
-            <l>0</l>
-          </block>
-          <script>
-            <block s="doSetVar">
-              <l>intensity</l>
-              <l>0</l>
-            </block>
-          </script>
-        </block>
-        <block s="doIf">
-          <block s="reportGreaterThan"><block var="intensity"/>
-            <l>100</l>
-          </block>
-          <script>
-            <block s="doSetVar">
-              <l>intensity</l>
-              <l>100</l>
-            </block>
-          </script>
-        </block>
         <block s="doRun">
           <block s="reportJSFunction">
             <list>
@@ -767,72 +745,6 @@
       </inputs>
       <script>
         <custom-block s="BirdBrain Setup"></custom-block>
-        <block s="doIf">
-          <block s="reportLessThan"><block var="redLED"/>
-            <l>0</l>
-          </block>
-          <script>
-            <block s="doSetVar">
-              <l>redLED</l>
-              <l>0</l>
-            </block>
-          </script>
-        </block>
-        <block s="doIf">
-          <block s="reportGreaterThan"><block var="redLED"/>
-            <l>100</l>
-          </block>
-          <script>
-            <block s="doSetVar">
-              <l>redLED</l>
-              <l>100</l>
-            </block>
-          </script>
-        </block>
-        <block s="doIf">
-          <block s="reportLessThan"><block var="greenLED"/>
-            <l>0</l>
-          </block>
-          <script>
-            <block s="doSetVar">
-              <l>greenLED</l>
-              <l>0</l>
-            </block>
-          </script>
-        </block>
-        <block s="doIf">
-          <block s="reportGreaterThan"><block var="greenLED"/>
-            <l>100</l>
-          </block>
-          <script>
-            <block s="doSetVar">
-              <l>greenLED</l>
-              <l>100</l>
-            </block>
-          </script>
-        </block>
-        <block s="doIf">
-          <block s="reportLessThan"><block var="blueLED"/>
-            <l>0</l>
-          </block>
-          <script>
-            <block s="doSetVar">
-              <l>blueLED</l>
-              <l>0</l>
-            </block>
-          </script>
-        </block>
-        <block s="doIf">
-          <block s="reportGreaterThan"><block var="blueLED"/>
-            <l>100</l>
-          </block>
-          <script>
-            <block s="doSetVar">
-              <l>blueLED</l>
-              <l>100</l>
-            </block>
-          </script>
-        </block>
         <block s="doRun">
           <block s="reportJSFunction">
             <list>

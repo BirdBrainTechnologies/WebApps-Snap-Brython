@@ -1413,7 +1413,10 @@ const FILES_TO_CACHE = [
   '/snap/src/ypr.js',
   //snap projects
   '/snap/snapProjects/PWAFinchSingleDevice.xml',
-  '/snap/snapProjects/PWAHummingbirdSingleDevice.xml'
+  '/snap/snapProjects/PWAHummingbirdSingleDevice.xml',
+  '/snap/snapProjects/PWAFinchMultiDevice.xml',
+  '/snap/snapProjects/PWAHummingbirdMultiDevice.xml',
+  '/snap/snapProjects/PWAMixedMultiDevice.xml'
 ];
 
 //The install event is called once per service worker.

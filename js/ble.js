@@ -107,6 +107,7 @@ function onConnectionComplete() {
   //displayConnectedDevice(robotConnecting);
 
   robotConnecting = null;
+  loadSnap();
 }
 
 function onDisconnected(event) {

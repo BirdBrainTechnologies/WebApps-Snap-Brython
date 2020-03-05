@@ -3,6 +3,8 @@ const finder = document.getElementById('finder');
 const connected = document.getElementById('connected');
 var snapExpanded = false;
 var internetIsConnected = false;
+var currentSnapProject = "";
+var iframe = null; //a frame for snap
 updateInternetStatus();
 setInterval(updateInternetStatus, 5000);
 
@@ -14,7 +16,27 @@ $('#startupState').css("display", "none");
 var language = "en"
 setLanguage();
 
-var iframe = null; //a frame for snap
+
+function onLoad() {
+  let user = navigator.userAgent;
+  let usingChrome = false;
+  let bluetoothAvailable = false;
+  console.log(user);
+  if (user.includes("Chrome")) {
+    console.log("Found chrome")
+    usingChrome = true;
+  }
+  if (!usingChrome) {
+    showErrorModal(" Incompatible Browser ", "Please visit this page in Google Chrome");
+  } else {
+    navigator.bluetooth.getAvailability().then(isAvailable => {
+      if (!isAvailable) {
+        showErrorModal(" No Bluetooth Detected ", "This app requires bluetooth");
+      }
+    });
+  }
+}
+
 
 $('#find-button').on('click', function(e) {
   findAndConnect();
@@ -34,14 +56,14 @@ function updateConnectedDevices() {
 
   if (robots.length == 0) {
     $('#connection-state').css("visibility", "hidden");
-    $('#startProgramming').hide();
+    //$('#startProgramming').hide();
   } else {
     $('#connection-state').css("visibility", "visible");
-    if (iframe == null) {
+    /*if (iframe == null) {
       $('#startProgramming').show();
     } else {
       $('#startProgramming').hide();
-    }
+    }*/
 
     robots.forEach(robot => {
       displayConnectedDevice(robot);
@@ -116,7 +138,8 @@ function displayConnectedDevice(robot) {
 }
 
 
-$('#startProgramming').on('click', function(e) {
+//$('#startProgramming').on('click', function(e) {
+function loadSnap() {
   updateInternetStatus();
 
   let projectName = "";
@@ -136,20 +159,40 @@ $('#startProgramming').on('click', function(e) {
     }
   }
 
-  iframe = document.createElement("iframe");
-  if (internetIsConnected) {
-    iframe.src = "https://snap.berkeley.edu/snap/snap.html#present:Username=birdbraintech&ProjectName=" + projectName + "&editMode&lang=" + language;
-  } else {
-    //iframe.src = "snap/snap.html";
-    iframe.src = "snap/snap.html#open:/snap/snapProjects/" + projectName + ".xml&editMode&lang=" + language;
+  if (projectName != currentSnapProject) {
+    currentSnapProject = projectName;
+
+    if (iframe != null) {
+      iframe.remove();
+    }
+    iframe = document.createElement("iframe");
+    let div = document.getElementById('snap-div');
+    div.appendChild(iframe);
+
+    //Do we want some sort of warning if the snap page will be reloaded?
+    //Snap! does this automatically if you reload the page, but within the app,
+    //you are not allowed to show that popup if there has been no user gesture
+    //in the iframe and reload fails. That's why I am replacing the iframe for
+    //now.
+
+    //Just changing src should get the iframe to reload, but doesn't work with
+    //urls that have # in them. A trick that works to get the reload is to
+    //first do this:
+    //iframe.src = "";
+
+    if (internetIsConnected) {
+      iframe.src = "https://snap.berkeley.edu/snap/snap.html#present:Username=birdbraintech&ProjectName=" + projectName + "&editMode&lang=" + language;
+    } else {
+      //iframe.src = "snap/snap.html";
+      iframe.src = "snap/snap.html#open:/snap/snapProjects/" + projectName + ".xml&editMode&lang=" + language;
+    }
+
+    console.log("opening iframe with src=" + iframe.src);
   }
 
-  console.log("opening iframe with src=" + iframe.src);
-  let div = document.getElementById('snap-div');
-  div.appendChild(iframe);
-
   expandSnap();
-})
+}
+//})
 
 $('#btn-expand-section').on('click', function(e) {
   $(this).hide();
@@ -164,7 +207,7 @@ $('#btn-expand-section').on('click', function(e) {
 
 $('#btn-collapse-section').on('click', function(e) {
   expandSnap();
-  $('#btn-expand-section').show();
+  //$('#btn-expand-section').show();
 })
 
 function expandSnap() {
@@ -175,6 +218,7 @@ function expandSnap() {
   snapExpanded = true;
   updateConnectedDevices();
   $('#connected-expanded').css("visibility", "visible");
+  $('#btn-expand-section').show();
 }
 
 function updateBatteryStatus() {
@@ -219,7 +263,7 @@ function updateInternetStatus() {
   }
 }
 
-function showCalibrationModal(robotType) {
+function createModal() {
   /* basic modal setup */
   const section = document.createElement('section');
   section.setAttribute("class", "modal");
@@ -232,10 +276,56 @@ function showCalibrationModal(robotType) {
   const header = document.createElement('h2');
   var icon = document.createElement('i');
   const span = document.createElement('span');
-  //Make a container for the video and any other animations
+  //Make a container for content
   const animation = document.createElement('div');
   animation.setAttribute("class", "animation");
   /* end basic modal setup */
+
+  header.appendChild(icon);
+  header.appendChild(span);
+  container.appendChild(header);
+  container.appendChild(animation);
+  section.appendChild(container);
+
+  return section;
+}
+
+function showErrorModal(title, content) {
+  let section = createModal();
+  let icon = section.getElementsByTagName('i')[0];
+  icon.setAttribute("class", "fas fa-exclamation-circle");
+  let span = section.getElementsByTagName('span')[0];
+  span.textContent = title;
+  let div = section.getElementsByTagName('div')[1];
+  div.textContent = content;
+  div.setAttribute("style", "position: relative; opacity: 1; background-color: rgba(255,255,255, 0.75); text-align: center; padding: 2em 2em 2em 2em;")
+
+  section.setAttribute("style", "display: block;");
+  document.body.appendChild(section);
+}
+
+function showCalibrationModal(robotType) {
+  /* basic modal setup */
+  /*const section = document.createElement('section');
+  section.setAttribute("class", "modal");
+  section.setAttribute("style", "display: none;")
+  //Make a container to hold everything
+  const container = document.createElement('div');
+  container.setAttribute("class", "container")
+  container.setAttribute("style", "position: relative; margin: 0 auto; height: auto; width: 95%; top: 50%; transform: translateY(-50%);");
+  //Create the parts
+  const header = document.createElement('h2');
+  var icon = document.createElement('i');
+  const span = document.createElement('span');
+  //Make a container for the video and any other animations
+  const animation = document.createElement('div');
+  animation.setAttribute("class", "animation");*/
+  /* end basic modal setup */
+  let section = createModal();
+  let icon = section.getElementsByTagName('i')[0];
+  let span = section.getElementsByTagName('span')[0];
+  let container = section.getElementsByTagName('div')[0];
+  let animation = section.getElementsByTagName('div')[1];
 
   let videoName = null;
   switch (robotType) {
@@ -250,8 +340,9 @@ function showCalibrationModal(robotType) {
       break;
   }
 
-  //calibration specific settings
+  //set modal id
   section.setAttribute("id", "calibrate-modal");
+  //set up the header
   icon.setAttribute("class", "fas fa-compass");
   span.setAttribute("id", "CompassCalibrate");
   span.textContent = " " + thisLocaleTable["CompassCalibrate"] + " ";
@@ -276,7 +367,8 @@ function showCalibrationModal(robotType) {
   const btnIcon = document.createElement('i');
   btnIcon.setAttribute("class", "fas fa-times");
   closeBtn.appendChild(btnIcon);
-  container.appendChild(closeBtn);
+  //container.appendChild(closeBtn);
+  container.insertBefore(closeBtn, container.childNodes[0]);
 
   //Make the video element
   const videoElement = document.createElement('video');
@@ -292,12 +384,12 @@ function showCalibrationModal(robotType) {
   }, false);
 
   //connect up the finished parts
-  header.appendChild(icon);
-  header.appendChild(span);
-  container.appendChild(header);
+  //header.appendChild(icon);
+  //header.appendChild(span);
+  //container.appendChild(header);
   animation.appendChild(videoElement);
-  container.appendChild(animation);
-  section.appendChild(container);
+  //container.appendChild(animation);
+  //section.appendChild(container);
   document.body.appendChild(section);
 
   /* If overlay of modal window is clicked, close calibration window */

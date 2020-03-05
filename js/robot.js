@@ -1,3 +1,9 @@
+
+/**
+ * robot.js - An instantiation of the Robot class represents one connected robot
+ * (finch, hummingbird, or micro:bit). 
+ */
+
 const SET_ALL_INTERVAL = 30;
 const MAX_LED_PRINT_WORD_LEN = 10;
 
@@ -253,6 +259,12 @@ Robot.prototype.sendSetAll = function() {
   }.bind(this), SET_ALL_INTERVAL/2)
 }
 
+/**
+ * Robot.prototype.setLED - Set a single, one color LED. Hummingbird only.
+ *
+ * @param  {integer} port      port of the LED to set (1-3)
+ * @param  {integer} intensity brightness to set (0-100)
+ */
 Robot.prototype.setLED = function(port, intensity) {
   //Only Hummingbird bits have single color leds
   if (!this.isA(Robot.ofType.HUMMINGBIRDBIT)) {
@@ -455,7 +467,7 @@ Robot.prototype.resetEncoders = function() {
 Robot.prototype.startCalibration = function() {
   this.write(Robot.propertiesFor[this.type].calibrationCommand);
   //It takes a bit for the robot to start calibrating
-  setTimeout(() => { this.isCalibrating = true; }, 200);
+  setTimeout(() => { this.isCalibrating = true; }, 500);
 }
 
 Robot.prototype.receiveSensorData = function(data) {

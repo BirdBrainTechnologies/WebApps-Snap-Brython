@@ -95,13 +95,13 @@
 						</div>
 					</div>
 
-					<div id="startProgramming" style="display: none;"> <!-- style="visibility:hidden"> -->
+	<!--				<div id="startProgramming" style="display: none;">
   					<div class="col-xs-12 text-center"><h1><span id="start_programming">Start Programming</span></h1></div>
 
   					<div id="programming-buttons" class="col-xs-12 text-center">
   						<a id="open-snap" class="btn btn-lg btn-orange launch-snap-btn"><img src="img/logo-snap.svg" alt="Snap!" /></a>
   					</div>
-  				</div>
+  				</div> -->
 				</div>
 
 			</div>
@@ -144,8 +144,9 @@
 	          .then((reg) => {
 	            console.log('Service worker registered.', reg);
 	          }).catch(error => {
-				          console.log(error);
+				          console.log(error.message);
 				    });
+					onLoad();
 	      });
 	    }
   	</script>
