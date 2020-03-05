@@ -57,7 +57,7 @@
 			</div>
 		</header>
 
-		<section id="finder">
+		<section id="finder" style="display: block;">
 			<div class="container">
 				<div class="row">
 					<div class="col-xs-12 text-center">
@@ -144,7 +144,7 @@
 	          .then((reg) => {
 	            console.log('Service worker registered.', reg);
 	          }).catch(error => {
-				          console.log(error.message);
+				      console.error("Error registering service worker: " + error.message);
 				    });
 					onLoad();
 	      });

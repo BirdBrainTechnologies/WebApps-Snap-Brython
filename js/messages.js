@@ -1,32 +1,41 @@
-window.addEventListener('message', onMessage);
-console.log("Adding listener");
-var messagePort;
-var messageCount = 0;
+/**
+ * This file handles Message Channel communications with the snap iframe.
+ */
 
+window.addEventListener('message', onMessage);
+var messagePort;
+
+/**
+ * onMessage - Handle message received by this window.
+ *
+ * @param  {Object} e Message event.
+ */
 function onMessage(e) {
   console.log(e.data);
-  messageCount += 1;
 
   if (e.ports[0] != undefined) {
+    //This message sets up the message port so that the app can send updates.
     messagePort = e.ports[0]
+    // Use the transfered port to post a message back to the main frame
+    messagePort.postMessage('Port received');
+  } else {
+    //This message is a robot command
+    parseMessage(e.data);
   }
-  // Use the transfered port to post a message back to the main frame
-  //e.ports[0].postMessage('Message back from the IFrame');
-  if (messagePort != undefined) {
-    messagePort.postMessage('Message back');
-    messagePort.postMessage(messageCount);
-  }
-
-  parseMessage(e.data);
 }
 
+/**
+ * parseMessage - Function for parsing robot commands
+ *
+ * @param  {Object} message Object containing command information
+ */
 function parseMessage(message) {
   const robot = getRobotByLetter(message.robot);
   if (robot == null) {
     console.error("Unable to find robot " + message.robot);
     return;
   }
-  //var robot = robots[0];
+
   switch(message.cmd) {
     case "triled":
       robot.setTriLED(message.port, message.red, message.green, message.blue);
@@ -56,6 +65,7 @@ function parseMessage(message) {
           break;
         case "Left":
           robot.setMotors(-message.speed, turnTicks, message.speed, turnTicks);
+          break;
       }
       break;
     case "move":
@@ -71,24 +81,35 @@ function parseMessage(message) {
       break;
     case "stopFinch":
       robot.setMotors(0, 0, 0, 0);
+
       break;
     case "resetEncoders":
       robot.resetEncoders();
+
       break;
     case "stopAll":
       robot.stopAll();
+
       break;
     case "servo":
       robot.setServo(message.port, message.value);
+
       break;
     case "led":
       robot.setLED(message.port, message.intensity);
+
       break;
     default:
       console.log("Command not implemented: " + message.cmd);
   }
 }
 
+/**
+ * sendMessage - Function for sending data back to snap. Does nothing if message
+ * channel has not been set up yet.
+ *
+ * @param  {Object} message Information to send 
+ */
 function sendMessage(message) {
   if (messagePort == undefined) {
     //console.log("Message channel not set up. Trying to send: ");

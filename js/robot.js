@@ -1,7 +1,7 @@
 
 /**
- * robot.js - An instantiation of the Robot class represents one connected robot
- * (finch, hummingbird, or micro:bit). 
+ * An instantiation of the Robot class represents one connected robot
+ * (finch, hummingbird, or micro:bit).
  */
 
 const SET_ALL_INTERVAL = 30;
@@ -13,6 +13,12 @@ const FINCH_TICKS_PER_DEGREE = 4.335;
 //This array tells the motors to keep doing what they are doing
 const FINCH_INITIAL_MOTOR_ARRAY = new Uint8Array([0, 0, 0, 1, 0, 0, 0, 1]);
 
+/**
+ * Robot - Initializer called when a new robot is connected.
+ *
+ * @param  {Object} device    Device object from navigator.bluetooth
+ * @param  {string} devLetter Character to identify device with (A, B, or C)
+ */
 function Robot(device, devLetter) {
   this.device = device;
   this.devLetter = devLetter;
@@ -34,11 +40,18 @@ function Robot(device, devLetter) {
   this.setAllInterval = setInterval(this.sendSetAll.bind(this), SET_ALL_INTERVAL);
 }
 
+/**
+ * Enum for robot types
+ */
 Robot.ofType = {
   FINCH: 1,
   HUMMINGBIRDBIT: 2,
   MICROBIT: 3,
 }
+
+/**
+ * Properties specific to each robot type
+ */
 Robot.propertiesFor = {
   //finch
   1: {
@@ -48,7 +61,11 @@ Robot.propertiesFor = {
     buzzerIndex: 16,
     stopCommand: new Uint8Array([0xDF]),
     calibrationCommand: new Uint8Array([0xCE, 0xFF, 0xFF, 0xFF]),
-    calibrationIndex: 16
+    calibrationIndex: 16,
+    batteryIndex: 6,
+    batteryFactor: 0.0376,
+    greenThreshold: 3.386,
+    yellowThreshold: 3.271
   },
   //hummingbird bit
   2: {
@@ -58,7 +75,11 @@ Robot.propertiesFor = {
     buzzerIndex: 15,
     stopCommand: new Uint8Array([0xCB, 0xFF, 0xFF, 0xFF]),
     calibrationCommand: new Uint8Array([0xCE, 0xFF, 0xFF, 0xFF]),
-    calibrationIndex: 7
+    calibrationIndex: 7,
+    batteryIndex: 3,
+    batteryFactor: 0.0406,
+    greenThreshold: 4.75,
+    yellowThreshold: 4.4
   },
   //micro:bit
   3: {
@@ -68,15 +89,30 @@ Robot.propertiesFor = {
     buzzerIndex: null, //no buzzer on the micro:bit
     stopCommand: new Uint8Array([144, 0, 0, 0, 0, 0, 0, 0]),
     calibrationCommand: new Uint8Array([0xCE, 0xFF, 0xFF, 0xFF]),
-    calibrationIndex: 7
+    calibrationIndex: 7,
+    batteryIndex: null, //no battery monitoring for micro:bit
+    batteryFactor: null,
+    greenThreshold: null,
+    yellowThreshold: null
   }
 }
+
+/**
+ * Enum for battery level options
+ */
 Robot.batteryLevel = {
   HIGH: 1,
   MEDIUM: 2,
   LOW: 3,
   UNKNOWN: 4
 }
+
+/**
+ * Robot.getTypeFromName - Returns the robot type based on the advertised name.
+ *
+ * @param  {string} name  Advertised robot name
+ * @return {Robot.ofType} Robot type
+ */
 Robot.getTypeFromName = function(name) {
   if (name.startsWith("FN")) {
     return Robot.ofType.FINCH
@@ -86,6 +122,14 @@ Robot.getTypeFromName = function(name) {
     return Robot.ofType.MICROBIT
   } else return null;
 }
+
+/**
+ * Robot.initialSetAllFor - Return the inital setAll array for the specified
+ * robot type.
+ *
+ * @param  {Robot.ofType} type  Robot type
+ * @return {Uint8Array}         initial set all for given type
+ */
 Robot.initialSetAllFor = function(type) {
   var array = new Uint8Array(Robot.propertiesFor[type].setAllLength);
   array[0] = Robot.propertiesFor[type].setAllLetter;
@@ -97,6 +141,14 @@ Robot.initialSetAllFor = function(type) {
   }
   return array;
 }
+
+/**
+ * Robot.dataIsEqual - Checks for equality between two data arrays.
+ *
+ * @param  {Uint8Array} data1 First data set to compare
+ * @param  {Uint8Array} data2 Second data set to compare
+ * @return {boolean}          True if the two data sets are equal
+ */
 Robot.dataIsEqual = function(data1, data2) {
   if (data1.length != data2.length) { return false; }
 
@@ -107,6 +159,12 @@ Robot.dataIsEqual = function(data1, data2) {
   return equal;
 }
 
+/**
+ * Robot.prototype.initializeDataArrays - Set all data arrays to initial values.
+ * States starting with 'old' represent the last state sent to the robot and
+ * should not be modified. Other arrays represent the next state to be sent and
+ * should be modified using updateData.
+ */
 Robot.prototype.initializeDataArrays = function() {
   this.setAllData = Robot.initialSetAllFor(this.type);
   this.oldSetAllData = this.setAllData.slice();
@@ -118,11 +176,21 @@ Robot.prototype.initializeDataArrays = function() {
   }
 }
 
+/**
+ * Robot.prototype.isA - Return true if this Robot is of the type specified.
+ *
+ * @param  {Robot.ofType} type Robot type to compare this to
+ * @return {boolean}      True if this is a Robot of the type specified
+ */
 Robot.prototype.isA = function(type) {
   if (this.type === type) return true
   else return false
 }
 
+/**
+ * Robot.prototype.disconnect - Disconnect this robot and remove it from the
+ * list.
+ */
 Robot.prototype.disconnect = function() {
   var index = robots.indexOf(this);
   if (index !== -1) robots.splice(index, 1);
@@ -131,6 +199,11 @@ Robot.prototype.disconnect = function() {
   updateConnectedDevices();
 }
 
+/**
+ * Robot.prototype.write - Send data to the physical robot over ble.
+ *
+ * @param  {Uint8Array} data The data to send
+ */
 Robot.prototype.write = function(data) {
   if (this.writeInProgress) {
     console.log("Write already in progress. Pushing data to the queue.")
@@ -163,8 +236,15 @@ Robot.prototype.write = function(data) {
       this.writeInProgress = false;
     });
 }
+
 //TODO: Make sure updates don't get skipped
-//TODO: Update group of data at once (eg entire buzzer command)
+/**
+ * Robot.prototype.updateData - Update this Robot's data, checking for validity.
+ *
+ * @param  {Uint8Array}   data       Data array to set (must be one of this robot's next state arrays).
+ * @param  {number}       startIndex Position in the array to start the update
+ * @param  {Array.number} valueArray Values to update to
+ */
 Robot.prototype.updateData = function(data, startIndex, valueArray) {
   //values must be between 0 and 255
   for(let i = 0; i < valueArray.length; i++) {
@@ -196,8 +276,11 @@ Robot.prototype.updateData = function(data, startIndex, valueArray) {
   }
 }
 
-
-
+/**
+ * Robot.prototype.sendSetAll - Send the next state to the robot if it differs
+ * from the current state. Called periodically (ever SET_ALL_INTERVAL ms) with
+ * a setInterval set up in the initializer (setAllInterval).
+ */
 Robot.prototype.sendSetAll = function() {
   var setAllChanged = !Robot.dataIsEqual(this.setAllData, this.oldSetAllData);
 
@@ -262,8 +345,8 @@ Robot.prototype.sendSetAll = function() {
 /**
  * Robot.prototype.setLED - Set a single, one color LED. Hummingbird only.
  *
- * @param  {integer} port      port of the LED to set (1-3)
- * @param  {integer} intensity brightness to set (0-100)
+ * @param  {number} port      port of the LED to set (1-3)
+ * @param  {number} intensity brightness to set (0-100)
  */
 Robot.prototype.setLED = function(port, intensity) {
   //Only Hummingbird bits have single color leds
@@ -291,6 +374,15 @@ Robot.prototype.setLED = function(port, intensity) {
   this.updateData(this.setAllData, index, [intensity]);
 }
 
+/**
+ * Robot.prototype.setTriLED - Set a single tri color LED to the given intensity
+ * values. Hummingbird and Finch only.
+ *
+ * @param  {number} port  Position of the LED to set (1-triLedCount)
+ * @param  {number} red   Red intensity (0-100)
+ * @param  {number} green Green intensity (0-100)
+ * @param  {number} blue  Blue intensity (0-100)
+ */
 Robot.prototype.setTriLED = function(port, red, green, blue) {
   //microbits do not have any trileds
   if (this.isA(Robot.ofType.MICROBIT)) {
@@ -329,6 +421,13 @@ Robot.prototype.setTriLED = function(port, red, green, blue) {
   }
 }
 
+/**
+ * Robot.prototype.setServo - Set the position or speed of a servo. Hummingbird
+ * only.
+ *
+ * @param  {number} port  Position of the servo to set (1-4)
+ * @param  {number} value Speed (rotation servo) or angle (position servo)
+ */
 Robot.prototype.setServo = function(port, value) {
   if (!this.isA(Robot.ofType.HUMMINGBIRDBIT)) {
     console.log("Only hummingbirds have servos.")
@@ -340,6 +439,15 @@ Robot.prototype.setServo = function(port, value) {
   this.updateData(this.setAllData, port + 8, [value]);
 }
 
+/**
+ * Robot.prototype.setMotors - Set the motors each to givien speed for given
+ * distance. Ticks=0 for continuous motion. Finch only.
+ *
+ * @param  {number} speedL Speed to set left motor to (-100 to 100)
+ * @param  {number} ticksL Distance for the left motor to travel in encoder ticks.
+ * @param  {number} speedR Speed to set right motor to (-100 to 100)
+ * @param  {number} ticksR Distance for the right motor to travel in encoder ticks.
+ */
 Robot.prototype.setMotors = function(speedL, ticksL, speedR, ticksR) {
   if (!this.isA(Robot.ofType.FINCH)) {
     console.log("Only finches have motors.")
@@ -373,6 +481,12 @@ Robot.prototype.setMotors = function(speedL, ticksL, speedR, ticksR) {
   ])
 }
 
+/**
+ * Robot.prototype.setBuzzer - Set the buzzer. Hummingbird and Finch only.
+ *
+ * @param  {number} note     Midi note to play
+ * @param  {number} duration Duration of the sound in ms
+ */
 Robot.prototype.setBuzzer = function(note, duration) {
   var index = Robot.propertiesFor[this.type].buzzerIndex
   if (index == null) {
@@ -389,6 +503,10 @@ Robot.prototype.setBuzzer = function(note, duration) {
   ])
 }
 
+/**
+ * Robot.prototype.clearBuzzerBytes - Clear the data bytes for the buzzer so
+ * that a note is only sent to the robot once.
+ */
 Robot.prototype.clearBuzzerBytes = function() {
   var index = Robot.propertiesFor[this.type].buzzerIndex
   if (index == null) {
@@ -399,7 +517,14 @@ Robot.prototype.clearBuzzerBytes = function() {
   this.updateData(this.setAllData, index, [0, 0, 0, 0])
 }
 
+/**
+ * Robot.prototype.setSymbol - Set the led display to a symbol specified by a
+ * string of true/false statements - one for each led in the display.
+ *
+ * @param  {string} symbolString String representation of the symbol to display
+ */
 Robot.prototype.setSymbol = function(symbolString) {
+  //If a string of text is printing on the display, we must interupt it.
   if (this.printTimer !== null) { clearTimeout(this.printTimer); }
 
   let data = [];
@@ -409,8 +534,8 @@ Robot.prototype.setSymbol = function(symbolString) {
   let iData = 2
   let shift = 0
 
+  //Convert the true/false string to bits. Requires 4 data bytes.
   for (let i = 24; i >= 0; i--) {
-    //console.log("processing " + sa[i] + " " + iData + " " + shift)
     data[iData] = (sa[i] == "true") ? (data[iData] | (1 << shift)) : (data[iData] & ~(1 << shift));
     if (shift == 0) {
       shift = 7
@@ -420,14 +545,18 @@ Robot.prototype.setSymbol = function(symbolString) {
     }
   }
   this.updateData(this.ledDisplayData, 0, data);
-  console.log("processed symbol:")
-  console.log(this.ledDisplayData)
-
 }
 
+/**
+ * Robot.prototype.setPrint - Print out a string on the led display
+ *
+ * @param  {Array.string} printChars Array of single characters to print
+ */
 Robot.prototype.setPrint = function(printChars) {
+  //If a string of text is printing on the display, we must interupt it.
   if (this.printTimer !== null) { clearTimeout(this.printTimer); }
 
+  //Only MAX_LED_PRINT_WORD_LEN characters can be sent to the robot at once
   if (printChars.length > MAX_LED_PRINT_WORD_LEN) {
     let nextPrintChars = printChars.slice(MAX_LED_PRINT_WORD_LEN, printChars.length);
     this.printTimer = setTimeout (function () {
@@ -437,7 +566,6 @@ Robot.prototype.setPrint = function(printChars) {
     printChars = printChars.slice(0, MAX_LED_PRINT_WORD_LEN);
   }
 
-  //let data = new Uint8Array(printChars.length + 2);
   let data = [];
   data[0] = 0xCC
   data[1] = printChars.length | 0x40;
@@ -449,12 +577,19 @@ Robot.prototype.setPrint = function(printChars) {
   this.updateData(this.ledDisplayData, 0, data);
 }
 
+/**
+ * Robot.prototype.stopAll - Stop all robot actions and reset states.
+ */
 Robot.prototype.stopAll = function() {
   if (this.printTimer !== null) { clearTimeout(this.printTimer); }
   this.write(Robot.propertiesFor[this.type].stopCommand);
   this.initializeDataArrays();
 }
 
+/**
+ * Robot.prototype.resetEncoders - Send the robot a command to reset its encoder
+ * values to 0.
+ */
 Robot.prototype.resetEncoders = function() {
   if (!this.isA(Robot.ofType.FINCH)) {
     console.log("Only finches have encoders.")
@@ -464,34 +599,30 @@ Robot.prototype.resetEncoders = function() {
   this.write(new Uint8Array([0xD5]));
 }
 
+/**
+ * Robot.prototype.startCalibration - Send the robot a command to start
+ * magnetometer calibration. (required for magnetometer and compass blocks)
+ */
 Robot.prototype.startCalibration = function() {
   this.write(Robot.propertiesFor[this.type].calibrationCommand);
   //It takes a bit for the robot to start calibrating
   setTimeout(() => { this.isCalibrating = true; }, 500);
 }
 
+/**
+ * Robot.prototype.receiveSensorData - Called when the robot updates its sensor
+ * data. This function will update the battery value and check the calibration
+ * state
+ *
+ * @param  {Uint8Array} data Incoming data
+ */
 Robot.prototype.receiveSensorData = function(data) {
-  var batteryIndex = null;
-  var batteryFactor = 0;
-  var greenThreshold = 0;
-  var yellowThreshold = 0;
-  switch(this.type) {
-    case Robot.ofType.FINCH:
-      batteryIndex = 6
-      batteryFactor = 0.0376
-      greenThreshold = 3.386
-      yellowThreshold = 3.271
-      break;
-    case Robot.ofType.HUMMINGBIRDBIT:
-      batteryIndex = 3
-      batteryFactor = 0.0406
-      greenThreshold = 4.75
-      yellowThreshold = 4.4
-      break;
-    //No battery monitoring for micro:bit
-  }
+  const batteryIndex = Robot.propertiesFor[this.type].batteryIndex;
+  const batteryFactor = Robot.propertiesFor[this.type].batteryFactor;
+  const greenThreshold = Robot.propertiesFor[this.type].greenThreshold;
+  const yellowThreshold = Robot.propertiesFor[this.type].yellowThreshold;
 
-  if (batteryIndex != null) {
+  if (batteryIndex != null) { //null for micro:bit which does not have battery monitoring
     const rawVoltage = data[batteryIndex]
     const voltage = rawVoltage * batteryFactor
     var newLevel = Robot.batteryLevel.UNKNOWN

@@ -1,3 +1,10 @@
+/**
+ * Handle translations of all text visible in the interface.
+ */
+
+/**
+ * Table of all keys in all supported languages.
+ */
 const fullTranslationTable = {
   en: {
     say_this: 'Say This',
@@ -196,24 +203,25 @@ const fullTranslationTable = {
   }
 };
 
+//Table to use for translations
 var thisLocaleTable = null;
 
+/**
+ * translateStrings - Translate all strings initially present in the UI, if a
+ * translation table has been selected.
+ */
 function translateStrings() {
   if (thisLocaleTable == null) { return; }
-  var translationTable = thisLocaleTable;
   // Set up defaults
-  //$('#findBtnText').text(" "+translationTable["finding_robots"]);
-  $('#connection-state').html(translationTable["connected"]);
-  $('#start_programming').html(translationTable["start_programming"]);
-  $('#Connection_Failure').html(" " + translationTable["Connection_Failure"] + " ");
-  $('#CompassCalibrate').html(" " + translationTable["CompassCalibrate"]);
-  // Multiple update_firmware tags on prototype.html
-  $('#Update_firmware').html(translationTable["Update_firmware"]);
-  $('#Update_firmware1').html(translationTable["Update_firmware"]);
-  $('#Update_firmware2').html(translationTable["Update_firmware"]);
-  $('#Update_firmware3').html(translationTable["Update_firmware"]);
+  $('#findBtnText').text(" " + thisLocaleTable["find_robots"]);
+  $('#connection-state').html(thisLocaleTable["connected"]);
+  $('#start_programming').html(thisLocaleTable["start_programming"]);
 }
 
+/**
+ * setLanguage - Set the app language based on the navigator language. Set to
+ * English if the language is not supported. Translate initial strings once set.
+ */
 function setLanguage() {
   language = window.navigator.language;
   console.log("window.navigator.language = " + language);

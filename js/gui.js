@@ -1,3 +1,11 @@
+/**
+ * This file handles all interactions with the main UI.
+ */
+
+
+/**
+ * Global variables/constants and initial setup.
+ */
 const header = document.getElementById('main-header');
 const finder = document.getElementById('finder');
 const connected = document.getElementById('connected');
@@ -5,18 +13,22 @@ var snapExpanded = false;
 var internetIsConnected = false;
 var currentSnapProject = "";
 var iframe = null; //a frame for snap
-updateInternetStatus();
-setInterval(updateInternetStatus, 5000);
-
-$('#finder').css("display", "block");
-
-//TODO: this is the spinner that you see instead of the connected robots list. Do we ever want this?
-$('#startupState').css("display", "none");
-
 var language = "en"
 setLanguage();
+updateInternetStatus();
+setInterval(updateInternetStatus, 5000);
+//This is the spinner that you see instead of the connected robots list.
+$('#startupState').css("display", "none");
+//Set the find robots button to bring up the chrome device chooser.
+$('#find-button').on('click', function(e) { findAndConnect(); });
+//$('#startProgramming').on('click', function(e) { loadSnap(); })
+$('#btn-expand-section').on('click', function(e) { collapseSnap(); })
+$('#btn-collapse-section').on('click', function(e) { expandSnap(); })
 
-
+/**
+ * onLoad - Handles everything that needs to be done once the window has loaded.
+ * Called right after the service worker registration is started.
+ */
 function onLoad() {
   let user = navigator.userAgent;
   let usingChrome = false;
@@ -37,12 +49,10 @@ function onLoad() {
   }
 }
 
-
-$('#find-button').on('click', function(e) {
-  findAndConnect();
-});
-
-
+/**
+ * updateConnectedDevices - Updates the list of connected devices seen by the
+ * user.
+ */
 function updateConnectedDevices() {
   $('#robots-connected').empty();
   $('#robots-connected-snap').empty();
@@ -71,7 +81,12 @@ function updateConnectedDevices() {
   }
 }
 
-// Display connected deivce(s)
+/**
+ * displayConnectedDevice - Sets up the display for a single connected robot.
+ *
+ * @param  {type} robot description
+ * @return {type}       description
+ */
 function displayConnectedDevice(robot) {
   var deviceImage = "img/img-hummingbird-bit.svg"
   var deviceFancyName = robot.fancyName;
@@ -137,8 +152,11 @@ function displayConnectedDevice(robot) {
   updateBatteryStatus();
 }
 
-
-//$('#startProgramming').on('click', function(e) {
+/**
+ * loadSnap - Load snap in an iframe with the appropriate starter project.
+ * Compresses the rest of the UI so that snap can have as much space as
+ * possible.
+ */
 function loadSnap() {
   updateInternetStatus();
 
@@ -192,10 +210,13 @@ function loadSnap() {
 
   expandSnap();
 }
-//})
 
-$('#btn-expand-section').on('click', function(e) {
-  $(this).hide();
+/**
+ * collapseSnap - Remove the snap iframe from view and expand the rest of the
+ * UI.
+ */
+function collapseSnap() {
+  $('#btn-expand-section').hide();
   snapExpanded = false;
   $('#connected-expanded').css("visibility", "hidden");
   document.body.insertBefore(connected, document.body.childNodes[0]);
@@ -203,13 +224,11 @@ $('#btn-expand-section').on('click', function(e) {
   document.body.insertBefore(header, document.body.childNodes[0]);
   updateConnectedDevices();
   $('#btn-collapse-section').css("visibility", "visible");
-})
+}
 
-$('#btn-collapse-section').on('click', function(e) {
-  expandSnap();
-  //$('#btn-expand-section').show();
-})
-
+/**
+ * expandSnap - Show the snap iframe and compress the rest of the UI.
+ */
 function expandSnap() {
   header.remove();
   finder.remove();
@@ -221,6 +240,10 @@ function expandSnap() {
   $('#btn-expand-section').show();
 }
 
+/**
+ * updateBatteryStatus - Update the displayed battery statuses for all
+ * connected robots.
+ */
 function updateBatteryStatus() {
   //For some reason, all battery icons have their classes removed
   // when trying to remove them from only one. So, here we remove
@@ -249,6 +272,9 @@ function updateBatteryStatus() {
   })
 }
 
+/**
+ * updateInternetStatus - Update and display the internet status.
+ */
 function updateInternetStatus() {
   const connected = navigator.onLine;
   if (connected === internetIsConnected) {
@@ -263,6 +289,11 @@ function updateInternetStatus() {
   }
 }
 
+/**
+ * createModal - Create a basic modal section.
+ *
+ * @return {Object}  The section created
+ */
 function createModal() {
   /* basic modal setup */
   const section = document.createElement('section');
@@ -290,6 +321,13 @@ function createModal() {
   return section;
 }
 
+/**
+ * showErrorModal - Show a modal displaying an error. This modal cannot be
+ * closed.
+ *
+ * @param  {string} title   Title to display in the modal header
+ * @param  {string} content Text to display in the body of the modal.
+ */
 function showErrorModal(title, content) {
   let section = createModal();
   let icon = section.getElementsByTagName('i')[0];
@@ -304,23 +342,14 @@ function showErrorModal(title, content) {
   document.body.appendChild(section);
 }
 
+/**
+ * showCalibrationModal - Show a modal displaying the calibration video for the
+ * given robot type. This modal can be closed by clicking on the x in the header
+ * or by clicking outside the modal.
+ *
+ * @param  {Robot.ofType} robotType The type of robot undergoing calibration.
+ */
 function showCalibrationModal(robotType) {
-  /* basic modal setup */
-  /*const section = document.createElement('section');
-  section.setAttribute("class", "modal");
-  section.setAttribute("style", "display: none;")
-  //Make a container to hold everything
-  const container = document.createElement('div');
-  container.setAttribute("class", "container")
-  container.setAttribute("style", "position: relative; margin: 0 auto; height: auto; width: 95%; top: 50%; transform: translateY(-50%);");
-  //Create the parts
-  const header = document.createElement('h2');
-  var icon = document.createElement('i');
-  const span = document.createElement('span');
-  //Make a container for the video and any other animations
-  const animation = document.createElement('div');
-  animation.setAttribute("class", "animation");*/
-  /* end basic modal setup */
   let section = createModal();
   let icon = section.getElementsByTagName('i')[0];
   let span = section.getElementsByTagName('span')[0];
@@ -382,14 +411,9 @@ function showCalibrationModal(robotType) {
     section.setAttribute("style", "display: block;");
     videoElement.play();
   }, false);
-
-  //connect up the finished parts
-  //header.appendChild(icon);
-  //header.appendChild(span);
-  //container.appendChild(header);
   animation.appendChild(videoElement);
-  //container.appendChild(animation);
-  //section.appendChild(container);
+
+  //finally, show the finished modal.
   document.body.appendChild(section);
 
   /* If overlay of modal window is clicked, close calibration window */
@@ -400,6 +424,12 @@ function showCalibrationModal(robotType) {
   });
 }
 
+/**
+ * updateCalibrationStatus - Update the status of the current calibration.
+ * Display a green checkmark upon success or a red x upon failure.
+ *
+ * @param  {boolean} success True if calibration has succeeded
+ */
 function updateCalibrationStatus(success) {
   var ha = $('#calibrate-modal .animation').height();
   var hi = $('#calibrate-modal .animation i').height();
@@ -414,6 +444,9 @@ function updateCalibrationStatus(success) {
   }
 }
 
+/**
+ * closeVideoModals - Close any currently open video modals.
+ */
 function closeVideoModals() {
   const videosOpen = document.getElementsByTagName("video").length;
   if (videosOpen > 0) {

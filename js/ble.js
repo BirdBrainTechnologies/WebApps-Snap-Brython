@@ -32,7 +32,11 @@ function findAndConnect() {
     })
     .then(device => {
 
-      console.log(device.name);
+      console.log("User selected " + device.name);
+      const type = Robot.getTypeFromName(device.name);
+      if (type == null) {
+        return Promise.reject(new Error("Device selected is not of a supported type."));
+      }
       const devLetter = getNextDevLetter();
       console.log("setting dev letter " + devLetter);
       robotConnecting = new Robot(device, devLetter);
@@ -62,7 +66,7 @@ function findAndConnect() {
           }
         })
         .catch(error => {
-          console.log(error.message);
+          console.error("Failed to get RX: " + error.message);
         });
 
       // Get sending Characteristics
@@ -74,12 +78,12 @@ function findAndConnect() {
           }
         })
         .catch(error => {
-          console.log(error.message);
+          console.error("Failed to get TX: " + error.message);
         });
 
     })
     .catch(error => {
-      console.log(error.message);
+      console.error("Device request failed: " + error.message);
     });
 }
 

@@ -1,5 +1,5 @@
 /*
- *
+ * Basic service worker.
  */
 'use strict';
 

@@ -1,3 +1,10 @@
+/**
+ * Handle assigning fancy names to connected robots.
+ */
+
+ /**
+  * Array of names to choose from. One name will be chosen from each column.
+  */
 const fancyNameArray = [
   ['Adorable', 'Amber', 'Beaver'],
   ['Adventurous', 'Amethyst', 'Bee'],
@@ -513,6 +520,10 @@ const fancyNameArray = [
   ['Zealous', 'Yellow', 'Zebra']
 ];
 
+/**
+ * Array of initials to avoid. If the chosen 3 word name will produce any of
+ * these initials, it is rejected and another is assigned.
+ */
 const blacklistArray = ['ANL',
   'ANS',
   'ASS',
@@ -668,7 +679,13 @@ const blacklistArray = ['ANL',
   'AZZ'
 ];
 
-
+/**
+ * getDeviceFancyName - Choose a fancy name based on the robot's advertised
+ * name. Avoids any name that produces blacklisted initials.
+ *
+ * @param  {string} devName Advertised name of the robot
+ * @return {string}         Fancy name derived from advertised name.
+ */
 function getDeviceFancyName(devName) {
   if ((devName.startsWith("MB")) || (devName.startsWith("BB")) || (devName.startsWith("FN"))) {
     //console.log("Code: " + devName.substr(devName.length - 5));
