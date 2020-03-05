@@ -13,9 +13,38 @@ const FILES_TO_CACHE = [
   //css files
   '/css/bootstrap.min.css',
   '/css/custom.css',
+  '/css/fonts.css',
   //fontawesome files
   '/fontawesome/css/all.min.css',
-  '/fontawesome/webfonts/', //todo:figure out what we need here
+  '/fontawesome/webfonts/fa-brands-400.eot', //todo: some of these may be unnecessary
+  '/fontawesome/webfonts/fa-brands-400.svg',
+  '/fontawesome/webfonts/fa-brands-400.ttf',
+  '/fontawesome/webfonts/fa-brands-400.woff',
+  '/fontawesome/webfonts/fa-brands-400.woff2',
+  '/fontawesome/webfonts/fa-regular-400.eot',
+  '/fontawesome/webfonts/fa-regular-400.svg',
+  '/fontawesome/webfonts/fa-regular-400.ttf',
+  '/fontawesome/webfonts/fa-regular-400.woff',
+  '/fontawesome/webfonts/fa-regular-400.woff2',
+  '/fontawesome/webfonts/fa-solid-900.eot',
+  '/fontawesome/webfonts/fa-solid-900.svg',
+  '/fontawesome/webfonts/fa-solid-900.ttf',
+  '/fontawesome/webfonts/fa-solid-900.woff',
+  '/fontawesome/webfonts/fa-solid-900.woff2',
+  //fonts
+  '/fonts/Avenir-Black-webfont.eot',  //todo: some of these may be unnecessary
+  '/fonts/Avenir-Black-webfont.svg',
+  '/fonts/Avenir-Black-webfont.ttf',
+  '/fonts/Avenir-Black-webfont.woff',
+  '/fonts/Avenir-Medium-webfont.eot',
+  '/fonts/Avenir-Medium-webfont.svg',
+  '/fonts/Avenir-Medium-webfont.ttf',
+  '/fonts/Avenir-Medium-webfont.woff',
+  '/fonts/raleway-semibold.eot',
+  '/fonts/raleway-semibold.svg',
+  '/fonts/raleway-semibold.ttf',
+  '/fonts/raleway-semibold.woff',
+  '/fonts/raleway-semibold.woff2',
   //image files
   '/img/birdbrain-technologies-logo.svg',
   '/img/icon_128x128.png',
