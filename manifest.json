@@ -2,27 +2,27 @@
   "name": "BirdBrain Technologies Progressive Web App",
   "short_name": "BBT Web App",
   "icons": [{
-    "src": "/img/icon_128x128.png",
+    "src": "img/icon_128x128.png",
       "sizes": "128x128",
       "type": "image/png"
     }, {
-      "src": "/img/icon_152x152.png",
+      "src": "img/icon_152x152.png",
       "sizes": "152x152",
       "type": "image/png"
     }, {
-      "src": "/img/icon_192x192.png",
+      "src": "img/icon_192x192.png",
       "sizes": "192x192",
       "type": "image/png"
     }, {
-      "src": "/img/icon_256x256.png",
+      "src": "img/icon_256x256.png",
       "sizes": "256x256",
       "type": "image/png"
     }, {
-      "src": "/img/icon_512x512.png",
+      "src": "img/icon_512x512.png",
       "sizes": "512x512",
       "type": "image/png"
     }],
-  "start_url": "/index.html",
+  "start_url": "index.html",
   "display": "fullscreen",
   "background_color": "#881199",
   "theme_color": "#089BAB"
