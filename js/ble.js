@@ -1,6 +1,14 @@
-const MAX_CONNECTIONS = 3;
-var robots = []
-var robotConnecting = null;
+/**
+ * This file handles all bluetooth actions
+ */
+
+
+ /**
+  *  Global variables/constants
+  */
+const MAX_CONNECTIONS = 3; //If increased, make sure to update getNextDevLetter
+var robots = [] //Robot array representing all currently connected robots
+var robotConnecting = null; //Robot that is in the process of connecting
 
 /*
 About getting the ble state... Cannot really determine whether ble is turned on
@@ -19,6 +27,11 @@ https://stackoverflow.com/questions/52221609/connect-to-a-paired-device-without-
 https://bugs.chromium.org/p/chromium/issues/detail?id=577953
 */
 
+
+/**
+ * findAndConnect - Opens the chrome device chooser and connects to the chosen
+ * device if it is of a recognized type.
+ */
 function findAndConnect() {
   if (robotConnecting || robots.length == MAX_CONNECTIONS) {
     return;
@@ -32,20 +45,24 @@ function findAndConnect() {
     })
     .then(device => {
 
+      //once the user has selected a device, check that it is a supported device.
       console.log("User selected " + device.name);
       const type = Robot.getTypeFromName(device.name);
       if (type == null) {
         return Promise.reject(new Error("Device selected is not of a supported type."));
       }
+
+      //if the device is supported, assign it a letter and Robot object.
       const devLetter = getNextDevLetter();
       console.log("setting dev letter " + devLetter);
       robotConnecting = new Robot(device, devLetter);
+      //Get a notification if this device disconnects.
       device.addEventListener('gattserverdisconnected', onDisconnected);
-      // Attempts to connect to remote GATT Server.
+      //Attempt to connect to remote GATT Server.
       return device.gatt.connect();
     })
     .then(server => {
-      // Getting Battery Service...
+      // Get the Service
       console.log("getting service")
       return server.getPrimaryService("6e400001-b5a3-f393-e0a9-e50e24dcca9e");
     })
@@ -53,7 +70,7 @@ function findAndConnect() {
       console.log("getting characteristic from ")
       console.log(service)
 
-      // Get receiving Characteristics
+      // Get receiving Characteristic
       service.getCharacteristic("6e400003-b5a3-f393-e0a9-e50e24dcca9e")
         .then(characteristic => characteristic.startNotifications())
         .then(characteristic => {
@@ -69,7 +86,7 @@ function findAndConnect() {
           console.error("Failed to get RX: " + error.message);
         });
 
-      // Get sending Characteristics
+      // Get sending Characteristic
       service.getCharacteristic("6e400002-b5a3-f393-e0a9-e50e24dcca9e")
         .then(characteristic => {
           robotConnecting.TX = characteristic;
@@ -87,6 +104,11 @@ function findAndConnect() {
     });
 }
 
+/**
+ * onConnectionComplete - Called when a device has been connected and its RX
+ * and TX characteristics discovered. Starts polling for sensor data, adds the
+ * device to the array of connected robots, and loads the snap iframe.
+ */
 function onConnectionComplete() {
   if (robotConnecting == null || robotConnecting.RX == null || robotConnecting.TX == null) {
     console.error("onConnectionComplete: incomplete connection");
@@ -98,22 +120,18 @@ function onConnectionComplete() {
   var pollStop = Uint8Array.of(0x62, 0x73);
   robotConnecting.write(pollStart);
 
-  //test command
-  //0xCA LED1 Reserved R1 G1 B1 R2 G2 B2 SS1 SS2 SS3 SS4 LED2 LED3 Time us(MSB) Time us(LSB) Time ms(MSB) Time ms(LSB)
-  //var command = new Uint8Array([0xCA, 255, 0, 0, 0, 0, 0, 0, 0, 255, 255, 255, 255, 0, 0, 0, 0, 0, 0]);
-  //robotConnecting.write(command);
-  //robotConnecting.setLED(1, 100);
-  //robotConnecting.setTriLED(1, 255, 255, 255);
-  //robotConnecting.write(robotConnecting.setAllData);
-
+  //Add robot to the list and open snap
   robots.push(robotConnecting);
   updateConnectedDevices();
-  //displayConnectedDevice(robotConnecting);
-
   robotConnecting = null;
   loadSnap();
 }
 
+/**
+ * onDisconnected - Handles robot disconnection events.
+ *
+ * @param  {Object} event Disconnection event
+ */
 function onDisconnected(event) {
   let device = event.target;
   console.log('Device ' + device.name + ' is disconnected.');
@@ -127,6 +145,13 @@ function onDisconnected(event) {
   }
 }
 
+/**
+ * onCharacteristicValueChanged - Handles characteristic value changes. This is
+ * called when there is a sensor notification. Passes the data to the snap
+ * iframe if available, and updates the device's Robot object.
+ *
+ * @param  {Object} event Characteristic value change event
+ */
 function onCharacteristicValueChanged(event) {
   var dataArray = new Uint8Array(event.target.value.buffer);
   var deviceName = event.target.service.device.name;
@@ -143,6 +168,13 @@ function onCharacteristicValueChanged(event) {
   }
 }
 
+/**
+ * getRobotByName - Returns the Robot with the given device name or null if no
+ * device with that name is found.
+ *
+ * @param  {string} name Robot's advertised name
+ * @return {?Robot}      Robot found or null if not found
+ */
 function getRobotByName(name) {
   for (let i = 0; i < robots.length; i++) {
     if (robots[i].device.name === name) {
@@ -152,6 +184,13 @@ function getRobotByName(name) {
   return null
 }
 
+/**
+ * getRobotByLetter - Returns the Robot associated with the given device letter
+ * (A, B, or C), or null if there is none.
+ *
+ * @param  {string} letter Character id to look for (A, B, or C)
+ * @return {?Robot}        Robot identified by the given letter, or null if none is found
+ */
 function getRobotByLetter(letter) {
   for (let i = 0; i < robots.length; i++) {
     if (robots[i].devLetter === letter) {
@@ -161,6 +200,12 @@ function getRobotByLetter(letter) {
   return null
 }
 
+/**
+ * getNextDevLetter - Returns the next available id letter starting with A and
+ * ending with C.
+ *
+ * @return {?string}  Next available id letter of null if they are all taken
+ */
 function getNextDevLetter() {
   let letter = 'A';
   if (!devLetterUsed(letter)) {
@@ -180,6 +225,13 @@ function getNextDevLetter() {
   }
 }
 
+/**
+ * devLetterUsed - Checks to see if any of the currently connected robots are
+ * using the given id letter.
+ *
+ * @param  {string} letter Letter to check for
+ * @return {boolean}       True if the letter is currently being used.
+ */
 function devLetterUsed(letter) {
   let letterFound = false;
   for (let i = 0; i < robots.length; i++) {
@@ -188,6 +240,11 @@ function devLetterUsed(letter) {
   return letterFound;
 }
 
+/**
+ * allRobotsAreFinches - Checks whether all connected robots are finches.
+ *
+ * @return {boolean}  True if all connected robots are finches
+ */
 function allRobotsAreFinches() {
   let onlyFinches = true;
   for (let i = 0; i < robots.length; i++) {
@@ -196,6 +253,11 @@ function allRobotsAreFinches() {
   return onlyFinches;
 }
 
+/**
+ * noRobotsAreFinches - Checks to see if any of the robots are finches.
+ *
+ * @return {boolean}  True if none of the connected robots are finches.
+ */
 function noRobotsAreFinches() {
   let noFinches = true;
   for (let i = 0; i < robots.length; i++) {
