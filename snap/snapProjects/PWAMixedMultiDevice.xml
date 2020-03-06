@@ -1536,24 +1536,6 @@
                       </block>
                   </script>
               </block>
-              <block s="doDeclareVariables">
-                  <list><l>wasMoving</l><l>isMoving</l></list>
-              </block>
-              <block s="doSetVar">
-                <l>isMoving</l>
-                <block s="evaluate">
-                  <block s="reportJSFunction">
-                    <list>
-                      <l>devId</l>
-                    </list>
-                    <l> return window.birdbrain.finchIsMoving(devId); </l>
-                  </block>
-                  <list>
-                    <block var="devId"/>
-                  </list>
-                </block>
-              </block>
-              <block s="doSetVar"><l>wasMoving</l><block var="isMoving"/></block>
               <block s="doRun">
                 <block s="reportJSFunction">
                     <list>
@@ -1580,13 +1562,17 @@
                     <block var="speed"/>
                 </list>
               </block>
+              <block s="doWait"><l>0.19</l></block>
+              <block s="doDeclareVariables">
+                  <list><l>isMoving</l></list>
+              </block>
+              <block s="doSetVar">
+                <l>isMoving</l>
+                <l>true</l>
+              </block>
               <block s="doUntil">
-                <block s="reportAnd">
-                  <block var="wasMoving"/>
-                  <block s="reportNot"><block var="isMoving"/></block>
-                </block>
+                <block s="reportNot"><block var="isMoving"/></block>
                 <script>
-                    <block s="doSetVar"><l>wasMoving</l><block var="isMoving"/></block>
                     <block s="doWait"><l>0.01</l></block>
                     <block s="doSetVar">
                         <l>isMoving</l>
@@ -1667,24 +1653,6 @@
                       </block>
                   </script>
               </block>
-              <block s="doDeclareVariables">
-                  <list><l>wasMoving</l><l>isMoving</l></list>
-              </block>
-              <block s="doSetVar">
-                  <l>isMoving</l>
-                  <block s="evaluate">
-                    <block s="reportJSFunction">
-                      <list>
-                        <l>devId</l>
-                      </list>
-                      <l> return window.birdbrain.finchIsMoving(devId); </l>
-                    </block>
-                    <list>
-                      <block var="devId"/>
-                    </list>
-                  </block>
-              </block>
-              <block s="doSetVar"><l>wasMoving</l><block var="isMoving"/></block>
               <block s="doRun">
                 <block s="reportJSFunction">
                     <list>
@@ -1711,13 +1679,17 @@
                     <block var="speed"/>
                 </list>
               </block>
+              <block s="doWait"><l>0.19</l></block>
+              <block s="doDeclareVariables">
+                  <list><l>isMoving</l></list>
+              </block>
+              <block s="doSetVar">
+                <l>isMoving</l>
+                <l>true</l>
+              </block>
               <block s="doUntil">
-                  <block s="reportAnd">
-                    <block var="wasMoving"/>
-                    <block s="reportNot"><block var="isMoving"/></block>
-                  </block>
+                  <block s="reportNot"><block var="isMoving"/></block>
                   <script>
-                      <block s="doSetVar"><l>wasMoving</l><block var="isMoving"/></block>
                       <block s="doWait"><l>0.01</l></block>
                       <block s="doSetVar">
                           <l>isMoving</l>
@@ -1938,7 +1910,7 @@
                     <block var="greenLED"/>
                     <block var="blueLED"/>
                 </list>
-              </block>  
+              </block>
             </script>
         </block-definition>
     </blocks>

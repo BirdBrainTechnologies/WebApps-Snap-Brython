@@ -218,8 +218,8 @@ Robot.prototype.write = function(data) {
     return;
   }
 
-  console.log("About to write:");
-  console.log(data);
+  //console.log("About to write:");
+  //console.log(data);
   this.writeInProgress = true;
   if (this.dataQueue.length != 0) {
     if (data != null) { this.dataQueue.push(data); }
