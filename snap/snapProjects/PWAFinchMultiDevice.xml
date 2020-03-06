@@ -126,6 +126,57 @@
                         return value;
                       }
 
+                      //  Converts byte range 0 - 255 to -127 - 127 represented as a 32 bit signe int
+                      function byteToSignedInt16 (msb, lsb) {
+                        var sign = msb & (1 &lt;&lt; 7);
+                        var value = (((msb & 0xFF) &lt;&lt; 8) | (lsb & 0xFF));
+                        if (sign) {
+                          value = 0xFFFF0000 | value;  // fill in most significant bits with 1's
+                        }
+                        return value;
+                      }
+
+                      window.birdbrain.getMicrobitAcceleration = function(axis, robot) {
+                        const rawToMperS = 196/1280; //convert to meters per second squared
+                        let sensorData = window.birdbrain.sensorData[robot];
+                        let accVal = 0;
+                        switch (axis) {
+                          case 'X':
+                            accVal = byteToSignedInt8(sensorData[4]);
+                            break;
+                          case 'Y':
+                            accVal = byteToSignedInt8(sensorData[5]);
+                            break;
+                          case 'Z':
+                            accVal = byteToSignedInt8(sensorData[6]);
+                            break;
+                        }
+                        return (accVal * rawToMperS);
+                      }
+
+                      window.birdbrain.getMicrobitMagnetometer = function(axis, finch) {
+                        const rawToUT = 1/10; //convert to uT
+                        let sensorData = window.birdbrain.sensorData[finch];
+                        let msb = 0;
+                        let lsb = 0;
+                        switch (axis) {
+                          case 'X':
+                            msb = sensorData[8];
+                            lsb = sensorData[9];
+                            break;
+                          case 'Y':
+                            msb = sensorData[10];
+                            lsb = sensorData[11];
+                            break;
+                          case 'Z':
+                            msb = sensorData[12];
+                            lsb = sensorData[13];
+                            break;
+                        }
+                        let magVal = byteToSignedInt16(msb, lsb);
+                        return Math.round(magVal * rawToUT);
+                      }
+
                       window.birdbrain.getFinchAcceleration = function(axis, finch) {
                         let sensorData = window.birdbrain.sensorData[finch];
                         let accVal = 0;
@@ -891,78 +942,6 @@
             </inputs>
             <script>
                 <custom-block s="BirdBrain Setup"></custom-block>
-                <block s="doIf">
-                    <block s="reportLessThan">
-                        <block var="redLED"/>
-                        <l>0</l>
-                    </block>
-                    <script>
-                        <block s="doSetVar">
-                            <l>redLED</l>
-                            <l>0</l>
-                        </block>
-                    </script>
-                </block>
-                <block s="doIf">
-                    <block s="reportGreaterThan">
-                        <block var="redLED"/>
-                        <l>100</l>
-                    </block>
-                    <script>
-                        <block s="doSetVar">
-                            <l>redLED</l>
-                            <l>100</l>
-                        </block>
-                    </script>
-                </block>
-                <block s="doIf">
-                    <block s="reportLessThan">
-                        <block var="greenLED"/>
-                        <l>0</l>
-                    </block>
-                    <script>
-                        <block s="doSetVar">
-                            <l>greenLED</l>
-                            <l>0</l>
-                        </block>
-                    </script>
-                </block>
-                <block s="doIf">
-                    <block s="reportGreaterThan">
-                        <block var="greenLED"/>
-                        <l>100</l>
-                    </block>
-                    <script>
-                        <block s="doSetVar">
-                            <l>greenLED</l>
-                            <l>100</l>
-                        </block>
-                    </script>
-                </block>
-                <block s="doIf">
-                    <block s="reportLessThan">
-                        <block var="blueLED"/>
-                        <l>0</l>
-                    </block>
-                    <script>
-                        <block s="doSetVar">
-                            <l>blueLED</l>
-                            <l>0</l>
-                        </block>
-                    </script>
-                </block>
-                <block s="doIf">
-                    <block s="reportGreaterThan">
-                        <block var="blueLED"/>
-                        <l>100</l>
-                    </block>
-                    <script>
-                        <block s="doSetVar">
-                            <l>blueLED</l>
-                            <l>100</l>
-                        </block>
-                    </script>
-                </block>
                 <block s="doRun">
                   <block s="reportJSFunction">
                       <list>
@@ -1007,95 +986,6 @@
             </inputs>
             <script>
                 <custom-block s="BirdBrain Setup"></custom-block>
-                <block s="doIf">
-                    <block s="reportNot">
-                            <block s="reportEquals">
-                                <block var="port"/>
-                                <l>all</l>
-                            </block>
-                    </block>
-                    <script>
-                        <block s="doSetVar">
-                            <l>port</l>
-                            <block s="reportSum">
-                                <block var="port"/>
-                                <l>1</l>
-                            </block>
-                        </block>
-                    </script>
-                </block>
-                <block s="doIf">
-                    <block s="reportLessThan">
-                        <block var="redLED"/>
-                        <l>0</l>
-                    </block>
-                    <script>
-                        <block s="doSetVar">
-                            <l>redLED</l>
-                            <l>0</l>
-                        </block>
-                    </script>
-                </block>
-                <block s="doIf">
-                    <block s="reportGreaterThan">
-                        <block var="redLED"/>
-                        <l>100</l>
-                    </block>
-                    <script>
-                        <block s="doSetVar">
-                            <l>redLED</l>
-                            <l>100</l>
-                        </block>
-                    </script>
-                </block>
-                <block s="doIf">
-                    <block s="reportLessThan">
-                        <block var="greenLED"/>
-                        <l>0</l>
-                    </block>
-                    <script>
-                        <block s="doSetVar">
-                            <l>greenLED</l>
-                            <l>0</l>
-                        </block>
-                    </script>
-                </block>
-                <block s="doIf">
-                    <block s="reportGreaterThan">
-                        <block var="greenLED"/>
-                        <l>100</l>
-                    </block>
-                    <script>
-                        <block s="doSetVar">
-                            <l>greenLED</l>
-                            <l>100</l>
-                        </block>
-                    </script>
-                </block>
-                <block s="doIf">
-                    <block s="reportLessThan">
-                        <block var="blueLED"/>
-                        <l>0</l>
-                    </block>
-                    <script>
-                        <block s="doSetVar">
-                            <l>blueLED</l>
-                            <l>0</l>
-                        </block>
-                    </script>
-                </block>
-                <block s="doIf">
-                    <block s="reportGreaterThan">
-                        <block var="blueLED"/>
-                        <l>100</l>
-                    </block>
-                    <script>
-                        <block s="doSetVar">
-                            <l>blueLED</l>
-                            <l>100</l>
-                        </block>
-                    </script>
-                </block>
                 <block s="doRun">
                   <block s="reportJSFunction">
                       <list>
