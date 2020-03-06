@@ -363,6 +363,9 @@
                                 console.log("unknown encoder port " + port);
                             }
                             var encoder = msb &lt;&lt; 16 | ssb &lt;&lt; 8 | lsb
+                            if (encoder >= 0x800000) {
+                              encoder = encoder | 0xFF000000;
+                            }
                             return Math.round( encoder * 10 / TICKS_PER_ROTATION ) / 10
                           }
                         }
