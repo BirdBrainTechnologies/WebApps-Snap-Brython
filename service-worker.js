@@ -7,7 +7,7 @@
 const CACHE_NAME = 'static-cache-v3';
 
 // CODELAB: Add list of files to cache here.
-const FILES_TO_CACHE = [
+const FILES_TO_CACHE_1 = [
   'index.html',
   //css files
   'css/bootstrap.min.css',
@@ -183,6 +183,9 @@ const FILES_TO_CACHE = [
   'snap/Backgrounds/woods.gif',
   'snap/Backgrounds/woods_and_bench.jpg',
   'snap/Backgrounds/xy-grid.gif',
+]
+
+const FILES_TO_CACHE_2 = [
   'snap/Costumes/0-pixel.svg',
   'snap/Costumes/1-glow.svg',
   'snap/Costumes/1-pixel.svg',
@@ -525,6 +528,9 @@ const FILES_TO_CACHE = [
   'snap/Costumes/crab-b.svg',
   'snap/Costumes/creature1-a.svg',
   'snap/Costumes/creature1-b.svg',
+]
+
+const FILES_TO_CACHE_3 = [
   'snap/Costumes/creature1-c.svg',
   'snap/Costumes/cymbal-a.svg',
   'snap/Costumes/cymbal-b.svg',
@@ -638,7 +644,7 @@ const FILES_TO_CACHE = [
   'snap/Costumes/glass_water-b.svg',
   'snap/Costumes/glasses.svg',
   'snap/Costumes/green_flag.svg',
-  'snap/Costumes/guitar',
+//  'snap/Costumes/guitar',
   'snap/Costumes/guitar.svg',
   'snap/Costumes/guitar_bass.svg',
   'snap/Costumes/guitar_electric.svg',
@@ -849,8 +855,8 @@ const FILES_TO_CACHE = [
   'snap/Costumes/taco-a.svg',
   'snap/Costumes/taco-b.svg',
   'snap/Costumes/tennisball.png',
-  'snap/Costumes/text',
-  'snap/Costumes/text',
+  //'snap/Costumes/text',   //TODO: need these?
+  //'snap/Costumes/text',
   'snap/Costumes/text_Halloween.svg',
   'snap/Costumes/text_awesome.svg',
   'snap/Costumes/trampoline.png',
@@ -886,6 +892,9 @@ const FILES_TO_CACHE = [
   'snap/Costumes/z-block.svg',
   'snap/Costumes/zara-a.png',
   'snap/Costumes/zara-b.png',
+]
+
+const FILES_TO_CACHE_4 = [
   'snap/Examples/Codification.xml',
   'snap/Examples/EXAMPLES',
   'snap/Examples/JSfunctions.xml',
@@ -1235,7 +1244,7 @@ const FILES_TO_CACHE = [
   'snap/help/hide.png',
   'snap/help/isObject_type_.png',
   'snap/help/joinwords.png',
-  'snap/help/list%24arrowRightsentence.png',
+//  'snap/help/list$arrowRightsentence.png', //TODO: Find a way to get this to load
 //  'snap/help/manual-LaTeX', //TODO: Do we need this manual?
   'snap/help/newClone.png',
   'snap/help/playFreq.png',
@@ -1321,7 +1330,7 @@ const FILES_TO_CACHE = [
   'snap/help/reportUnicode.png',
   'snap/help/reportUnicodeAsLetter.png',
   'snap/help/reportVideo.png',
-  'snap/help/sentence%24arrowRightlist.png',
+//  'snap/help/sentence$arrowRightlist.png',  //TODO: Find a way to get this to load
   'snap/help/setBrightness.png',
   'snap/help/setColor.png',
   'snap/help/setEffect.png',
@@ -1455,7 +1464,11 @@ self.addEventListener('install', (evt) => {
   evt.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
       console.log('[ServiceWorker] Pre-caching...');
-      return cache.addAll(FILES_TO_CACHE);
+      //return cache.addAll(FILES_TO_CACHE_1);
+      return cache.addAll(FILES_TO_CACHE_1).then(() =>
+        cache.addAll(FILES_TO_CACHE_2) ).then(() =>
+        cache.addAll(FILES_TO_CACHE_3) ).then(() =>
+        cache.addAll(FILES_TO_CACHE_4) );
     }).catch(error => {
           console.error("Error caching during install event: " + error.message);
     })
