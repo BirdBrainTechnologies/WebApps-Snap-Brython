@@ -4,11 +4,12 @@
 'use strict';
 
 // Update cache names any time any of the cached files change.
-const CACHE_NAME = 'static-cache-v3';
+const CACHE_NAME = 'static-cache-v5';
 
 // CODELAB: Add list of files to cache here.
 const FILES_TO_CACHE_1 = [
   'index.html',
+  'manifest.json',
   //css files
   'css/bootstrap.min.css',
   'css/custom.css',
@@ -46,6 +47,8 @@ const FILES_TO_CACHE_1 = [
   'fonts/raleway-semibold.woff2',
   //image files
   'img/birdbrain-technologies-logo.svg',
+  'img/hummingbird-only-logo.svg',
+  'img/icon_32x32.png',
   'img/icon_128x128.png',
   'img/icon_152x152.png',
   'img/icon_192x192.png',
@@ -1495,7 +1498,7 @@ self.addEventListener('activate', (evt) => {
   self.clients.claim();
 });
 self.addEventListener('fetch', (evt) => {
-  console.log('[ServiceWorker] Fetch', evt.request.url);
+  //console.log('[ServiceWorker] Fetch', evt.request.url);
   //Response for robot requests
   if (evt.request.url.includes('/robot/')) {
     console.log('[Service Worker] Fetch (robot)', evt.request.url);
@@ -1521,9 +1524,14 @@ self.addEventListener('fetch', (evt) => {
   //Response for all other requests
   evt.respondWith(
       caches.open(CACHE_NAME).then((cache) => {
-        return cache.match(evt.request)
+        let options = {};
+        if (evt.request.url.includes("?version=")) {
+          options["ignoreSearch"] = true;
+        }
+        return cache.match(evt.request, options)
             .then((response) => {
-              console.log("responding with ");
+              let success = (response != undefined);
+              console.log("[ServiceWorker] Fetch: found in cache? " + success + " Requested url: " + evt.request.url);
               console.log(response);
               //return the cached page if possible otherwise get from network
               return response || fetch(evt.request);

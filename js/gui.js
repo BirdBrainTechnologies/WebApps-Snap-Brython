@@ -39,7 +39,7 @@ function onLoad() {
     usingChrome = true;
   }
   if (!usingChrome) {
-    showErrorModal(" Incompatible Browser ", "Please visit this page in Google Chrome");
+    showErrorModal(" Incompatible Browser ", "Please visit this page in Google Chrome (version 70 or later)");
   } else {
     navigator.bluetooth.getAvailability().then(isAvailable => {
       if (!isAvailable) {
@@ -202,7 +202,7 @@ function loadSnap() {
       iframe.src = "https://snap.berkeley.edu/snap/snap.html#present:Username=birdbraintech&ProjectName=" + projectName + "&editMode&lang=" + language;
     } else {
       //iframe.src = "snap/snap.html";
-      iframe.src = "snap/snap.html#open:/snap/snapProjects/" + projectName + ".xml&editMode&lang=" + language;
+      iframe.src = "snap/snap.html#open:snapProjects/" + projectName + ".xml&editMode&lang=" + language;
     }
 
     console.log("opening iframe with src=" + iframe.src);
