@@ -1497,31 +1497,9 @@ self.addEventListener('activate', (evt) => {
   );
   self.clients.claim();
 });
+
 self.addEventListener('fetch', (evt) => {
   //console.log('[ServiceWorker] Fetch', evt.request.url);
-  //Response for robot requests
-  if (evt.request.url.includes('/robot/')) {
-    console.log('[Service Worker] Fetch (robot)', evt.request.url);
-    evt.respondWith(
-
-      //Start here. we don't want to cache data, what do we do?
-
-        caches.open(DATA_CACHE_NAME).then((cache) => {
-          return fetch(evt.request)
-              .then((response) => {
-                // If the response was good, clone it and store it in the cache.
-                if (response.status === 200) {
-                  cache.put(evt.request.url, response.clone());
-                }
-                return response;
-              }).catch((err) => {
-                // Network request failed, try to get it from the cache.
-                return cache.match(evt.request);
-              });
-          }));
-      return;
-  }
-  //Response for all other requests
   evt.respondWith(
       caches.open(CACHE_NAME).then((cache) => {
         let options = {};
