@@ -59,18 +59,13 @@ function parseMessage(message) {
       break;
     case "turn":
       const shouldFlip = (message.angle < 0);
+      const shouldTurnRight = (message.direction == "Right" && !shouldFlip) || (message.direction == "Left" && shouldFlip);
+      const shouldTurnLeft = (message.direction == "Left" && !shouldFlip) || (message.direction == "Right" && shouldFlip);
       const turnTicks = Math.abs(message.angle * FINCH_TICKS_PER_DEGREE);
-      /*switch(message.direction) {
-        case "Right":
-          robot.setMotors(message.speed, turnTicks, -message.speed, turnTicks);
-          break;
-        case "Left":
-          robot.setMotors(-message.speed, turnTicks, message.speed, turnTicks);
-          break;
-      }*/
-      if ((message.direction == "Right" && !shouldFlip) || (message.direction == "Left" && shouldFlip)) {
+
+      if (shouldTurnRight) {
         robot.setMotors(message.speed, turnTicks, -message.speed, turnTicks);
-      } else if ((message.direction == "Left" && !shouldFlip) || (message.direction == "Right" && shouldFlip)) {
+      } else if (shouldTurnLeft) {
         robot.setMotors(-message.speed, turnTicks, message.speed, turnTicks);
       }
       break;

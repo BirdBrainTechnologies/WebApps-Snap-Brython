@@ -1,5 +1,9 @@
 
-
+/**
+ * RobotData - Data set ready to send to a robot when changed.
+ *
+ * @param  {[number]} initialValues values to initialize the data set with
+ */
 function RobotData(initialValues) {
   this.values = new Uint8Array(initialValues);
   this.oldValues = this.values.slice();
@@ -9,11 +13,14 @@ function RobotData(initialValues) {
   this.pendingChanges = [];
 }
 
-
+/**
+ * RobotData - Compare two value arrays
+ *
+ * @param  {Uint8Array} data1 first array to compare
+ * @param  {Uint8Array} data2 second array to compare
+ * @return {boolean}          true if data is same in both arrays
+ */
 RobotData.isEqual = function(data1, data2) {
-  //console.log("isEqual comparing... ")
-  //console.log(data1);
-  //console.log(data2);
 
   if (data1.length != data2.length) { return false; }
 
@@ -26,7 +33,16 @@ RobotData.isEqual = function(data1, data2) {
   return equal;
 }
 
-RobotData.prototype.segmentHasChanged = function (startIndex, length) {
+
+/**
+ * RobotData.prototype.segmentHasChanged - Determines whether a specified
+ * portion of the data has changed.
+ *
+ * @param  {number} startIndex position to start the check
+ * @param  {number} length     number of values to check
+ * @return {boolean}           true if the specified portion of the data has changed
+ */
+RobotData.prototype.segmentHasChanged = function(startIndex, length) {
   var hasChanged = false;
   for (var i = 0; i < length; i++) {
     if (this.values[startIndex + i] != this.oldValues[startIndex + i]) {
@@ -36,7 +52,12 @@ RobotData.prototype.segmentHasChanged = function (startIndex, length) {
   return hasChanged;
 }
 
-
+/**
+ * RobotData.prototype.update - Update the data with new values
+ *
+ * @param  {type} startIndex position in the value array to start the update
+ * @param  {type} valueArray new values
+ */
 RobotData.prototype.update = function(startIndex, valueArray) {
   console.log("updateData starting at " + startIndex + " to " + valueArray);
 
@@ -58,7 +79,14 @@ RobotData.prototype.update = function(startIndex, valueArray) {
   this.updatePending();
 }
 
-RobotData.prototype.updatePending = function () {
+/**
+ * RobotData.prototype.updatePending - Performs the next update in the queue if
+ * possible. Called after each change is received to see if the update can be
+ * made immediately, and called after each write to see if there are more
+ * changes pending. Also called if an update is successfully made to see if the
+ * next change can be made as well.
+ */
+RobotData.prototype.updatePending = function() {
   if (this.pendingChanges.length == 0) {
     console.log("no pending changes found.");
     return;
@@ -101,7 +129,14 @@ RobotData.prototype.updatePending = function () {
   this.updatePending(); //See if there is another change we can add.
 }
 
-RobotData.prototype.reset = function (startIndex, length) {
+/**
+ * RobotData.prototype.reset - Returns all or a portion of the data to its
+ * original values.
+ *
+ * @param  {number} startIndex Start the reset at this index (or 0 if null)
+ * @param  {number} length     Length of the section to reset (or reset everything if null)
+ */
+RobotData.prototype.reset = function(startIndex, length) {
   if (startIndex == null || length == null) {
     this.values = this.originalValues.slice();
     this.oldValues = this.originalValues.slice();
@@ -113,7 +148,16 @@ RobotData.prototype.reset = function (startIndex, length) {
   }
 }
 
-RobotData.prototype.getSendable = function (reset) {
+/**
+ * RobotData.prototype.getSendable - Returns a Uint8Array of values to send to
+ * the robot. Saves a copy of these values for comparison, or resets the data
+ * if necessary. The data is now no longer new, and the next update is
+ * performed if there is one.
+ *
+ * @param  {boolean} reset True if the data should be reset after sending. Used for motor data and print arrays so that the same command can be sent again (but is not sent accidentially)
+ * @return {Uint8Array}    Data array ready to be sent to the robot 
+ */
+RobotData.prototype.getSendable = function(reset) {
   const sendable = this.values.slice();
   if (reset) {
     this.reset();

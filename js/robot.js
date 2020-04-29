@@ -12,7 +12,6 @@ const INITIAL_LED_DISPLAY_ARRAY = Array(MAX_LED_PRINT_WORD_LEN + 2).fill(0);
 const FINCH_TICKS_PER_CM = 49.7;
 const FINCH_TICKS_PER_DEGREE = 4.335;
 //This array tells the motors to keep doing what they are doing
-//const FINCH_INITIAL_MOTOR_ARRAY = new Uint8Array([0, 0, 0, 1, 0, 0, 0, 1]);
 const FINCH_INITIAL_MOTOR_ARRAY = [0, 0, 0, 1, 0, 0, 0, 1];
 
 /**
@@ -39,9 +38,6 @@ function Robot(device, devLetter) {
 
   //Robot state arrays
   this.initializeDataArrays();
-
-  //Start the setAll timer at the minimum interval
-  //this.startSetAll();
 }
 
 /**
@@ -148,37 +144,12 @@ Robot.initialSetAllFor = function(type) {
 }
 
 /**
- * Robot.dataIsEqual - Checks for equality between two data arrays.
- *
- * @param  {Uint8Array} data1 First data set to compare
- * @param  {Uint8Array} data2 Second data set to compare
- * @return {boolean}          True if the two data sets are equal
- */
-/*Robot.dataIsEqual = function(data1, data2) {
-  if (data1.length != data2.length) { return false; }
-
-  var equal = true;
-  for (var i = 0; i < data1.length; i++) {
-    if (data1[i] != data2[i]) { equal = false; }
-  }
-  return equal;
-}*/
-
-/**
  * Robot.prototype.initializeDataArrays - Set all data arrays to initial values.
  * States starting with 'old' represent the last state sent to the robot and
  * should not be modified. Other arrays represent the next state to be sent and
  * should be modified using updateData.
  */
 Robot.prototype.initializeDataArrays = function() {
-  /*this.setAllData = Robot.initialSetAllFor(this.type);
-  this.oldSetAllData = this.setAllData.slice();
-  this.ledDisplayData = new Uint8Array(8);
-  this.oldLedDisplayData = this.ledDisplayData.slice();
-  if (this.isA(Robot.ofType.FINCH)) {
-    this.motorsData = FINCH_INITIAL_MOTOR_ARRAY.slice();
-    this.oldMotorsData = FINCH_INITIAL_MOTOR_ARRAY.slice();
-  }*/
   this.setAllData = new RobotData(Robot.initialSetAllFor(this.type));
   this.ledDisplayData = new RobotData(INITIAL_LED_DISPLAY_ARRAY);
   if (this.isA(Robot.ofType.FINCH)) {
@@ -401,7 +372,6 @@ Robot.prototype.setLED = function(port, intensity) {
       return;
   }
 
-  //this.updateData(this.setAllData, index, [intensity]);
   this.setAllData.update(index, [intensity]);
 }
 
@@ -426,8 +396,6 @@ Robot.prototype.setTriLED = function(port, red, green, blue) {
       return;
     }
 
-    //this.updateData(this.setAllData, 4, [red, green, blue,
-    //  red, green, blue, red, green, blue, red, green, blue]);
     this.setAllData.update(4, [red, green, blue,
       red, green, blue, red, green, blue, red, green, blue]);
 
@@ -450,7 +418,6 @@ Robot.prototype.setTriLED = function(port, red, green, blue) {
         return;
     }
 
-    //this.updateData(this.setAllData, index, [red, green, blue]);
     this.setAllData.update(index, [red, green, blue]);
   }
 }
@@ -470,7 +437,7 @@ Robot.prototype.setServo = function(port, value) {
   if (port < 1 || port > 4) {
     console.log("setServo invalid port: " + port);
   }
-  //this.updateData(this.setAllData, port + 8, [value]);
+
   this.setAllData.update(port + 8, [value]);
 }
 
@@ -508,12 +475,6 @@ Robot.prototype.setMotors = function(speedL, ticksL, speedR, ticksR) {
     }
   }
 
-  /*this.updateData(this.motorsData, 0, [
-    scaledVelocity(speedL), ((ticksL & 0x00ff0000) >> 16),
-    ((ticksL & 0x0000ff00) >> 8), (ticksL & 0x000000ff),
-    scaledVelocity(speedR), ((ticksR & 0x00ff0000) >> 16),
-    ((ticksR & 0x0000ff00) >> 8), (ticksR & 0x000000ff)
-  ])*/
   this.motorsData.update(0, [
     scaledVelocity(speedL), ((ticksL & 0x00ff0000) >> 16),
     ((ticksL & 0x0000ff00) >> 8), (ticksL & 0x000000ff),
@@ -539,9 +500,6 @@ Robot.prototype.setBuzzer = function(note, duration) {
   let period = (1/frequency) * 1000000
   //TODO: check if period is in range?
 
-  /*this.updateData(this.setAllData, index, [
-    period >> 8, period & 0x00ff, duration >> 8, duration & 0x00ff
-  ])*/
   this.setAllData.update(index, [
     period >> 8, period & 0x00ff, duration >> 8, duration & 0x00ff
   ])
@@ -557,15 +515,6 @@ Robot.prototype.clearBuzzerBytes = function() {
     console.log("clearBuzzerBytes invalid robot type: " + this.type);
     return;
   }
-
-  //this.updateData(this.setAllData, index, [0, 0, 0, 0])
-
-  /*const currentBuzzer = this.setAllData.values.slice(index, index + 4);
-  const blankBuzzer = [0, 0, 0, 0]
-  if (!RobotData.isEqual(currentBuzzer, blankBuzzer)) {
-    console.log("clear buzzer " + currentBuzzer + " to " + blankBuzzer);
-    this.setAllData.update(index, blankBuzzer);
-  }*/
 
   this.setAllData.reset(index, index + 4);
 }
@@ -597,7 +546,7 @@ Robot.prototype.setSymbol = function(symbolString) {
       shift -= 1
     }
   }
-  //this.updateData(this.ledDisplayData, 0, data);
+
   this.ledDisplayData.update(0, data);
 }
 
@@ -628,7 +577,6 @@ Robot.prototype.setPrint = function(printChars) {
     data[i+2] = printChars[i].charCodeAt(0);
   }
 
-  //this.updateData(this.ledDisplayData, 0, data);
   this.ledDisplayData.update(0, data);
 }
 
