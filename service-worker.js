@@ -67,6 +67,7 @@ const FILES_TO_CACHE_1 = [
   'js/jquery.js',
   'js/messages.js',
   'js/robot.js',
+  'js/robotData.js',
   'js/translations.js',
   //videos
   'vid/Finch_Calibration.mp4',

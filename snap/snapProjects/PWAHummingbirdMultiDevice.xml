@@ -297,6 +297,7 @@
             <block var="position"/>
           </list>
         </block>
+        <block s="doWait"><l>0.03</l></block>
       </script>
     </block-definition>
     <block-definition s="Hummingbird %&apos;devId&apos; Rotation Servo %&apos;port&apos; %&apos;speed&apos; %" type="command" category="motion">
@@ -390,6 +391,7 @@
             <block var="speed"/>
           </list>
         </block>
+        <block s="doWait"><l>0.03</l></block>
       </script>
     </block-definition>
     <block-definition s="Hummingbird %&apos;DevId&apos; LED %&apos;port&apos; %&apos;intensity&apos; %" type="command" category="looks">
@@ -428,6 +430,7 @@
             <block var="intensity"/>
           </list>
         </block>
+        <block s="doWait"><l>0.03</l></block>
       </script>
     </block-definition>
     <block-definition s="Hummingbird %&apos;devId&apos; Tri-LED %&apos;port&apos; R %&apos;redLED&apos; % G %&apos;greenLED&apos; % B %&apos;blueLED&apos; %" type="command" category="looks">
@@ -475,6 +478,7 @@
             <block var="blueLED"/>
           </list>
         </block>
+        <block s="doWait"><l>0.03</l></block>
       </script>
     </block-definition>
     <block-definition s="Hummingbird %&apos;devId&apos; %&apos;sensor&apos; %&apos;port&apos;" type="reporter" category="sensing">
@@ -543,7 +547,7 @@
         por _ pulsos&#xD;ca:Hummingbird _ Toca nota _ durant _ temps&#xD;fi:Hummingbird _ Soita sävel _ _ iskun ajan&#xD;sv:Hummingbird _ Spela not _ _&#xD;</translations>
       <inputs>
         <input type="%txt" readonly="true">A<options>A&#xD;B&#xD;C</options></input>
-        <input type="%n">60</input>
+        <input type="%n">60<options>§_pianoKeyboardMenu</options></input>
         <input type="%n">0.5</input>
       </inputs>
       <script>
@@ -711,6 +715,12 @@
             <block var="devId"/>
             <block var="string"/>
           </list>
+        </block>
+        <block s="doWait">
+          <block s="reportProduct">
+            <l>.6</l>
+            <block s="reportStringSize"><block var="string"/></block>
+          </block>
         </block>
       </script>
     </block-definition>
@@ -968,6 +978,7 @@
             <block var="55"/>
           </list>
         </block>
+        <block s="doWait"><l>0.03</l></block>
       </script>
     </block-definition>
     <block-definition s="stop all %&apos;devId&apos;" type="command" category="control">

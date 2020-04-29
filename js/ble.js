@@ -115,10 +115,15 @@ function onConnectionComplete() {
     return;
   }
 
+  console.log("Connection to " + robotConnecting.fancyName + " complete. Starting sensor polling.")
+
   //Start polling sensors
   var pollStart = Uint8Array.of(0x62, 0x67);
   var pollStop = Uint8Array.of(0x62, 0x73);
   robotConnecting.write(pollStart);
+
+  //Start the setAll timer
+  robotConnecting.startSetAll();
 
   //Add robot to the list and open snap
   robots.push(robotConnecting);

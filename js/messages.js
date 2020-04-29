@@ -11,7 +11,7 @@ var messagePort;
  * @param  {Object} e Message event.
  */
 function onMessage(e) {
-  console.log(e.data);
+  //console.log(e.data);
 
   if (e.ports[0] != undefined) {
     //This message sets up the message port so that the app can send updates.
@@ -58,14 +58,20 @@ function parseMessage(message) {
 
       break;
     case "turn":
-      const turnTicks = message.angle * FINCH_TICKS_PER_DEGREE;
-      switch(message.direction) {
+      const shouldFlip = (message.angle < 0);
+      const turnTicks = Math.abs(message.angle * FINCH_TICKS_PER_DEGREE);
+      /*switch(message.direction) {
         case "Right":
           robot.setMotors(message.speed, turnTicks, -message.speed, turnTicks);
           break;
         case "Left":
           robot.setMotors(-message.speed, turnTicks, message.speed, turnTicks);
           break;
+      }*/
+      if ((message.direction == "Right" && !shouldFlip) || (message.direction == "Left" && shouldFlip)) {
+        robot.setMotors(message.speed, turnTicks, -message.speed, turnTicks);
+      } else if ((message.direction == "Left" && !shouldFlip) || (message.direction == "Right" && shouldFlip)) {
+        robot.setMotors(-message.speed, turnTicks, message.speed, turnTicks);
       }
       break;
     case "move":
@@ -108,7 +114,7 @@ function parseMessage(message) {
  * sendMessage - Function for sending data back to snap. Does nothing if message
  * channel has not been set up yet.
  *
- * @param  {Object} message Information to send 
+ * @param  {Object} message Information to send
  */
 function sendMessage(message) {
   if (messagePort == undefined) {

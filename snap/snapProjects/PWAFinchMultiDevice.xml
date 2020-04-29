@@ -458,7 +458,7 @@
             <translations>ko:Finch _ 번 음을 _ 박자로 연주하기&#xD;de:Finch Spiele Note _ für _ Schläge&#xD;pt:Finch Toque Notas _ por _ Batidas&#xD;fr:Finch Jouer la note _ pour _ battement(s)&#xD;nl:Finch Speel Noot _ voor _ Beats&#xD;zh_CN:Finch 演奏 音阶 _ 于 _ 拍&#xD;zh_TW:Finch 演奏 音階 _ 於 _ 拍&#xD;ar:Finch تشغيل الموسيقى _ _&#xD;dk:Finch Spil tone _ i _ slag&#xD;he:Finch נגן תו _ במשך _ פעימות&#xD;es:Finch Emitir un sonido _ por _ pulsos&#xD;ca:Finch Toca nota _ durant _ temps&#xD;fi:Finch Soita sävel _ _ iskun ajan&#xD;sv:Finch Spela not _ _&#xD;</translations>
             <inputs>
                 <input type="%txt" readonly="true">A<options>A&#xD;B&#xD;C</options></input>
-                <input type="%n">60</input>
+                <input type="%n">60<options>§_pianoKeyboardMenu</options></input>
                 <input type="%n">0.5</input>
             </inputs>
             <script>
@@ -586,12 +586,12 @@
                 <block s="doIf">
                     <block s="reportGreaterThan">
                         <block var="distance"/>
-                        <l>500</l>
+                        <l>10000</l>
                     </block>
                     <script>
                         <block s="doSetVar">
                             <l>distance</l>
-                            <l>500</l>
+                            <l>10000</l>
                         </block>
                     </script>
                 </block>
@@ -691,24 +691,24 @@
                 <block s="doIf">
                     <block s="reportLessThan">
                         <block var="angle"/>
-                        <l>0</l>
+                        <l>-360000</l>
                     </block>
                     <script>
                         <block s="doSetVar">
                             <l>angle</l>
-                            <l>0</l>
+                            <l>-360000</l>
                         </block>
                     </script>
                 </block>
                 <block s="doIf">
                     <block s="reportGreaterThan">
                         <block var="angle"/>
-                        <l>360</l>
+                        <l>360000</l>
                     </block>
                     <script>
                         <block s="doSetVar">
                             <l>angle</l>
-                            <l>360</l>
+                            <l>360000</l>
                         </block>
                     </script>
                 </block>
@@ -874,6 +874,7 @@
                       <block var="right"/>
                   </list>
                 </block>
+                <block s="doWait"><l>0.03</l></block>
             </script>
         </block-definition>
         <block-definition s="Finch %&apos;devId&apos; Stop" type="command" category="motion">
@@ -945,6 +946,7 @@
                       <block var="blueLED"/>
                   </list>
                 </block>
+                <block s="doWait"><l>0.03</l></block>
             </script>
         </block-definition>
         <block-definition s="Finch %&apos;devId&apos; Tail %&apos;port&apos; R %&apos;redLED&apos; % G %&apos;greenLED&apos; % B %&apos;blueLED&apos; %"
@@ -994,6 +996,7 @@
                       <block var="blueLED"/>
                   </list>
                 </block>
+                <block s="doWait"><l>0.03</l></block>
             </script>
         </block-definition>
         <block-definition s="micro:bit %&apos;devId&apos; Button %&apos;button&apos;" type="predicate"
@@ -1234,6 +1237,12 @@
                         <block var="string"/>
                     </list>
                 </block>
+                <block s="doWait">
+                  <block s="reportProduct">
+                    <l>.6</l>
+                    <block s="reportStringSize"><block var="string"/></block>
+                  </block>
+                </block>
             </script>
         </block-definition>
         <block-definition
@@ -1386,6 +1395,7 @@
                         </block>
                     </block>
                 </block>
+                <block s="doWait"><l>0.03</l></block>
             </script>
         </block-definition>
         <block-definition s="stop all %&apos;devId&apos;" type="command" category="control">
