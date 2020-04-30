@@ -158,6 +158,8 @@ function displayConnectedDevice(robot) {
  * possible.
  */
 function loadSnap() {
+  const useSnap = ($('#snap-slider').prop('checked'))
+
   updateInternetStatus();
 
   let projectName = "";
@@ -198,7 +200,9 @@ function loadSnap() {
     //first do this:
     //iframe.src = "";
 
-    if (internetIsConnected) {
+    if (!useSnap) {
+      iframe.src = "brython/console.html";  //"http://brython.info/console.html"
+    } else if (internetIsConnected) {
       iframe.src = "https://snap.berkeley.edu/snap/snap.html#present:Username=birdbraintech&ProjectName=" + projectName + "&editMode&lang=" + language;
     } else {
       //iframe.src = "snap/snap.html";

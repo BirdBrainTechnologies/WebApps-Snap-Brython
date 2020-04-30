@@ -165,3 +165,5 @@ h1 { font-family: 'Raleway', Helvetica, Arial, sans-serif; font-size: 1.75em; te
 #connected-expanded iframe { width: 100%; height: 88vh; }
 #btn-collapse { margin-top: 4px; padding: 0.275em 0.5em; font-size: 2em; line-height: 1em; }
 #btn-collapse-section { padding-right: 1.5em; text-align: right; }
+
+.logo-language { height: 27px; width: auto; }
