@@ -14,42 +14,7 @@
     <link rel=stylesheet href="brython.css">
 
     <script src="src/brython.js"></script>
-
-    <script>
-      //if (window.birdbrain === undefined) {
-        window.birdbrain = {};
-        window.birdbrain.sensorData = {};
-        window.birdbrain.sensorData.A = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
-        window.birdbrain.sensorData.B = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
-        window.birdbrain.sensorData.C = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
-        window.birdbrain.robotType = {
-          FINCH: 1,
-          HUMMINGBIRDBIT: 2,
-          MICROBIT: 3,
-          //connected robots default to type MICROBIT
-          A: 3,
-          B: 3,
-          C: 3
-        };
-
-        console.log("setting up message channel")
-        window.birdbrain.messageChannel = new MessageChannel();
-        window.birdbrain.messageChannel.port1.onmessage = function (e) {
-            console.log("Got a message: ");
-            console.log(e.data);
-            if (e.data.sensorData != null && e.data.robot != null) {
-              let robot = e.data.robot;
-              window.birdbrain.sensorData[robot] = e.data.sensorData;
-              window.birdbrain.robotType[robot] = e.data.robotType;
-            }
-        }
-        window.parent.postMessage("hello from snap", "*", [window.birdbrain.messageChannel.port2]);
-
-        window.birdbrain.sendCommand = function(command) {
-          window.parent.postMessage(command, "*");
-        }
-      //}
-    </script>
+    <script src="birdBrainSetup.js"></script>
 
     <style>
     .codearea {

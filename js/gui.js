@@ -201,7 +201,7 @@ function loadSnap() {
     //iframe.src = "";
 
     if (!useSnap) {
-      iframe.src = "brython/console.html";  //"http://brython.info/console.html"
+      iframe.src = "brython/editor.html"; //"brython/console.html";  //"http://brython.info/console.html"
     } else if (internetIsConnected) {
       iframe.src = "https://snap.berkeley.edu/snap/snap.html#present:Username=birdbraintech&ProjectName=" + projectName + "&editMode&lang=" + language;
     } else {
