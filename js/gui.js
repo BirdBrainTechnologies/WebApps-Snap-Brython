@@ -186,6 +186,7 @@ function loadSnap() {
       iframe.remove();
     }
     iframe = document.createElement("iframe");
+    iframe.frameBorder = "0";
     let div = document.getElementById('snap-div');
     div.appendChild(iframe);
 

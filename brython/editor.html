@@ -6,6 +6,9 @@
 <link rel="stylesheet" href="brython.css">
 <link rel="stylesheet" href="console.css">
 
+<link href="../fontawesome/css/all.min.css" rel="stylesheet" type="text/css">
+<script type="text/javascript" src="birdBrainSetup.js"></script>
+
 <script type="text/javascript" src="src/brython_builtins.js"></script>
 <script type="text/javascript" src="src/version_info.js"></script>
 <script type="text/javascript" src="src/py2js.js"></script>
@@ -63,7 +66,7 @@ trans = {
                    'es':'Poner los bugs en el ',
                    'fr':"Signalez les bugs dans l'"},
     'test_page':{'en':'Tests page','es':'P&aacute;gina de pruebas','fr':'Page de tests'},
-    'run':{'en':'run','es':'ejecutar','fr':'Exécuter'},
+#    'run':{'en':'run','es':'ejecutar','fr':'Exécuter'},
     'clear':{'en':'clear','es':'borrar','fr':'Effacer'}
 }
 
@@ -83,11 +86,11 @@ __BRYTHON__.debug = int(doc['set_debug'].checked)
 doc['set_debug'].bind('change',set_debug)
 
 # next functions are defined in editor.py
-doc['show_js'].bind('click',editor.show_js)
-doc['share_code'].bind('click',editor.share_code)
+#doc['show_js'].bind('click',editor.show_js)
+#doc['share_code'].bind('click',editor.share_code)
 # Create a lambda around editor.run() so that the event object is not passed to it
 doc['run'].bind('click',lambda *args: editor.run())
-doc['show_console'].bind('click',editor.show_console)
+#doc['show_console'].bind('click',editor.show_console)
 
 
 
@@ -105,8 +108,6 @@ function run_js(){
 }
 </script>
 
-<script src="birdBrainSetup.js"></script>
-
 </head>
 <body onload="brython({debug:1})">
 
@@ -118,10 +119,20 @@ function run_js(){
 
 <div id="main_container"></div>
 
-</div>
-
 <table id="container">
+  <tr style="height:20px;">
+    <td></td>
+    <td></td>
+    <td></td>
+  </tr>
   <tr>
+    <td style="text-align:right">
+      <button id="file"><i class="fas fa-file"></i></button>
+      <button id="run"><i class="fas fa-play"></i></button>
+    </td>
+    <td></td>
+    <td><input type="checkbox" id="set_debug" checked hidden></td>
+    <!--
     <td>Brython version: <span id="version"></span></td>
     <td></td>
     <td>
@@ -131,10 +142,11 @@ function run_js(){
         <button id="show_js">Javascript</button>
         <button id="share_code">Share code</button>
     </td>
+    -->
   </tr>
 
   <tr>
-    <td id="left">
+    <td id="left" style="width:70%;">
       <div id="editor" style="width:100%;"></div>
     </td>
     <td id="separator"></td>
@@ -149,7 +161,8 @@ function run_js(){
     </td>
     <td></td>
     <td>
-      <a href="index.html">Tests suite</a>
+      Brython version: <span id="version"></span>
+      <!--<a href="index.html">Tests suite</a>-->
     </td>
   </tr>
 </table>

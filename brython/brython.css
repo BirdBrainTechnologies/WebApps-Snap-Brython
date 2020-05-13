@@ -11,6 +11,9 @@
   --dark-1: #2a4494;
   --dark-2: #028090;
   --dark-3: #0a090c;
+  --bbt-bg: #881199;
+  --bbt-txt: #ffffff;
+  --bbt-bn: #ff9922;
 }
 
 @font-face{
@@ -31,12 +34,12 @@ body {
   font-family:Montserrat, Arial;
   font-size:0.9em;
   margin: 0px;
-  background-color: var(--clear-1);
-  color: var(--dark-1);
+  background-color: var(--bbt-bg);
+  color: var(--bbt-txt);
 }
 
 a.navig:link,a:link,a:hover,a:visited,a.navig:visited {
-  color:var(--dark-1);
+  color:var(--bbt-txt);
   text-decoration:none;
 }
 
@@ -88,11 +91,12 @@ a.glink {
 }
 
 button{
-    background-color: var(--clear-2);
-    border-color: var(--clear-2);
-    color: var(--dark-1);
-    border: 1px solid;
-    padding: 0.2em;
+    background-color: var(--bbt-bn);
+    border-color: var(--bbt-bn);
+    color: var(--bbt-txt);
+    border: none;
+    padding: 0.5em;
+    border-radius: 2px;
 }
 button:hover{
     border-color: var(--dark-2);

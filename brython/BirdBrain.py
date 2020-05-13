@@ -21,8 +21,7 @@
 #import urllib.request
 import sys
 #import time
-from browser import window
-from browser import timer
+from browser import window, timer, aio
 ###############################################################
 ###############################################################
 #Constants
@@ -105,7 +104,8 @@ class Microbit:
         # return (response == 'true')
 
 
-    def clampParametersToBounds(self, input, inputMin, inputMax):
+    @staticmethod
+    def _clampParametersToBounds(input, inputMin, inputMax):
         """This function checks whether an input parameter is within the
         given bounds. If not, it prints a warning and returns a value of the
         input parameter that is within the required range. Otherwise, it
@@ -117,8 +117,8 @@ class Microbit:
         else:
             return input
 
-
-    def process_display(self , value):
+    @staticmethod
+    def _process_display(value):
         """Convert a string of 1's and 0's into true and false."""
 
         new_str = ""
@@ -133,11 +133,17 @@ class Microbit:
         return new_str
 
 
+    @staticmethod
+    async def _sendCommand(command):
+        window.birdbrain.sendCommand(command)
+        #keep the backend from getting overloaded with commands
+        await aio.sleep(0.01)
+
     ######################################################################
     #######################  OUTPUTS MICRO BIT ###########################
     ######################################################################
 
-    def setDisplay(self, LEDlist):
+    async def setDisplay(self, LEDlist):
         """Set Display of the LED Array on microbit with the given input LED
         list of 0's and 1's."""
 
@@ -149,15 +155,16 @@ class Microbit:
 
         #Check if all the characters entered are valid
         for index in range(0,len(LEDlist)):
-            LEDlist[index] = self.clampParametersToBounds(LEDlist[index],0,1)
+            LEDlist[index] = self._clampParametersToBounds(LEDlist[index],0,1)
 
         # Reset the display status
         self.symbolvalue = LEDlist
 
         #Convert the LED_list to  an appropriate value which the server can understand
-        LED_string = self.process_display(LEDlist)
+        LED_string = self._process_display(LEDlist)
 
-        window.birdbrain.sendCommand({
+        #window.birdbrain.sendCommand({
+        await self._sendCommand({
             'robot': self.device_s_no,
             'cmd': "symbol",
             'symbolString': LED_string
@@ -167,7 +174,7 @@ class Microbit:
         # return response
 
 
-    def print(self, message):
+    async def print(self, message):
         """Print the characters on the LED screen."""
 
         # Warn the user about any special characters - we can mostly only print English characters and digits
@@ -181,7 +188,8 @@ class Microbit:
         # Empty out the internal representation of the display, since it will be blank when the print ends
         self.symbolvalue = [0]*25
 
-        window.birdbrain.sendCommand({
+        #window.birdbrain.sendCommand({
+        await self._sendCommand({
             'robot': self.device_s_no,
             'cmd': "print",
             'printString': message
@@ -191,14 +199,14 @@ class Microbit:
         # return response
 
 
-    def setPoint(self, x , y , value):
+    async def setPoint(self, x , y , value):
         """Choose a certain LED on the LED Array and switch it on or off.
         The value specified should be 1 for on, 0 for off."""
 
         #Check if x, y and value are valid
-        x = self.clampParametersToBounds(x,1,5)
-        y = self.clampParametersToBounds(y,1,5)
-        value = self.clampParametersToBounds(value,0,1)
+        x = self._clampParametersToBounds(x,1,5)
+        y = self._clampParametersToBounds(y,1,5)
+        value = self._clampParametersToBounds(value,0,1)
 
         #Calculate which LED should be selected
         index = (x-1)*5 + (y-1)
@@ -207,9 +215,10 @@ class Microbit:
         self.symbolvalue[index] = value
 
         #Convert the display status to  an appropriate value which the server can understand
-        outputString = self.process_display(self.symbolvalue)
+        outputString = self._process_display(self.symbolvalue)
 
-        window.birdbrain.sendCommand({
+        #window.birdbrain.sendCommand({
+        await self._sendCommand({
             'robot': self.device_s_no,
             'cmd': "symbol",
             'symbolString': outputString
@@ -333,21 +342,19 @@ class Microbit:
         return "In between"
 
 
-    def _stop_all(self):
-        window.birdbrain.sendCommand({
-            'robot': self.device_s_no,
-            'cmd': "stopAll"
-        })
-        self.symbolvalue = [0]*25
-
-    def stopAll(self):
+    async def stopAll(self):
         """Stop all device outputs (ie. Servos, LEDs, LED Array, Motors, etc.)."""
 
         #time.sleep(0.1)         # Hack to give stopAll() time to act before the end of a program
         #response = self.send_httprequest_stopAll()
         #self.symbolvalue = [0]*25
         #return response
-        timer.set_timeout(self._stop_all, 0.1)
+        await aio.sleep(0.1)
+        await self._sendCommand({
+            'robot': self.device_s_no,
+            'cmd': "stopAll"
+        })
+        self.symbolvalue = [0]*25
 
 
     ##########################################################################
@@ -487,7 +494,8 @@ class Hummingbird(Microbit):
         return (window.birdbrain.robotType[self.device_s_no] == window.birdbrain.robotType.HUMMINGBIRDBIT)
 
 
-    def isPortValid(self, port, portMax):
+    @staticmethod
+    def __isPortValid(port, portMax):
         """This function checks whether a port is within the given bounds.
         It returns a boolean value that is either true or false and prints
         an error if necessary."""
@@ -499,7 +507,8 @@ class Hummingbird(Microbit):
             return True
 
 
-    def calculate_LED(self,intensity):
+    @staticmethod
+    def _calculate_LED(intensity):
         """ Utility function to covert LED from 0-100 to 0-255."""
 
         intensity_c = int((intensity * 255) / 100) ;
@@ -507,7 +516,8 @@ class Hummingbird(Microbit):
         return intensity_c
 
 
-    def calculate_RGB(self,r_intensity, g_intensity, b_intensity):
+    @staticmethod
+    def _calculate_RGB(r_intensity, g_intensity, b_intensity):
         """Utility function to covert RGB LED from 0-100 to 0-255."""
 
         r_intensity_c   = int((r_intensity * 255) / 100) ;
@@ -517,7 +527,8 @@ class Hummingbird(Microbit):
         return (r_intensity_c,g_intensity_c,b_intensity_c)
 
 
-    def calculate_servo_p(self,servo_value):
+    @staticmethod
+    def __calculate_servo_p(servo_value):
         """Utility function to covert Servo from 0-180 to 0-255."""
 
         servo_value_c   = int((servo_value * 254)/180) ;
@@ -525,7 +536,8 @@ class Hummingbird(Microbit):
         return servo_value_c
 
 
-    def calculate_servo_r(self,servo_value):
+    @staticmethod
+    def __calculate_servo_r(servo_value):
         """Utility function to covert Servo from -100 - 100 to 0-255."""
 
         #If the vlaues are above the limits fix the instensity to maximum value,
@@ -542,20 +554,21 @@ class Hummingbird(Microbit):
     ##############################################################################
 
 
-    def setLED(self, port, intensity):
+    async def setLED(self, port, intensity):
         """Set LED  of a certain port requested to a valid intensity."""
 
         # Early return if we can't execute the command because the port is invalid
-        if not self.isPortValid(port,3):
+        if not self.__isPortValid(port,3):
             return
 
         #Check the intensity value lies with in the range of LED limits
-        intensity = self.clampParametersToBounds(intensity,0,100)
+        intensity = self._clampParametersToBounds(intensity,0,100)
 
         #Change the range from 0-100 to 0-255
-        intensity_c = self.calculate_LED(intensity)
+        intensity_c = self._calculate_LED(intensity)
 
-        window.birdbrain.sendCommand({
+        #window.birdbrain.sendCommand({
+        await self._sendCommand({
             'robot': self.device_s_no,
             'cmd': "led",
             'port': port,
@@ -567,22 +580,23 @@ class Hummingbird(Microbit):
 
 
 
-    def setTriLED(self, port, redIntensity, greenIntensity, blueIntensity):
+    async def setTriLED(self, port, redIntensity, greenIntensity, blueIntensity):
         """Set TriLED  of a certain port requested to a valid intensity."""
 
         # Early return if we can't execute the command because the port is invalid
-        if not self.isPortValid(port,2):
+        if not self.__isPortValid(port,2):
             return
 
         #Check the intensity value lies with in the range of RGB LED limits
-        red = self.clampParametersToBounds(redIntensity,0,100)
-        green = self.clampParametersToBounds(greenIntensity,0,100)
-        blue = self.clampParametersToBounds(blueIntensity,0,100)
+        red = self._clampParametersToBounds(redIntensity,0,100)
+        green = self._clampParametersToBounds(greenIntensity,0,100)
+        blue = self._clampParametersToBounds(blueIntensity,0,100)
 
         #Change the range from 0-100 to 0-255
-        (r_intensity_c, g_intensity_c, b_intensity_c) = self.calculate_RGB(red,green,blue)
+        (r_intensity_c, g_intensity_c, b_intensity_c) = self._calculate_RGB(red,green,blue)
 
-        window.birdbrain.sendCommand({
+        #window.birdbrain.sendCommand({
+        await self._sendCommand({
             'robot': self.device_s_no,
             'cmd': "triled",
             'port': port,
@@ -595,19 +609,20 @@ class Hummingbird(Microbit):
 #        return response
 
 
-    def setPositionServo(self, port, angle):
+    async def setPositionServo(self, port, angle):
         """Set Position servo of a certain port requested to a valid angle."""
 
         # Early return if we can't execute the command because the port is invalid
-        if not self.isPortValid(port,4):
+        if not self.__isPortValid(port,4):
             return
 
         #Check the angle lies within servo limits
-        angle = self.clampParametersToBounds(angle,0,180)
+        angle = self._clampParametersToBounds(angle,0,180)
 
-        angle_c = self.calculate_servo_p(angle)
+        angle_c = self.__calculate_servo_p(angle)
 
-        window.birdbrain.sendCommand({
+        #window.birdbrain.sendCommand({
+        await self._sendCommand({
             'robot': self.device_s_no,
             'cmd': "servo",
             'port': port,
@@ -618,19 +633,20 @@ class Hummingbird(Microbit):
 #        return response
 
 
-    def setRotationServo(self, port, speed):
+    async def setRotationServo(self, port, speed):
         """Set Rotation servo of a certain port requested to a valid speed."""
 
         # Early return if we can't execute the command because the port is invalid
-        if not self.isPortValid(port,4):
+        if not self.__isPortValid(port,4):
             return
 
         #Check the speed lies within servo limits
-        speed = self.clampParametersToBounds(speed,-100,100)
+        speed = self._clampParametersToBounds(speed,-100,100)
 
-        speed_c  = self.calculate_servo_r(speed)
+        speed_c  = self.__calculate_servo_r(speed)
 
-        window.birdbrain.sendCommand({
+        #window.birdbrain.sendCommand({
+        await self._sendCommand({
             'robot': self.device_s_no,
             'cmd': "servo",
             'port': port,
@@ -641,16 +657,17 @@ class Hummingbird(Microbit):
 #        return response
 
 
-    def playNote(self, note, beats ):
+    async def playNote(self, note, beats):
         """Make the buzzer play a note for certain number of beats."""
 
         ### Check that both parameters are within the required bounds
-        note = self.clampParametersToBounds(note,32,135)
-        beats = self.clampParametersToBounds(beats,0,16)
+        note = self._clampParametersToBounds(note,32,135)
+        beats = self._clampParametersToBounds(beats,0,16)
 
         beats = int(beats * (60000/TEMPO))
 
-        window.birdbrain.sendCommand({
+        #window.birdbrain.sendCommand({
+        await self._sendCommand({
             'robot': self.device_s_no,
             'cmd': "playNote",
             'note': note,
@@ -670,7 +687,7 @@ class Hummingbird(Microbit):
         If the port is not valid, it returns -1."""
 
         # Early return if we can't execute the command because the port is invalid
-        if not self.isPortValid(port,3):
+        if not self.__isPortValid(port,3):
             return -1
 
         return window.birdbrain.sensorData[self.device_s_no][port - 1]
@@ -866,7 +883,7 @@ class Finch(Microbit):
 
     ######## Finch Output ########
 
-    def __setTriLED(self, port, redIntensity, greenIntensity, blueIntensity):
+    async def __setTriLED(self, port, redIntensity, greenIntensity, blueIntensity):
         """Set TriLED(s) on the Finch.
         Port 1 is the beak. Ports 2 to 5 are tail. Specify port "all" to set the whole tail."""
 
@@ -875,14 +892,15 @@ class Finch(Microbit):
                 return 0
 
         #Check the intensity value lies with in the range of RGB LED limits
-        red = self.clampParametersToBounds(redIntensity,0,100)
-        green = self.clampParametersToBounds(greenIntensity,0,100)
-        blue = self.clampParametersToBounds(blueIntensity,0,100)
+        red = self._clampParametersToBounds(redIntensity,0,100)
+        green = self._clampParametersToBounds(greenIntensity,0,100)
+        blue = self._clampParametersToBounds(blueIntensity,0,100)
 
         #Change the range from 0-100 to 0-255
         (red_c, green_c, blue_c) = self.__calculate_RGB(red,green,blue)
 
-        window.birdbrain.sendCommand({
+        #window.birdbrain.sendCommand({
+        await self._sendCommand({
             'robot': self.device_s_no,
             'cmd': "triled",
             'port': port,
@@ -892,14 +910,13 @@ class Finch(Microbit):
         )
 
 
-    def setBeak(self, redIntensity, greenIntensity, blueIntensity):
+    async def setBeak(self, redIntensity, greenIntensity, blueIntensity):
         """Set beak to a valid intensity. Each intensity should be an integer from 0 to 100."""
 
-        response = self.__setTriLED(1, redIntensity, greenIntensity, blueIntensity)
-        return response
+        await self.__setTriLED(1, redIntensity, greenIntensity, blueIntensity)
 
 
-    def setTail(self, port, redIntensity, greenIntensity, blueIntensity):
+    async def setTail(self, port, redIntensity, greenIntensity, blueIntensity):
         """Set tail to a valid intensity. Port can be specified as 1, 2, 3, 4, or all.
         Each intensity should be an integer from 0 to 100."""
 
@@ -907,23 +924,23 @@ class Finch(Microbit):
         if not port == "all":
                 port = port + 1
 
-        response = self.__setTriLED(port, redIntensity, greenIntensity, blueIntensity)
-        return response
+        await self.__setTriLED(port, redIntensity, greenIntensity, blueIntensity)
 
 
-    def playNote(self, note, beats):
+    async def playNote(self, note, beats):
         """Make the buzzer play a note for certain number of beats. Note is the midi
         note number and should be specified as an integer from 32 to 135. Beats can be
         any number from 0 to 16."""
 
         #Check that both parameters are within the required bounds
-        note = self.clampParametersToBounds(note, 32, 135)
-        beats = self.clampParametersToBounds(beats, 0, 16)
+        note = self._clampParametersToBounds(note, 32, 135)
+        beats = self._clampParametersToBounds(beats, 0, 16)
 
         note = self.__constrainToInt(note)
         beats = int(beats * (60000/TEMPO))
 
-        window.birdbrain.sendCommand({
+        #window.birdbrain.sendCommand({
+        await self._sendCommand({
             'robot': self.device_s_no,
             'cmd': "playNote",
             'note': note,
@@ -931,28 +948,28 @@ class Finch(Microbit):
         })
 
 
-#    def __moveFinchAndWait(self, motion, direction, length, speed):
-#        """Send a command to move the finch and wait until the finch has finished
-#        its motion to return. Used by setMove and setTurn."""
+    async def __moveFinchAndWait(self, command):
+        """Send a command to move the finch and wait until the finch has finished
+        its motion to return. Used by setMove and setTurn."""
 
 #        length = self.__constrainToInt(length)
 #        speed = self.__constrainToInt(speed)
 
-#        isMoving = self.__send_httprequest_in("finchIsMoving", "static")
-#        wasMoving = isMoving
+        isMoving = window.birdbrain.finchIsMoving(self.device_s_no)
+        wasMoving = isMoving
 
-        #Send HTTP request
-#        response = self.__send_httprequest_move(motion, direction, length, speed)
+        #window.birdbrain.sendCommand(command)
+        await self._sendCommand(command)
 
-#        while (not((wasMoving == "true") and (isMoving == "false")) and not(isMoving == "Not Connected")):
-#            wasMoving = isMoving
-#            time.sleep(0.01)
-#            isMoving = self.__send_httprequest_in("finchIsMoving", "static")
+        while (not((wasMoving) and (not isMoving)) and self.isConnectionValid()):
+            wasMoving = isMoving
+            await aio.sleep(0.01)
+            isMoving = window.birdbrain.finchIsMoving(self.device_s_no)
 
 #        return response
 
 
-    def setMove(self, direction, distance, speed):
+    async def setMove(self, direction, distance, speed):
         """Move the Finch forward or backward for a given distance at a given speed.
         Direction should be specified as 'F' or 'B' and distance and speed should
         be given as integers."""
@@ -961,10 +978,11 @@ class Finch(Microbit):
         if direction is None:
                 return 0
 
-        distance = self.clampParametersToBounds(distance, 0, 500)
-        speed =  self.clampParametersToBounds(speed, 0, 100)
+        distance = self._clampParametersToBounds(distance, 0, 500)
+        speed =  self._clampParametersToBounds(speed, 0, 100)
 
-        window.birdbrain.sendCommand({
+        #window.birdbrain.sendCommand({
+        await self.__moveFinchAndWait({
             'robot': self.device_s_no,
             'cmd': "move",
             'direction': direction,
@@ -976,7 +994,7 @@ class Finch(Microbit):
 #        return response
 
 
-    def setTurn(self, direction, angle, speed):
+    async def setTurn(self, direction, angle, speed):
         """Turn the Finch right or left to a given angle at a given speed.
         Direction should be specified as 'R' or 'L' and angle and speed should
         be given as integers."""
@@ -985,10 +1003,11 @@ class Finch(Microbit):
         if direction is None:
                 return 0
 
-        angle =  self.clampParametersToBounds(angle, 0, 360)
-        speed =  self.clampParametersToBounds(speed, 0, 100)
+        angle =  self._clampParametersToBounds(angle, 0, 360)
+        speed =  self._clampParametersToBounds(speed, 0, 100)
 
-        window.birdbrain.sendCommand({
+        #window.birdbrain.sendCommand({
+        await self.__moveFinchAndWait({
             'robot': self.device_s_no,
             'cmd': "turn",
             'direction': direction,
@@ -1000,16 +1019,17 @@ class Finch(Microbit):
 #        return response
 
 
-    def setMotors(self, leftSpeed, rightSpeed):
+    async def setMotors(self, leftSpeed, rightSpeed):
         """Set the speed of each motor individually. Speed should be an integer in
         the range of -100 to 100."""
 
-        leftSpeed = self.clampParametersToBounds(leftSpeed, -100, 100)
+        leftSpeed = self._clampParametersToBounds(leftSpeed, -100, 100)
         leftSpeed = self.__constrainToInt(leftSpeed)
-        rightSpeed = self.clampParametersToBounds(rightSpeed, -100, 100)
+        rightSpeed = self._clampParametersToBounds(rightSpeed, -100, 100)
         rightSpeed = self.__constrainToInt(rightSpeed)
 
-        window.birdbrain.sendCommand({
+        #window.birdbrain.sendCommand({
+        await self._sendCommand({
             'robot': self.device_s_no,
             'cmd': "wheels",
             'speedL': left,
@@ -1020,21 +1040,26 @@ class Finch(Microbit):
 #        return response
 
 
-    def stop(self):
+    async def stop(self):
         """Stop the Finch motors."""
 
-        window.birdbrain.sendCommand({
+        #window.birdbrain.sendCommand({
+        await self._sendCommand({
             'robot': self.device_s_no,
             'cmd': "stopFinch"
         })
 
 
-    def resetEncoders(self):
+    async def resetEncoders(self):
         """Reset both encoder values to 0."""
-        window.birdbrain.sendCommand({
+
+        #window.birdbrain.sendCommand({
+        await self._sendCommand({
             'robot': self.device_s_no,
             'cmd': "resetEncoders"
         })
+        #the finch needs a little time to reset
+        await aio.sleep(0.1)
 #        response = self.__send_httprequest_out("resetEncoders", None, None)
 
         #The finch needs a chance to actually reset

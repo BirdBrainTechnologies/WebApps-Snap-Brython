@@ -13,6 +13,30 @@ _height = doc.documentElement.clientHeight
 _s = doc['container']
 _s.style.height = '%spx' % int(_height * 0.85)
 
+defaultFinchScript = """from BirdBrain import Finch
+
+myFinch = Finch(\'A\')
+myFinch.print("hello")
+"""
+defaultHummingbirdScript = """from BirdBrain import Hummingbird
+
+myHummingbird = Hummingbird(\'A\')
+myHummingbird.print("hello")
+"""
+defaultMicrobitScript = """from BirdBrain import Microbit
+
+myMicrobit = Microbit(\'A\')
+myMicrobit.print("hello")
+"""
+if (window.birdbrain.robotType.A == window.birdbrain.robotType.FINCH):
+    defaultScript = defaultFinchScript
+elif (window.birdbrain.robotType.A == window.birdbrain.robotType.HUMMINGBIRDBIT):
+    defaultScript = defaultHummingbirdScript
+elif (window.birdbrain.robotType.A == window.birdbrain.robotType.MICROBIT):
+    defaultScript = defaultMicrobitScript
+else:
+    defaultScript = 'for i in range(10):\n\tprint(i)'
+
 has_ace = True
 try:
     editor = window.ace.edit("editor")
@@ -51,7 +75,8 @@ def reset_src():
         if storage is not None and "py_src" in storage:
             editor.setValue(storage["py_src"])
         else:
-            editor.setValue('for i in range(10):\n\tprint(i)')
+            #editor.setValue('for i in range(10):\n\tprint(i)')
+            editor.setValue(defaultScript)
     editor.scrollToRow(0)
     editor.gotoLine(0)
 
@@ -59,7 +84,8 @@ def reset_src_area():
     if storage and "py_src" in storage:
         editor.value = storage["py_src"]
     else:
-        editor.value = 'for i in range(10):\n\tprint(i)'
+        editor.value = defaultScript
+        #editor.value = 'for i in range(10):\n\tprint(i)'
 
 
 class cOutput:
@@ -114,6 +140,11 @@ def run(*args):
        storage["py_src"] = src
 
     t0 = time.perf_counter()
+
+    #The brython version of the find and replace used here was very slow.
+    src = window.birdbrain.wrapPython(src)
+    #print('\nexecuting:\n\n' + src)
+
     try:
         ns = {'__name__':'__main__'}
         exec(src, ns)
@@ -124,7 +155,7 @@ def run(*args):
     sys.stdout.flush()
     output = doc["console"].value
 
-    print('<completed in %6.2f ms>' % ((time.perf_counter() - t0) * 1000.0))
+    #print('<completed in %6.2f ms>' % ((time.perf_counter() - t0) * 1000.0))
     return state
 
 def show_js(ev):

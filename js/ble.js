@@ -142,12 +142,12 @@ function onDisconnected(event) {
   console.log('Device ' + device.name + ' is disconnected.');
   for (let i = 0; i < robots.length; i++) {
     if (robots[i].device.name == device.name) {
-      robots.splice(i, 1);
-      updateConnectedDevices();
       sendMessage({
         robot: robots[i].devLetter,
         connectionLost: true
       });
+      robots.splice(i, 1);
+      updateConnectedDevices();
       //In the case that the robot is still in the list, it has disconnected
       // from outside the app. Start some sort of auto reconnect here?
     }

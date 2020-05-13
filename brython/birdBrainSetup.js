@@ -262,3 +262,15 @@ window.birdbrain.getFinchCompass = function (robot) {
 
   return ((Math.round(angle) + 180) % 360) //turn so that beak points north
 }
+
+window.birdbrain.finchIsMoving = function(finch) {
+  return (window.birdbrain.sensorData[finch][4] > 127);
+}
+
+window.birdbrain.wrapPython = function(src) {
+  let wrapped = src.replace(/\n/g, "\n\t")
+  wrapped = wrapped.replace(/([a-zA-Z_][a-zA-Z_0-9]*)\.(setMove|setTurn|setMotors|playNote|setTail|setBeak|setDisplay|print|setPoint|stopAll|setLED|setTriLED|setPositionServo|setRotationServo|stop|resetEncoders)/g, "await $1.$2")
+  wrapped = wrapped.replace(/time\.sleep/g, "await aio.sleep")
+  wrapped = "from browser import aio\n\nasync def main():\n\t" + wrapped + "\n\naio.run(main())"
+  return wrapped
+}
