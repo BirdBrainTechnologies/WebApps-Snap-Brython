@@ -6,6 +6,7 @@
 <link rel="stylesheet" href="brython.css">
 <link rel="stylesheet" href="console.css">
 
+<!-- BBT specific -->
 <link href="../fontawesome/css/all.min.css" rel="stylesheet" type="text/css">
 <script type="text/javascript" src="birdBrainSetup.js"></script>
 
@@ -92,8 +93,10 @@ doc['set_debug'].bind('change',set_debug)
 doc['run'].bind('click',lambda *args: editor.run())
 #doc['show_console'].bind('click',editor.show_console)
 
-
-
+# file handling
+doc['loadedScript'].bind('click',editor.load_script)
+doc['downloadFile'].bind('click',editor.save_script)
+doc['fileName'].bind('input',editor.update_script_name)
 
 </script>
 
@@ -108,6 +111,7 @@ function run_js(){
 }
 </script>
 
+
 </head>
 <body onload="brython({debug:1})">
 
@@ -118,6 +122,8 @@ function run_js(){
 </table>-->
 
 <div id="main_container"></div>
+<div id="loadedScript" hidden></div>
+<input type="file" id="chooseFile" accept=".py" onchange="onFileChoice()" hidden/>
 
 <table id="container">
   <tr style="height:20px;">
@@ -126,9 +132,17 @@ function run_js(){
     <td></td>
   </tr>
   <tr>
-    <td style="text-align:right">
-      <button id="file"><i class="fas fa-file"></i></button>
-      <button id="run"><i class="fas fa-play"></i></button>
+    <td>
+      <table width="100%">
+        <tr style="text-align:right">
+          <td><div id="fileName" contenteditable="true">test</div></td>
+          <td width="80px">
+            <button id="uploadFile" onclick="performClick('chooseFile');"><i class="fas fa-file-upload"></i></button>
+            <button id="downloadFile" onclick=""><i class="fas fa-file-download"></i></button>
+            <button id="run"><i class="fas fa-play"></i></button>
+          </td>
+        </tr>
+      </table>
     </td>
     <td></td>
     <td><input type="checkbox" id="set_debug" checked hidden></td>

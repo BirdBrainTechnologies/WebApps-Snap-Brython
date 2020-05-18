@@ -166,4 +166,6 @@ h1 { font-family: 'Raleway', Helvetica, Arial, sans-serif; font-size: 1.75em; te
 #btn-collapse { margin-top: 4px; padding: 0.275em 0.5em; font-size: 2em; line-height: 1em; }
 #btn-collapse-section { padding-right: 1.5em; text-align: right; }
 
-.logo-language { height: 27px; width: auto; }
+.logo-brython { height: 27px; width: auto; }
+.logo-snap { height: 40px; width: auto; }
+.centered-div { height: 80px; padding: 10px;}

@@ -274,3 +274,45 @@ window.birdbrain.wrapPython = function(src) {
   wrapped = "from browser import aio\n\nasync def main():\n\t" + wrapped + "\n\naio.run(main())"
   return wrapped
 }
+
+function onFileChoice() {
+  var input = document.getElementById('chooseFile')
+  console.log("found " + input.files.length + " files.")
+  console.log(input.files[0].name + " " + input.files[0].size + " " + input.files[0].type)
+  input.files[0].text().then(contents => {
+    console.log("found contents:")
+    console.log(contents)
+    var container = document.getElementById('loadedScript');
+    container.value = contents;
+    container.click();
+    var fileNameLabel = document.getElementById('fileName');
+    fileNameLabel.innerHTML = input.files[0].name
+    fileNameLabel.dispatchEvent(new Event("input"));
+  }).catch(error => {
+    console.error("failed to read file: " + error.message);
+  });
+}
+
+function performClick(elemId) {
+   var elem = document.getElementById(elemId);
+   if(elem && document.createEvent) {
+      var evt = document.createEvent("MouseEvents");
+      evt.initEvent("click", true, false);
+      elem.dispatchEvent(evt);
+   }
+}
+
+window.birdbrain.savePythonProject = function(fileName, contents) {
+  var blob = new Blob([contents], {
+    type: "text/x-python-script"
+  });
+  var a = document.createElement("a");
+  document.body.appendChild(a);
+  a.style = "display: none";
+
+  var url = window.URL.createObjectURL(blob);
+  a.href = url;
+  a.download = fileName;
+  a.click();
+  window.URL.revokeObjectURL(url);
+}
