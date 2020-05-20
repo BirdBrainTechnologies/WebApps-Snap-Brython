@@ -63,21 +63,26 @@ function parseMessage(message) {
       const shouldTurnLeft = (message.direction == "Left" && !shouldFlip) || (message.direction == "Right" && shouldFlip);
       const turnTicks = Math.abs(message.angle * FINCH_TICKS_PER_DEGREE);
 
-      if (shouldTurnRight) {
-        robot.setMotors(message.speed, turnTicks, -message.speed, turnTicks);
-      } else if (shouldTurnLeft) {
-        robot.setMotors(-message.speed, turnTicks, message.speed, turnTicks);
+      if (turnTicks != 0) { //ticks=0 is the command for continuous motion
+        if (shouldTurnRight) {
+          robot.setMotors(message.speed, turnTicks, -message.speed, turnTicks);
+        } else if (shouldTurnLeft) {
+          robot.setMotors(-message.speed, turnTicks, message.speed, turnTicks);
+        }
       }
       break;
     case "move":
       const moveTicks = message.distance * FINCH_TICKS_PER_CM;
-      switch(message.direction) {
-        case "Forward":
-          robot.setMotors(message.speed, moveTicks, message.speed, moveTicks);
-        break;
-        case "Backward":
-          robot.setMotors(-message.speed, moveTicks, -message.speed, moveTicks);
-        break;
+
+      if (moveTicks != 0) { //ticks=0 is the command for continuous motion
+        switch(message.direction) {
+          case "Forward":
+            robot.setMotors(message.speed, moveTicks, message.speed, moveTicks);
+          break;
+          case "Backward":
+            robot.setMotors(-message.speed, moveTicks, -message.speed, moveTicks);
+          break;
+        }
       }
       break;
     case "stopFinch":

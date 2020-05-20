@@ -465,6 +465,8 @@ Robot.prototype.setMotors = function(speedL, ticksL, speedR, ticksR) {
   let scaledVelocity = function(speed) {
     const speedScaling = 36/100;
     let vel = Math.round(speed * speedScaling);
+    if (speed > 0 && vel < 3) { vel = 3; }
+    if (speed < 0 && vel > -3) { vel = -3; }
     if (vel > 0 && vel < 128) {
       return vel + 128;
     } else if (vel <= 0 && vel > -128) {
