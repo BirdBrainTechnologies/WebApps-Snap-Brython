@@ -211,8 +211,21 @@ function run(coro){
                 err_msg += "\n" + ev.__class__.$infos.__name__ +
                     ': ' + ev.args[0]
             }
-            $B.builtins.print(err_msg)
-            throw ev
+
+            //***BirdBrain changes***
+
+            //$B.builtins.print(err_msg)
+            //throw ev
+
+            //The stack trace produced above is not helpful.
+            // Extract whatever useful information we can:
+            const et = ev.stack.match(/_b_\.(.*?)\./);
+            const errorType = et[1];
+            if (errorType != "SystemExit") { //SystemExit is not meant to print error messages
+              $B.builtins.print("ERROR: " + errorType + " - \"" + ev.args[0] + "\"")
+            }
+
+            //***End BirdBrain changes***
         }
 
     var $ = $B.args("run", 3, {coro: null, onsuccess: null, onerror: null},

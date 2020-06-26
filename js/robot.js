@@ -63,9 +63,10 @@ Robot.propertiesFor = {
     calibrationCommand: new Uint8Array([0xCE, 0xFF, 0xFF, 0xFF]),
     calibrationIndex: 16,
     batteryIndex: 6,
-    batteryFactor: 0.0376,
-    greenThreshold: 3.386,
-    yellowThreshold: 3.271
+    batteryFactor: 0.00937, //0.0376,
+    batteryConstant: 320,
+    greenThreshold: 3.51375, //3.386,
+    yellowThreshold: 3.3732 //3.271
   },
   //hummingbird bit
   2: {
@@ -78,6 +79,7 @@ Robot.propertiesFor = {
     calibrationIndex: 7,
     batteryIndex: 3,
     batteryFactor: 0.0406,
+    batteryConstant: 0,
     greenThreshold: 4.75,
     yellowThreshold: 4.4
   },
@@ -92,6 +94,7 @@ Robot.propertiesFor = {
     calibrationIndex: 7,
     batteryIndex: null, //no battery monitoring for micro:bit
     batteryFactor: null,
+    batteryConstant: null,
     greenThreshold: null,
     yellowThreshold: null
   }
@@ -624,12 +627,13 @@ Robot.prototype.startCalibration = function() {
 Robot.prototype.receiveSensorData = function(data) {
   const batteryIndex = Robot.propertiesFor[this.type].batteryIndex;
   const batteryFactor = Robot.propertiesFor[this.type].batteryFactor;
+  const batteryConstant = Robot.propertiesFor[this.type].batteryConstant;
   const greenThreshold = Robot.propertiesFor[this.type].greenThreshold;
   const yellowThreshold = Robot.propertiesFor[this.type].yellowThreshold;
 
   if (batteryIndex != null) { //null for micro:bit which does not have battery monitoring
     const rawVoltage = data[batteryIndex]
-    const voltage = rawVoltage * batteryFactor
+    const voltage = batteryFactor * (rawVoltage + batteryConstant)//rawVoltage * batteryFactor
     var newLevel = Robot.batteryLevel.UNKNOWN
     if (voltage > greenThreshold) {
       newLevel = Robot.batteryLevel.HIGH

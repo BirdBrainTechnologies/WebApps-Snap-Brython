@@ -32,15 +32,9 @@ const FILES_TO_CACHE_1 = [
   'fontawesome/webfonts/fa-solid-900.woff',
   'fontawesome/webfonts/fa-solid-900.woff2',
   //fonts
-  'fonts/Avenir-Black-webfont.eot',  //todo: some of these may be unnecessary
-  'fonts/Avenir-Black-webfont.svg',
-  'fonts/Avenir-Black-webfont.ttf',
-  'fonts/Avenir-Black-webfont.woff',
-  'fonts/Avenir-Medium-webfont.eot',
-  'fonts/Avenir-Medium-webfont.svg',
-  'fonts/Avenir-Medium-webfont.ttf',
-  'fonts/Avenir-Medium-webfont.woff',
-  'fonts/raleway-semibold.eot',
+  'fonts/Nunito-ExtraBold.ttf',
+  'fonts/Nunito-Regular.ttf',
+  'fonts/raleway-semibold.eot', //todo: some of these may be unnecessary
   'fonts/raleway-semibold.svg',
   'fonts/raleway-semibold.ttf',
   'fonts/raleway-semibold.woff',

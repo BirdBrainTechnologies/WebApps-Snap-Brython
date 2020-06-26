@@ -19,6 +19,7 @@
 ###############################################################
 ###############################################################
 import sys
+import time
 from browser import window, aio
 ###############################################################
 ###############################################################
@@ -39,7 +40,6 @@ VOLTAGE_FACTOR            = 3.3/255
 
 #Scaling factors for Finch
 FINCH_DISTANCE = 0.0919
-BATTERY_FACTOR = 0.0406
 
 TEMPO                      = 60
 
@@ -76,6 +76,7 @@ class Microbit:
             self.buttonShakeIndex = 7
             if (str(self.__class__.__name__) == "Finch"):
                 self.buttonShakeIndex = 16
+                self.currentBeak = [0]*3 # the current state of the finch beak is needed to calculate light sensor values
 
         else:
             print("Error: Device must be A, B, or C.")
@@ -649,6 +650,7 @@ class Finch(Microbit):
     async def setBeak(self, redIntensity, greenIntensity, blueIntensity):
         """Set beak to a valid intensity. Each intensity should be an integer from 0 to 100."""
 
+        self.currentBeak = [redIntensity, greenIntensity, blueIntensity]
         await self.__setTriLED(1, redIntensity, greenIntensity, blueIntensity)
 
 
@@ -688,13 +690,17 @@ class Finch(Microbit):
 
         isMoving = window.birdbrain.finchIsMoving(self.device_s_no)
         wasMoving = isMoving
+        commandSendTime = time.time()
+        done = False
 
         await self._sendCommand(command)
 
-        while (not((wasMoving) and (not isMoving)) and self.isConnectionValid()):
+        #while (not((wasMoving) and (not isMoving)) and self.isConnectionValid()):
+        while (not(done) and self.isConnectionValid()):
             wasMoving = isMoving
             await aio.sleep(0.01)
             isMoving = window.birdbrain.finchIsMoving(self.device_s_no)
+            done = ((time.time() > commandSendTime + 0.5) or wasMoving) and (not isMoving)
 
 
     async def setMove(self, direction, distance, speed):
@@ -706,7 +712,7 @@ class Finch(Microbit):
         if direction is None:
                 return 0
 
-        distance = self._clampParametersToBounds(distance, 0, 500)
+        distance = self._clampParametersToBounds(distance, -10000, 10000)
         speed =  self._clampParametersToBounds(speed, 0, 100)
 
         await self.__moveFinchAndWait({
@@ -727,7 +733,7 @@ class Finch(Microbit):
         if direction is None:
                 return 0
 
-        angle =  self._clampParametersToBounds(angle, 0, 360)
+        angle =  self._clampParametersToBounds(angle, -360000, 360000)
         speed =  self._clampParametersToBounds(speed, 0, 100)
 
         await self.__moveFinchAndWait({
@@ -780,12 +786,21 @@ class Finch(Microbit):
     def getLight(self, direction):
         """Read the value of the right or left light sensor ('R' or 'L')."""
         direction = self.__formatRightLeft(direction)
+        R = self.currentBeak[0]
+        G = self.currentBeak[1]
+        B = self.currentBeak[2]
+        rawLight = 0
+        correction = 0
         if direction == "Right":
-            return window.birdbrain.sensorData[self.device_s_no][3];
+            rawLight = window.birdbrain.sensorData[self.device_s_no][3];
+            correction = 6.40473070e-03*R + 1.41015162e-02*G + 5.05547817e-02*B + 3.98301391e-04*R*G + 4.41091223e-04*R*B + 6.40756862e-04*G*B + -4.76971242e-06*R*G*B
         elif direction == "Left":
-            return window.birdbrain.sensorData[self.device_s_no][2];
+            rawLight = window.birdbrain.sensorData[self.device_s_no][2];
+            correction = 1.06871493e-02*R + 1.94526614e-02*G + 6.12409825e-02*B + 4.01343475e-04*R*G + 4.25761981e-04*R*B + 6.46091068e-04*G*B + -4.41056971e-06*R*G*B
         else:
             return 0
+
+        return round(max(0, min((rawLight - correction), 100)))
 
 
     def getDistance(self):
