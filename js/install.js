@@ -32,6 +32,7 @@ window.addEventListener('beforeinstallprompt', saveBeforeInstallPromptEvent);
  */
 function saveBeforeInstallPromptEvent(evt) {
   // CODELAB: Add code to save event & show the install button.
+  console.log("Ready to install: showing install button")
   deferredInstallPrompt = evt;
   installButton.removeAttribute('hidden');
 }
@@ -73,5 +74,5 @@ window.addEventListener('appinstalled', logAppInstalled);
  */
 function logAppInstalled(evt) {
   // CODELAB: Add code to log the event
-  console.log('Weather App was installed.', evt);
+  console.log('BlueBird was installed.', evt);
 }
