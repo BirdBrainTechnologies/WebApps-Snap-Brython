@@ -158,7 +158,7 @@ function displayConnectedDevice(robot) {
  * possible.
  */
 function loadSnap() {
-  const useSnap = ($('#snap-slider').prop('checked'))
+  //const useSnap = ($('#snap-slider').prop('checked'))
 
   updateInternetStatus();
 

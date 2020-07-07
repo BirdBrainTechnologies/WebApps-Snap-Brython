@@ -48,6 +48,9 @@ h1 { font-family: 'Raleway', Helvetica, Arial, sans-serif; font-size: 1.75em; te
 #indicators .dot.dot-spin { color: #FF5222; font-size: 2em; left: -1em; top: 0; }
 #indicator-bluetooth.indicator-on .dot-spin { display: none; }
 
+/* programming language label */
+#programmingLang { font-size: 0.875em; position: absolute; left: 20px; top: 12px; }
+
 /* !finder + button */
 #finder {display: none; background-color: #089BAB; color: #fff; padding-top: 2em; padding-bottom: 2em; transition-delay: 0.5s; transition: all 1s ease; height: auto; }
 #find-button { font-family: 'Raleway', Helvetica, Arial, sans-serif; font-size: 1.75em; padding: 0.35em 1.5em; text-transform: uppercase; }

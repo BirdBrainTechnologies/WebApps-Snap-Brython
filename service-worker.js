@@ -8,8 +8,8 @@ const CACHE_NAME = 'static-cache-v6';
 
 // CODELAB: Add list of files to cache here.
 const FILES_TO_CACHE_1 = [
-  'index.html',
-  'manifest.json',
+  //'index.html',
+  //'manifest.json',
   //css files
   'css/bootstrap.min.css',
   'css/custom.css',
@@ -66,7 +66,12 @@ const FILES_TO_CACHE_1 = [
   //videos
   'vid/Finch_Calibration.mp4',
   'vid/HummBit_Calibration.mp4',
-  'vid/MicroBit_Calibration.mp4',
+  'vid/MicroBit_Calibration.mp4'
+]
+
+const SNAP_FILES_TO_CACHE_1 = [
+  'useSnap.html',
+  'manifest-snap.json',
   //snap
   'snap/',
   'snap/API.md',
@@ -183,7 +188,7 @@ const FILES_TO_CACHE_1 = [
   'snap/Backgrounds/xy-grid.gif',
 ]
 
-const FILES_TO_CACHE_2 = [
+const SNAP_FILES_TO_CACHE_2 = [
   'snap/Costumes/0-pixel.svg',
   'snap/Costumes/1-glow.svg',
   'snap/Costumes/1-pixel.svg',
@@ -528,7 +533,7 @@ const FILES_TO_CACHE_2 = [
   'snap/Costumes/creature1-b.svg',
 ]
 
-const FILES_TO_CACHE_3 = [
+const SNAP_FILES_TO_CACHE_3 = [
   'snap/Costumes/creature1-c.svg',
   'snap/Costumes/cymbal-a.svg',
   'snap/Costumes/cymbal-b.svg',
@@ -642,7 +647,7 @@ const FILES_TO_CACHE_3 = [
   'snap/Costumes/glass_water-b.svg',
   'snap/Costumes/glasses.svg',
   'snap/Costumes/green_flag.svg',
-//  'snap/Costumes/guitar',
+  //  'snap/Costumes/guitar',
   'snap/Costumes/guitar.svg',
   'snap/Costumes/guitar_bass.svg',
   'snap/Costumes/guitar_electric.svg',
@@ -892,7 +897,7 @@ const FILES_TO_CACHE_3 = [
   'snap/Costumes/zara-b.png',
 ]
 
-const FILES_TO_CACHE_4 = [
+const SNAP_FILES_TO_CACHE_4 = [
   'snap/Examples/Codification.xml',
   'snap/Examples/EXAMPLES',
   'snap/Examples/JSfunctions.xml',
@@ -1242,8 +1247,8 @@ const FILES_TO_CACHE_4 = [
   'snap/help/hide.png',
   'snap/help/isObject_type_.png',
   'snap/help/joinwords.png',
-//  'snap/help/list$arrowRightsentence.png', //TODO: Find a way to get this to load
-//  'snap/help/manual-LaTeX', //TODO: Do we need this manual?
+  //  'snap/help/list$arrowRightsentence.png', //TODO: Find a way to get this to load
+  //  'snap/help/manual-LaTeX', //TODO: Do we need this manual?
   'snap/help/newClone.png',
   'snap/help/playFreq.png',
   'snap/help/playSound.png',
@@ -1328,7 +1333,7 @@ const FILES_TO_CACHE_4 = [
   'snap/help/reportUnicode.png',
   'snap/help/reportUnicodeAsLetter.png',
   'snap/help/reportVideo.png',
-//  'snap/help/sentence$arrowRightlist.png',  //TODO: Find a way to get this to load
+  //  'snap/help/sentence$arrowRightlist.png',  //TODO: Find a way to get this to load
   'snap/help/setBrightness.png',
   'snap/help/setColor.png',
   'snap/help/setEffect.png',
@@ -1454,7 +1459,10 @@ const FILES_TO_CACHE_4 = [
   'snap/snapProjects/PWAMixedMultiDevice.xml'
 ];
 
-const FILES_TO_CACHE_5 = [
+const BRYTHON_FILES_TO_CACHE_1 = [
+  'useBrython.html',
+  'manifest-brython.json',
+  //brython
   'brython/BirdBrain.py',
   'brython/birdBrainSetup.js',
   'brython/brython.css',
@@ -1679,7 +1687,7 @@ const FILES_TO_CACHE_5 = [
   'brython/src/web_workers/worker.js'
 ];
 
-const FILES_TO_CACHE_6 = [
+const BRYTHON_FILES_TO_CACHE_2 = [
   'brython/src/Lib/browser/aio.py',
   'brython/src/Lib/browser/ajax.py',
   'brython/src/Lib/browser/highlight.py',
@@ -1867,67 +1875,76 @@ const FILES_TO_CACHE_6 = [
   'brython/src/Lib/site-packages/ui/widget.py'
 ];
 
-//The install event is called once per service worker.
-//Changes to the service worker script count as a new service worker
-self.addEventListener('install', (evt) => {
-  console.log('[ServiceWorker] Install');
-  //Precache static resources
-  evt.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => {
-      console.log('[ServiceWorker] Pre-caching...');
-      //return cache.addAll(FILES_TO_CACHE_1);
-      return cache.addAll(FILES_TO_CACHE_1).then(() =>
-        cache.addAll(FILES_TO_CACHE_2) ).then(() =>
-        cache.addAll(FILES_TO_CACHE_3) ).then(() =>
-        cache.addAll(FILES_TO_CACHE_4) ).then(() =>
-        cache.addAll(FILES_TO_CACHE_5) ).then(() =>
-        cache.addAll(FILES_TO_CACHE_6) );
-    }).catch(error => {
-          console.error("Error caching during install event: " + error.message);
-    })
-  );
-  self.skipWaiting();
-});
+function addEventListeners(usingSnap) {
+  //The install event is called once per service worker.
+  //Changes to the service worker script count as a new service worker
+  self.addEventListener('install', (evt) => {
+    console.log('[ServiceWorker] Install');
+    //Precache static resources
+    evt.waitUntil(
+      caches.open(CACHE_NAME).then((cache) => {
+        console.log('[ServiceWorker] Pre-caching...');
+        //return cache.addAll(FILES_TO_CACHE_1);
+        return cache.addAll(FILES_TO_CACHE_1).then(() => {
+          if (usingSnap) {
+            cache.addAll(SNAP_FILES_TO_CACHE_1).then(() =>
+            cache.addAll(SNAP_FILES_TO_CACHE_2)).then(() =>
+            cache.addAll(SNAP_FILES_TO_CACHE_3)).then(() =>
+            cache.addAll(SNAP_FILES_TO_CACHE_4));
+          } else {
+            cache.addAll(BRYTHON_FILES_TO_CACHE_1).then(() =>
+            cache.addAll(BRYTHON_FILES_TO_CACHE_2));
+          }
+        })
 
-//The activate event is called each time the app starts up.
-self.addEventListener('activate', (evt) => {
-  console.log('[ServiceWorker] Activate');
-  //Remove previous cached data from disk.
-  evt.waitUntil(
-    caches.keys().then((keyList) => {
-      return Promise.all(keyList.map((key) => {
-        if (key !== CACHE_NAME) {
-          console.log('[ServiceWorker] Removing old cache', key);
-          return caches.delete(key);
-        }
-      }));
-    }).catch(error => {
-          console.error(error.message);
-    })
-  );
-  self.clients.claim();
-});
+      }).catch(error => {
+        console.error("Error caching during install event: " + error.message);
+      })
+    );
+    self.skipWaiting();
+  });
 
-self.addEventListener('fetch', (evt) => {
-  //console.log('[ServiceWorker] Fetch', evt.request.url);
-  evt.respondWith(
+  //The activate event is called each time the app starts up.
+  self.addEventListener('activate', (evt) => {
+    console.log('[ServiceWorker] Activate');
+    //Remove previous cached data from disk.
+    evt.waitUntil(
+      caches.keys().then((keyList) => {
+        return Promise.all(keyList.map((key) => {
+          if (key !== CACHE_NAME) {
+            console.log('[ServiceWorker] Removing old cache', key);
+            return caches.delete(key);
+          }
+        }));
+      }).catch(error => {
+        console.error(error.message);
+      })
+    );
+    self.clients.claim();
+  });
+
+  self.addEventListener('fetch', (evt) => {
+    //console.log('[ServiceWorker] Fetch', evt.request.url);
+    evt.respondWith(
       caches.open(CACHE_NAME).then((cache) => {
         let options = {};
         if (evt.request.url.includes("?version=")) {
           options["ignoreSearch"] = true;
         }
         return cache.match(evt.request, options)
-            .then((response) => {
-              let success = (response != undefined);
-              console.log("[ServiceWorker] Fetch: found in cache? " + success + " Requested url: " + evt.request.url);
-              console.log(response);
-              //return the cached page if possible otherwise get from network
-              return response || fetch(evt.request);
-            }).catch(error => {
-              console.error(error.message);
-            });
-      }).catch(error => {
+          .then((response) => {
+            let success = (response != undefined);
+            console.log("[ServiceWorker] Fetch: found in cache? " + success + " Requested url: " + evt.request.url);
+            console.log(response);
+            //return the cached page if possible otherwise get from network
+            return response || fetch(evt.request);
+          }).catch(error => {
             console.error(error.message);
+          });
+      }).catch(error => {
+        console.error(error.message);
       })
-  );
-});
+    );
+  });
+
+}
