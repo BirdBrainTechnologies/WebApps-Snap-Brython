@@ -55,7 +55,18 @@ function findAndConnect() {
       //if the device is supported, assign it a letter and Robot object.
       const devLetter = getNextDevLetter();
       console.log("setting dev letter " + devLetter);
-      robotConnecting = new Robot(device, devLetter);
+      let robotNotAlreadyInList = true;
+      for (let i = 0; i < robots.length; i++) {
+        if (robots[i].device.name == device.name) {
+          robotConnecting = robots[i];
+          robotConnecting.reconnect(device, devLetter);
+          robots.splice(i, 1);
+          robotNotAlreadyInList = false;
+        }
+      }
+      if (robotNotAlreadyInList) {
+        robotConnecting = new Robot(device, devLetter);
+      }
       //Get a notification if this device disconnects.
       device.addEventListener('gattserverdisconnected', onDisconnected);
       //Attempt to connect to remote GATT Server.
@@ -129,7 +140,7 @@ function onConnectionComplete() {
   robots.push(robotConnecting);
   updateConnectedDevices();
   robotConnecting = null;
-  loadSnap();
+  loadIDE();
 }
 
 /**
@@ -146,8 +157,12 @@ function onDisconnected(event) {
         robot: robots[i].devLetter,
         connectionLost: true
       });
-      robots.splice(i, 1);
+      //robots.splice(i, 1);
+      robots[i].externalDisconnect();
       updateConnectedDevices();
+      let cf = " " + thisLocaleTable["Connection_Failure"];
+      let msg = robots[i].fancyName + cf;
+      showErrorModal(cf, msg, true)
       //In the case that the robot is still in the list, it has disconnected
       // from outside the app. Start some sort of auto reconnect here?
     }

@@ -156,7 +156,7 @@ h1 { font-family: 'Raleway', Helvetica, Arial, sans-serif; font-size: 1.75em; te
 }
 
 /* Snap iframe and collapsed robot info */
-#connected-expanded { background-color: #881199; position: absolute; top: 0; left: 0; right: 0; bottom: 0; }
+#connected-expanded { background-color: #881199; color: #fff; position: absolute; top: 0; left: 0; right: 0; bottom: 0; }
 #connected-expanded .container { width: 100%; padding-top: 6px; }
 #logo-section { padding-left: 1.5em; }
 #hummingbird-only-logo { margin-top: 4px; height: 54px; width: auto; }

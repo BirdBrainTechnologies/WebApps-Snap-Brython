@@ -51,7 +51,6 @@ const FILES_TO_CACHE_1 = [
   'img/img-bit.svg',
   'img/img-finch.svg',
   'img/img-hummingbird-bit.svg',
-  'img/logo-snap.svg',
   'img/pattern-blue-circuitry.svg',
   //javascript
   'js/ble.js',
@@ -72,6 +71,7 @@ const FILES_TO_CACHE_1 = [
 const SNAP_FILES_TO_CACHE_1 = [
   'useSnap.html',
   'manifest-snap.json',
+  'img/logo-snap.svg',
   //snap
   'snap/',
   'snap/API.md',
@@ -1462,6 +1462,7 @@ const SNAP_FILES_TO_CACHE_4 = [
 const BRYTHON_FILES_TO_CACHE_1 = [
   'useBrython.html',
   'manifest-brython.json',
+  'img/logo-brython.svg',
   //brython
   'brython/BirdBrain.py',
   'brython/birdBrainSetup.js',

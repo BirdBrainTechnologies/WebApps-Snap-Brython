@@ -35,6 +35,7 @@ function Robot(device, devLetter) {
   this.printTimer = null;
   this.isCalibrating = false;
   this.setAllTimeToAdd = 0;
+  this.isConnected = true;
 
   //Robot state arrays
   this.initializeDataArrays();
@@ -209,6 +210,28 @@ Robot.prototype.disconnect = function() {
   }
   this.device.gatt.disconnect();
   updateConnectedDevices();
+}
+
+/**
+ * Robot.prototype.externalDisconnect - Called when the robot disconnects
+ * (rather than the user disconnecting through the app)
+ */
+Robot.prototype.externalDisconnect = function() {
+  console.log("setting isConnected to false for " + this.fancyName)
+  this.isConnected = false;
+  this.devLetter = "X"
+}
+
+/**
+ * Robot.prototype.reconnect - Connect again. Only used in the case of external
+ * disconnect.
+ *
+ * @param  {type} devLetter New device letter for the robot
+ */
+Robot.prototype.reconnect = function(device, devLetter) {
+  this.isConnected = true;
+  this.device = device
+  this.devLetter = devLetter;
 }
 
 /**

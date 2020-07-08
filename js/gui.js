@@ -9,7 +9,7 @@
 const header = document.getElementById('main-header');
 const finder = document.getElementById('finder');
 const connected = document.getElementById('connected');
-var snapExpanded = false;
+var ideExpanded = false;
 var internetIsConnected = false;
 var currentSnapProject = "";
 var iframe = null; //a frame for snap
@@ -22,8 +22,8 @@ $('#startupState').css("display", "none");
 //Set the find robots button to bring up the chrome device chooser.
 $('#find-button').on('click', function(e) { findAndConnect(); });
 //$('#startProgramming').on('click', function(e) { loadSnap(); })
-$('#btn-expand-section').on('click', function(e) { collapseSnap(); })
-$('#btn-collapse-section').on('click', function(e) { expandSnap(); })
+$('#btn-expand-section').on('click', function(e) { collapseIDE(); })
+$('#btn-collapse-section').on('click', function(e) { expandIDE(); })
 
 /**
  * onLoad - Handles everything that needs to be done once the window has loaded.
@@ -32,18 +32,17 @@ $('#btn-collapse-section').on('click', function(e) { expandSnap(); })
 function onLoad() {
   let user = navigator.userAgent;
   let usingChrome = false;
-  let bluetoothAvailable = false;
   console.log(user);
   if (user.includes("Chrome")) {
     console.log("Found chrome")
     usingChrome = true;
   }
   if (!usingChrome) {
-    showErrorModal(" Incompatible Browser ", "Please visit this page in Google Chrome (version 70 or later)");
+    showErrorModal(" Incompatible Browser ", "Please visit this page in Google Chrome (version 70 or later)", false);
   } else {
     navigator.bluetooth.getAvailability().then(isAvailable => {
       if (!isAvailable) {
-        showErrorModal(" No Bluetooth Detected ", "This app requires bluetooth");
+        showErrorModal(" No Bluetooth Detected ", "This app requires bluetooth", false);
       }
     });
   }
@@ -92,59 +91,79 @@ function displayConnectedDevice(robot) {
   var deviceFancyName = robot.fancyName;
   var deviceLetter = robot.devLetter;
   var batteryDisplay = "style=\"display:inline-block\"";
+  var el = null;
+  console.log("displayConnectedDevice " + deviceFancyName + " " + robot.isConnected)
+  if (robot.isConnected) {
 
-  switch (robot.type) {
-    case Robot.ofType.MICROBIT:
-      deviceImage = "img/img-bit.svg";
-      batteryDisplay = "style=\"display:none\"";
-      break;
-    case Robot.ofType.FINCH:
-      deviceImage = "img/img-finch.svg";
+    switch (robot.type) {
+      case Robot.ofType.MICROBIT:
+        deviceImage = "img/img-bit.svg";
+        batteryDisplay = "style=\"display:none\"";
+        break;
+      case Robot.ofType.FINCH:
+        deviceImage = "img/img-finch.svg";
+    }
+
+    el = $(
+
+      "             <div class=\"row robot-item\">" +
+      "               <div class=\"col-xs-2 img\">" + deviceLetter + " <img src=\"" + deviceImage + "\" alt=\"Hummingbird Bit\" /></div>" +
+      "               <div class=\"col-xs-6 name\">" + deviceFancyName + "</div>" +
+      "               <div class=\"col-xs-4 buttons\">" +
+
+      //Battery for Hummingbits and Finches only
+      "                 <div style=\"display:inline-block\">" +
+      "                   <span " + batteryDisplay + " class=\"button button-battery button-battery-" + deviceLetter + " fa-stack fa-2x\"><i class=\"fas /*fa-battery-full fa-battery-half*/ /*fa-battery-quarter*/ fa-stack-2x\"></i></span>                " +
+
+      //Calibrate button
+      "                   <a class=\"button\" href=\"#\" ><span class=\"button-calibrate fa-stack fa-2x\">" +
+      "                     <i class=\"fas fa-square fa-stack-2x\"></i>" +
+      "                     <i class=\"fas fa-compass fa-stack-1x fa-inverse\"></i>" +
+      "                   </span></a>" +
+      "                  </div>" +
+
+      //Disconnect Button
+      "                 <a class=\"button\" href=\"#\"><span class=\"button-disconnect fa-stack fa-2x\">" +
+      "                   <i class=\"fas fa-circle fa-stack-2x\"></i>" +
+      "                   <i class=\"fas fa-minus fa-stack-1x fa-inverse\"></i>" +
+      "                 </span></a>" +
+      "               </div>" +
+      "             </div>"
+
+
+    );
+
+    el.find('.button-calibrate').click(function() {
+      console.log("button-calibrate");
+      robot.startCalibration();
+      showCalibrationModal(robot.type);
+    });
+  } else {
+    el = $(
+
+      "             <div class=\"row robot-item\">" +
+      "               <div class=\"col-xs-10 name\">" + thisLocaleTable["Connection_Failure"] + ": " + deviceFancyName + "</div>" +
+      "               <div class=\"col-xs-2 buttons\">" +
+      //Disconnect Button
+      "                 <a class=\"button\" href=\"#\"><span class=\"button-disconnect fa-stack fa-2x\">" +
+      "                   <i class=\"fas fa-circle fa-stack-2x\"></i>" +
+      "                   <i class=\"fas fa-minus fa-stack-1x fa-inverse\"></i>" +
+      "                 </span></a>" +
+      "               </div>" +
+      "             </div>"
+
+
+    );
   }
-
-  var el = $(
-
-    "             <div class=\"row robot-item\">" +
-    "               <div class=\"col-xs-2 img\">" + deviceLetter + " <img src=\"" + deviceImage + "\" alt=\"Hummingbird Bit\" /></div>" +
-    "               <div class=\"col-xs-6 name\">" + deviceFancyName + "</div>" +
-    "               <div class=\"col-xs-4 buttons\">" +
-
-    //Battery for Hummingbits and Finches only
-    "                 <div style=\"display:inline-block\">" +
-    "                   <span " + batteryDisplay + " class=\"button button-battery button-battery-" + deviceLetter + " fa-stack fa-2x\"><i class=\"fas /*fa-battery-full fa-battery-half*/ /*fa-battery-quarter*/ fa-stack-2x\"></i></span>                " +
-
-    //Calibrate button
-    "                   <a class=\"button\" href=\"#\" ><span class=\"button-calibrate fa-stack fa-2x\">" +
-    "                     <i class=\"fas fa-square fa-stack-2x\"></i>" +
-    "                     <i class=\"fas fa-compass fa-stack-1x fa-inverse\"></i>" +
-    "                   </span></a>" +
-    "                  </div>" +
-
-    //Disconnect Button
-    "                 <a class=\"button\" href=\"#\"><span class=\"button-disconnect fa-stack fa-2x\">" +
-    "                   <i class=\"fas fa-circle fa-stack-2x\"></i>" +
-    "                   <i class=\"fas fa-minus fa-stack-1x fa-inverse\"></i>" +
-    "                 </span></a>" +
-    "               </div>" +
-    "             </div>"
-
-
-  );
 
   el.find('.button-disconnect').click(function() {
     console.log("button-disconnect");
     robot.disconnect();
   });
 
-  el.find('.button-calibrate').click(function() {
-    console.log("button-calibrate");
-    robot.startCalibration();
-    showCalibrationModal(robot.type);
-  });
-
   robot.displayElement = el; //TODO: need this?
 
-  if (snapExpanded) {
+  if (ideExpanded) {
     $('#robots-connected-snap').append(el);
   } else {
     $('#robots-connected').append(el);
@@ -153,11 +172,11 @@ function displayConnectedDevice(robot) {
 }
 
 /**
- * loadSnap - Load snap in an iframe with the appropriate starter project.
+ * loadIde - Load snap or brython in an iframe with the appropriate starter project.
  * Compresses the rest of the UI so that snap can have as much space as
  * possible.
  */
-function loadSnap() {
+function loadIDE() {
   //const useSnap = ($('#snap-slider').prop('checked'))
 
   updateInternetStatus();
@@ -180,6 +199,7 @@ function loadSnap() {
   }
 
   if (projectName != currentSnapProject) {
+    $('#ideLoading').css("display", "block");
     currentSnapProject = projectName;
 
     if (iframe != null) {
@@ -211,18 +231,28 @@ function loadSnap() {
     }
 
     console.log("opening iframe with src=" + iframe.src);
+    iframe.addEventListener('load', iframeOnLoadHandler, false)
   }
 
-  expandSnap();
+  expandIDE();
+}
+
+
+/**
+ * iframeOnLoadHandler - Hide the spinner once the iframe has loaded.
+ */
+function iframeOnLoadHandler() {
+  console.log("iframe has loaded")
+  $('#ideLoading').css("display", "none");
 }
 
 /**
- * collapseSnap - Remove the snap iframe from view and expand the rest of the
+ * collapseIDE - Remove the iframe from view and expand the rest of the
  * UI.
  */
-function collapseSnap() {
+function collapseIDE() {
   $('#btn-expand-section').hide();
-  snapExpanded = false;
+  ideExpanded = false;
   $('#connected-expanded').css("visibility", "hidden");
   document.body.insertBefore(connected, document.body.childNodes[0]);
   document.body.insertBefore(finder, document.body.childNodes[0]);
@@ -232,14 +262,14 @@ function collapseSnap() {
 }
 
 /**
- * expandSnap - Show the snap iframe and compress the rest of the UI.
+ * expandIDE - Show the ide iframe and compress the rest of the UI.
  */
-function expandSnap() {
+function expandIDE() {
   header.remove();
   finder.remove();
   connected.remove();
 
-  snapExpanded = true;
+  ideExpanded = true;
   updateConnectedDevices();
   $('#connected-expanded').css("visibility", "visible");
   $('#btn-expand-section').show();
@@ -259,20 +289,22 @@ function updateBatteryStatus() {
   $(battSelector).removeClass("fa-battery-quarter");
 
   robots.forEach(function (robot) {
-    console.log("Updating battery status for " + robot.devLetter + " of type " + robot.type + " to " + robot.batteryLevel)
-    battSelector = '.button-battery-' + robot.devLetter + ' i';
+    if (robot.isConnected) {
+      console.log("Updating battery status for " + robot.devLetter + " of type " + robot.type + " to " + robot.batteryLevel)
+      battSelector = '.button-battery-' + robot.devLetter + ' i';
 
-    switch (robot.batteryLevel) {
-      case Robot.batteryLevel.HIGH:
-        $(battSelector).addClass("fa-battery-full");
-        break;
-      case Robot.batteryLevel.MEDIUM:
-        $(battSelector).addClass("fa-battery-half");
-        break;
-      case Robot.batteryLevel.LOW:
-        $(battSelector).addClass("fa-battery-quarter");
-        break;
-      default: //UNKNOWN
+      switch (robot.batteryLevel) {
+        case Robot.batteryLevel.HIGH:
+          $(battSelector).addClass("fa-battery-full");
+          break;
+        case Robot.batteryLevel.MEDIUM:
+          $(battSelector).addClass("fa-battery-half");
+          break;
+        case Robot.batteryLevel.LOW:
+          $(battSelector).addClass("fa-battery-quarter");
+          break;
+        default: //UNKNOWN
+      }
     }
   })
 }
@@ -333,7 +365,7 @@ function createModal() {
  * @param  {string} title   Title to display in the modal header
  * @param  {string} content Text to display in the body of the modal.
  */
-function showErrorModal(title, content) {
+function showErrorModal(title, content, shouldAddCloseBtn) {
   let section = createModal();
   let icon = section.getElementsByTagName('i')[0];
   icon.setAttribute("class", "fas fa-exclamation-circle");
@@ -342,6 +374,12 @@ function showErrorModal(title, content) {
   let div = section.getElementsByTagName('div')[1];
   div.textContent = content;
   div.setAttribute("style", "position: relative; opacity: 1; background-color: rgba(255,255,255, 0.75); text-align: center; padding: 2em 2em 2em 2em;")
+
+  if (shouldAddCloseBtn) {
+    let container = section.getElementsByTagName('div')[0];
+    section.setAttribute("id", "errorModal")
+    addCloseBtn(container, "return closeErrorModal();")
+  }
 
   section.setAttribute("style", "display: block;");
   document.body.appendChild(section);
@@ -394,15 +432,7 @@ function showCalibrationModal(robotType) {
 
   //Make a button to close the calibration modal
   var onClickCloseBtn = "return closeVideoModals();";
-  const closeBtn = document.createElement('a');
-  closeBtn.setAttribute("href", "#");
-  closeBtn.setAttribute("onclick", onClickCloseBtn);
-  closeBtn.setAttribute("class", "close btn btn-modal");
-  const btnIcon = document.createElement('i');
-  btnIcon.setAttribute("class", "fas fa-times");
-  closeBtn.appendChild(btnIcon);
-  //container.appendChild(closeBtn);
-  container.insertBefore(closeBtn, container.childNodes[0]);
+  addCloseBtn(container, onClickCloseBtn);
 
   //Make the video element
   const videoElement = document.createElement('video');
@@ -427,6 +457,23 @@ function showCalibrationModal(robotType) {
   }).children().click(function(e) {
     return false;
   });
+}
+
+/**
+ * addCloseBtn - Add a close button to a modal
+ *
+ * @param  {type} container div to add the button to
+ * @param  {type} onClickFn function to call when button is clicked
+ */
+function addCloseBtn(container, onClickFn) {
+  const closeBtn = document.createElement('a');
+  closeBtn.setAttribute("href", "#");
+  closeBtn.setAttribute("onclick", onClickFn);
+  closeBtn.setAttribute("class", "close btn btn-modal");
+  const btnIcon = document.createElement('i');
+  btnIcon.setAttribute("class", "fas fa-times");
+  closeBtn.appendChild(btnIcon);
+  container.insertBefore(closeBtn, container.childNodes[0]);
 }
 
 /**
@@ -474,4 +521,13 @@ function closeVideoModals() {
       section.parentNode.removeChild(section);
     }
   }
+}
+
+/**
+ * closeErrorModal - Function for closing an error modal. Called by clicking
+ * the x on the modal.
+ */
+function closeErrorModal() {
+  let modal = document.getElementById("errorModal");
+  modal.parentNode.removeChild(modal)
 }

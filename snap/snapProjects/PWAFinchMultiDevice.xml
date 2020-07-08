@@ -696,7 +696,8 @@
                               </block>
                               <block s="reportSum">
                                   <block var="commandSendTime"/>
-                                  <l>500</l>
+                                  <l>1000</l>
+                                  <comment w="350" collapsed="true">Timeout must be longer here to accommodate slower Chromebooks</comment>
                               </block>
                           </block>
                       </block>
@@ -848,7 +849,8 @@
                               </block>
                               <block s="reportSum">
                                   <block var="commandSendTime"/>
-                                  <l>500</l>
+                                  <l>1000</l>
+                                  <comment w="350" collapsed="true">Timeout must be longer here to accommodate slower Chromebooks</comment>
                               </block>
                           </block>
                       </block>
