@@ -270,7 +270,8 @@ window.birdbrain.finchIsMoving = function(finch) {
 window.birdbrain.wrapPython = function(src) {
   let wrapped = src.replace(/\n/g, "\n\t")
   wrapped = wrapped.replace(/([a-zA-Z_][a-zA-Z_0-9]*)\.(setMove|setTurn|setMotors|playNote|setTail|setBeak|setDisplay|print|setPoint|stopAll|setLED|setTriLED|setPositionServo|setRotationServo|stop|resetEncoders)/g, "await $1.$2")
-  wrapped = wrapped.replace(/time\.sleep/g, "await aio.sleep")
+  wrapped = wrapped.replace(/(time\.)?sleep/g, "await aio.sleep")
+  wrapped = wrapped.replace(/pass/g, "await aio.sleep(0.01)") //Otherwise, some common while loops will hang
   wrapped = "from browser import aio\n\nasync def main():\n\t" + wrapped + "\n\naio.run(main())"
   return wrapped
 }

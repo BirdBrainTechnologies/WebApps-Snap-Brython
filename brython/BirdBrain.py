@@ -755,8 +755,8 @@ class Finch(Microbit):
         await self._sendCommand({
             'robot': self.device_s_no,
             'cmd': "wheels",
-            'speedL': left,
-            'speedR': right
+            'speedL': leftSpeed,
+            'speedR': rightSpeed
         })
 
 
