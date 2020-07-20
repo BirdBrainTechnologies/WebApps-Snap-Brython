@@ -58,7 +58,7 @@ function parseMessage(message) {
 
       break;
     case "turn":
-      const shouldFlip = (message.angle < 0);
+      shouldFlip = (message.angle < 0);
       const shouldTurnRight = (message.direction == "Right" && !shouldFlip) || (message.direction == "Left" && shouldFlip);
       const shouldTurnLeft = (message.direction == "Left" && !shouldFlip) || (message.direction == "Right" && shouldFlip);
       const turnTicks = Math.abs(message.angle * FINCH_TICKS_PER_DEGREE);
@@ -72,16 +72,16 @@ function parseMessage(message) {
       }
       break;
     case "move":
-      const moveTicks = message.distance * FINCH_TICKS_PER_CM;
+      shouldFlip = (message.distance < 0);
+      const shouldGoForward = (message.direction == "Forward" && !shouldFlip) || (message.direction == "Backward" && shouldFlip);
+      const shouldGoBackward = (message.direction == "Backward" && !shouldFlip) || (message.direction == "Forward" && shouldFlip);
+      const moveTicks = Math.abs(message.distance * FINCH_TICKS_PER_CM);
 
       if (moveTicks != 0) { //ticks=0 is the command for continuous motion
-        switch(message.direction) {
-          case "Forward":
-            robot.setMotors(message.speed, moveTicks, message.speed, moveTicks);
-          break;
-          case "Backward":
-            robot.setMotors(-message.speed, moveTicks, -message.speed, moveTicks);
-          break;
+        if (shouldGoForward) {
+          robot.setMotors(message.speed, moveTicks, message.speed, moveTicks);
+        } else if (shouldGoBackward) {
+          robot.setMotors(-message.speed, moveTicks, -message.speed, moveTicks);
         }
       }
       break;

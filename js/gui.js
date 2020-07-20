@@ -207,6 +207,11 @@ function loadIDE() {
     }
     iframe = document.createElement("iframe");
     iframe.frameBorder = "0";
+    if (robots.length == 2) {
+      iframe.setAttribute("style", "width: 100%; height: 80vh;")
+    } else if (robots.length == 3) {
+      iframe.setAttribute("style", "width: 100%; height: 72vh;")
+    }
     let div = document.getElementById('snap-div');
     div.appendChild(iframe);
 

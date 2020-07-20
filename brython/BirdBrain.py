@@ -40,6 +40,7 @@ VOLTAGE_FACTOR            = 3.3/255
 
 #Scaling factors for Finch
 FINCH_DISTANCE = 0.0919
+TICKS_PER_ROTATION = 792
 
 TEMPO                      = 60
 
@@ -848,9 +849,13 @@ class Finch(Microbit):
             lsb = window.birdbrain.sensorData[self.device_s_no][9];
 
         encoder = msb << 16 | ssb << 8 | lsb
-        if encoder >= 0x800000:
-            encoder = encoder | 0xFF000000
-        encoder_value = round(float(encoder), 2)
+        
+        if encoder >= 0x800000: #if the number is negative, do a two's complement conversion
+            tmp = encoder.to_bytes(3, byteorder=sys.byteorder, signed=False)
+            encoder = int.from_bytes(tmp, byteorder=sys.byteorder, signed=True)
+
+        #convert value to rotations and round to two decimal places.
+        encoder_value = round(float(encoder)/TICKS_PER_ROTATION, 2)
         return encoder_value
 
 

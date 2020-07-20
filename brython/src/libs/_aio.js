@@ -201,6 +201,11 @@ function post(){
 
 function run(coro){
     var handle_success = function(){
+            //***BirdBrain changes***
+            // Refocus on the editor at program completion.
+            ed = window.ace.edit("editor")
+            ed.focus()
+            //***End BirdBrain changes***
             $B.leave_frame()
         },
         handle_error = function(ev){

@@ -267,12 +267,42 @@ window.birdbrain.finchIsMoving = function(finch) {
   return (window.birdbrain.sensorData[finch][4] > 127);
 }
 
+/**
+ * wrapPython - Because programming robots requires waits, all user code must
+ * use the async module. For the ease of the user, this function takes regular
+ * python code and wraps it in an async function, converting the fuction calls
+ * to async calls.
+ *
+ * @param  {string} src python code to be converted
+ * @return {string}     converted code
+ */
 window.birdbrain.wrapPython = function(src) {
-  let wrapped = src.replace(/\n/g, "\n\t")
-  wrapped = wrapped.replace(/([a-zA-Z_][a-zA-Z_0-9]*)\.(setMove|setTurn|setMotors|playNote|setTail|setBeak|setDisplay|print|setPoint|stopAll|setLED|setTriLED|setPositionServo|setRotationServo|stop|resetEncoders)/g, "await $1.$2")
-  wrapped = wrapped.replace(/(time\.)?sleep/g, "await aio.sleep")
-  wrapped = wrapped.replace(/pass/g, "await aio.sleep(0.01)") //Otherwise, some common while loops will hang
+
+  //get a list of functions defined so that they can be turned into async functions
+  let functionsDefined = src.match(/def [a-zA-Z_][a-zA-Z_0-9]*/g) || []
+
+  //replace birdbrain function calls with async versions
+  let replaced = src.replace(/([a-zA-Z_][a-zA-Z_0-9]*)\.(setMove|setTurn|setMotors|playNote|setTail|setBeak|setDisplay|print|setPoint|stopAll|setLED|setTriLED|setPositionServo|setRotationServo|stop|resetEncoders)/g, "await $1.$2")
+  //replace sleep with async sleep
+  replaced = replaced.replace(/(time\.)?sleep/g, "await aio.sleep")
+  //Add sleep to while loops so that they will not hang
+  replaced = replaced.replace(/([ \t]*)(while[^:]*:)/g, "$1$2\n    $1await aio.sleep(0.01)")
+  //Replace user function definitions with async definitions
+  replaced = replaced.replace(/def /g, "async def ")
+  //replace user defined function calls with async versions
+  functionsDefined.forEach((funcDef) => {
+    var name = funcDef.replace(/def ([a-zA-Z_][a-zA-Z_0-9]*)/, "$1")
+    var re = new RegExp("(?<!def )(" + name + ")","g");
+    replaced = replaced.replace(re, "await $1")
+  });
+
+  //indent the current script
+  let wrapped = replaced.replace(/\n/g, "\n\t")
+  //wrap the whole script in an async function and call the function at the end
   wrapped = "from browser import aio\n\nasync def main():\n\t" + wrapped + "\n\naio.run(main())"
+
+  console.log("WRAPPED SCRIPT:")
+  console.log(wrapped)
   return wrapped
 }
 
