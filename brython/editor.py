@@ -12,7 +12,8 @@ from browser.widgets import dialog
 _height = doc.documentElement.clientHeight
 _s = doc['container']
 _s.style.height = '%spx' % int(_height * 0.95)
-
+# set a variable to allow us to keep track of when an execution is in process
+window.birdbrain.runIsInProgress = False
 # set the default script based on the type of robot currently connected
 defaultFinchScript = """from BirdBrain import Finch
 
@@ -163,6 +164,9 @@ def save_script(evt):
     update_storage(src)
     window.birdbrain.savePythonProject(currentScriptName, src)
 
+def reload_editor(evt):
+    window.location.reload(False)
+
 def update_script_name(evt):
     global currentScriptName
     currentScriptName = evt.target.innerHTML
@@ -179,6 +183,12 @@ def update_storage(src):
 
 # run a script, in global namespace if in_globals is True
 def run(*args):
+    #If a script is already running, just return.
+    if(window.birdbrain.runIsInProgress == True):
+        return 0
+
+    window.birdbrain.runIsInProgress = True
+
     global output
     doc["console"].value = ''
     src = editor.getValue()
@@ -195,6 +205,8 @@ def run(*args):
         exec(src, ns)
         state = 1
     except Exception as exc:
+        window.birdbrain.runIsInProgress = False
+        editor.focus()
         traceback.print_exc(file=sys.stderr)
         state = 0
     sys.stdout.flush()

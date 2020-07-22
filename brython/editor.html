@@ -98,6 +98,9 @@ doc['loadedScript'].bind('click',editor.load_script)
 doc['downloadFile'].bind('click',editor.save_script)
 doc['fileName'].bind('input',editor.update_script_name)
 
+# emergency stop of current execution
+doc['stop'].bind('click', editor.reload_editor)
+
 </script>
 
 <script>
@@ -136,10 +139,11 @@ function run_js(){
       <table width="100%">
         <tr style="text-align:right">
           <td><div id="fileName" contenteditable="true">test</div></td>
-          <td width="80px">
+          <td width="110px">
             <button id="uploadFile" onclick="performClick('chooseFile');"><i class="fas fa-file-upload"></i></button>
             <button id="downloadFile" onclick=""><i class="fas fa-file-download"></i></button>
             <button id="run"><i class="fas fa-play"></i></button>
+            <button id="stop"><i class="fas fa-stop"></i></button>
           </td>
         </tr>
       </table>

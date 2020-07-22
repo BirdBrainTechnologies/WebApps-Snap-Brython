@@ -205,6 +205,7 @@ function run(coro){
             // Refocus on the editor at program completion.
             ed = window.ace.edit("editor")
             ed.focus()
+            window.birdbrain.runIsInProgress = false
             //***End BirdBrain changes***
             $B.leave_frame()
         },
@@ -229,6 +230,10 @@ function run(coro){
             if (errorType != "SystemExit") { //SystemExit is not meant to print error messages
               $B.builtins.print("ERROR: " + errorType + " - \"" + ev.args[0] + "\"")
             }
+            //Put the focus back on the editor to signal that we are done here.
+            ed = window.ace.edit("editor")
+            ed.focus()
+            window.birdbrain.runIsInProgress = false
 
             //***End BirdBrain changes***
         }

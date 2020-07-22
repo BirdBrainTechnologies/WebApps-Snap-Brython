@@ -246,8 +246,9 @@ class Microbit:
         button = button.upper()
         #Check if the button A and button B are represented in a valid manner
         if((button != 'A') and (button != 'B')):
+            print("Error: Button must be A or B.")
             sys.exit()
-
+        
         buttonState = window.birdbrain.sensorData[self.device_s_no][self.buttonShakeIndex] & 0xF0
         if (button == 'A'):
             return (buttonState == 0x00 or buttonState == 0x20)
@@ -267,7 +268,7 @@ class Microbit:
         "Screen up", "Screen down", "Tilt left", "Tilt right", "Logo up",
         "Logo down", and "In between"."""
 
-        orientations = ["Screen Up","Screen Down","Tilt Left","Tilt Right","Logo Up","Logo Down"]
+        orientations = ["Screen up","Screen down","Tilt left","Tilt right","Logo up","Logo down"]
 
         #Check for orientation of each device and if true return that state
         for targetOrientation in orientations:
@@ -301,27 +302,6 @@ class Hummingbird(Microbit):
     ######################  UTILITY FUNCTIONS ################################
 
 
-#    def __init__(self , device = 'A'):
-#        """Class initializer. Specify device letter A, B or C."""
-
-#        if('ABC'.find(device) != -1):
-#            self.device_s_no = device
-#            self.buttonShakeIndex = 7
-#            # Check if device is connected and is a hummingbird
-#            if not self.isConnectionValid():
-#                self.stopAll()
-#                sys.exit()
-#            if not self.isHummingbird():
-#                print("Error: Device " + str(self.device_s_no) + " is not a Hummingbird")
-#                self.stopAll()
-#                sys.exit()
-#            self.symbolvalue = [0]*25
-#        else:
-#            self.stopAll()
-#            sys.exit()
-
-
-    #def isHummingbird(self):
     def _robotIsThisType(self):
         """This function determines whether or not the device is a Hummingbird."""
         return (window.birdbrain.robotType[self.device_s_no] == window.birdbrain.robotType.HUMMINGBIRDBIT)
@@ -552,35 +532,10 @@ class Finch(Microbit):
     in the Finch robot. When creating an instance, specify which robot by the
     device letter used in the BlueBirdConnector device list (A, B, or C)."""
 
-#    def __init__(self , device = 'A'):
-#        """Class initializer. """
-
-#        if('ABC'.find(device) != -1): #check for valid device letter
-#            self.device_s_no = device
-#            self.buttonShakeIndex = 16
-
-#            if not self.isConnectionValid():
-#                self.__exit("Error: Invalid Connection")
-
-#            if not self.__isFinch():
-#                self.__exit("Error: Device " + str(self.device_s_no) + " is not a Finch")
-
-#            self.symbolvalue = [0]*25
-
-#        else:
-#            self.__exit("Error: Device must be A, B, or C.")
-
 
     ######## Finch Utility Functions ########
 
-#    def __exit(self, msg):
-#        """Print error, shutdown robot, and exit python"""
-#        print(msg)
-#        self.stopAll()
-#        sys.exit()
 
-
-#    def __isFinch(self):
     def _robotIsThisType(self):
         """Determine whether or not the device is a Finch"""
         return (window.birdbrain.robotType[self.device_s_no] == window.birdbrain.robotType.FINCH)
@@ -621,6 +576,7 @@ class Finch(Microbit):
 
 
     ######## Finch Output ########
+
 
     async def __setTriLED(self, port, redIntensity, greenIntensity, blueIntensity):
         """Set TriLED(s) on the Finch.
@@ -849,7 +805,7 @@ class Finch(Microbit):
             lsb = window.birdbrain.sensorData[self.device_s_no][9];
 
         encoder = msb << 16 | ssb << 8 | lsb
-        
+
         if encoder >= 0x800000: #if the number is negative, do a two's complement conversion
             tmp = encoder.to_bytes(3, byteorder=sys.byteorder, signed=False)
             encoder = int.from_bytes(tmp, byteorder=sys.byteorder, signed=True)
@@ -892,7 +848,7 @@ class Finch(Microbit):
         "Beak up", "Beak down", "Tilt left", "Tilt right", "Level",
         "Upside down", and "In between"."""
 
-        orientations = ["Beak Up","Beak Down","Tilt Left","Tilt Right","Level","Upside Down"]
+        orientations = ["Beak up","Beak down","Tilt left","Tilt right","Level","Upside down"]
 
         #Check for orientation of each device and if true return that state
         for targetOrientation in orientations:

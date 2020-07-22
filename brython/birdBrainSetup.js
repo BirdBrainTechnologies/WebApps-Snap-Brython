@@ -26,6 +26,13 @@ window.birdbrain.messageChannel.port1.onmessage = function(e) {
     let robot = e.data.robot;
 
     if (e.data.sensorData != null) {
+      if (window.birdbrain.isConnected[robot] == false) {
+        //This robot has just connected, or we are just loading. Get a fresh start:
+        window.birdbrain.sendCommand({
+          'robot': robot,
+          'cmd': "stopAll"
+        })
+      }
       window.birdbrain.sensorData[robot] = e.data.sensorData;
       window.birdbrain.robotType[robot] = e.data.robotType;
       window.birdbrain.isConnected[robot] = true;
@@ -110,27 +117,27 @@ window.birdbrain.microbitOrientation = function (dim, robot) {
   const threshold = 7.848;
   let acceleration = 0;
   switch(dim) {
-    case "Tilt Left":
-    case "Tilt Right":
+    case "Tilt left":
+    case "Tilt right":
       acceleration = window.birdbrain.getMicrobitAcceleration('X', robot);
       break;
-    case "Logo Up":
-    case "Logo Down":
+    case "Logo up":
+    case "Logo down":
       acceleration = window.birdbrain.getMicrobitAcceleration('Y', robot);
       break;
-    case "Screen Up":
-    case "Screen Down":
+    case "Screen up":
+    case "Screen down":
       acceleration = window.birdbrain.getMicrobitAcceleration('Z', robot);
       break;
   }
   switch(dim) {
-    case "Tilt Left":
-    case "Logo Down":
-    case "Screen Down":
+    case "Tilt left":
+    case "Logo down":
+    case "Screen down":
       return (acceleration > threshold);
-    case "Tilt Right":
-    case "Logo Up":
-    case "Screen Up":
+    case "Tilt right":
+    case "Logo up":
+    case "Screen up":
       return (acceleration < -threshold);
   }
 }
@@ -215,26 +222,26 @@ window.birdbrain.finchOrientation = function (dim, robot) {
   const threshold = 7.848;
   let acceleration = 0;
   switch(dim) {
-    case "Tilt Left":
-    case "Tilt Right":
+    case "Tilt left":
+    case "Tilt right":
       acceleration = window.birdbrain.getFinchAcceleration('X', robot);
       break;
-    case "Beak Up":
-    case "Beak Down":
+    case "Beak up":
+    case "Beak down":
       acceleration = window.birdbrain.getFinchAcceleration('Y', robot);
       break;
     case "Level":
-    case "Upside Down":
+    case "Upside down":
       acceleration = window.birdbrain.getFinchAcceleration('Z', robot);
       break;
   }
   switch(dim) {
-    case "Tilt Right":
-    case "Beak Up":
-    case "Upside Down":
+    case "Tilt right":
+    case "Beak up":
+    case "Upside down":
       return (acceleration > threshold);
-    case "Tilt Left":
-    case "Beak Down":
+    case "Tilt left":
+    case "Beak down":
     case "Level":
       return (acceleration < -threshold);
   }
@@ -278,27 +285,33 @@ window.birdbrain.finchIsMoving = function(finch) {
  */
 window.birdbrain.wrapPython = function(src) {
 
-  //get a list of functions defined so that they can be turned into async functions
+  //Get a list of functions defined so that they can be turned into async functions
   let functionsDefined = src.match(/def [a-zA-Z_][a-zA-Z_0-9]*/g) || []
 
-  //replace birdbrain function calls with async versions
-  let replaced = src.replace(/([a-zA-Z_][a-zA-Z_0-9]*)\.(setMove|setTurn|setMotors|playNote|setTail|setBeak|setDisplay|print|setPoint|stopAll|setLED|setTriLED|setPositionServo|setRotationServo|stop|resetEncoders)/g, "await $1.$2")
-  //replace sleep with async sleep
+  //Remove comments: We don't need them and they occasionally cause problems with the other changes below
+  let replaced = src.replace(/#.*/g, "")
+  //Replace birdbrain function calls with async versions
+  replaced = replaced.replace(/([a-zA-Z_][a-zA-Z_0-9]*)\.(setMove|setTurn|setMotors|playNote|setTail|setBeak|setDisplay|print|setPoint|stopAll|setLED|setTriLED|setPositionServo|setRotationServo|stop|resetEncoders)/g, "await $1.$2")
+  //Replace sleep with async sleep
   replaced = replaced.replace(/(time\.)?sleep/g, "await aio.sleep")
   //Add sleep to while loops so that they will not hang
-  replaced = replaced.replace(/([ \t]*)(while[^:]*:)/g, "$1$2\n    $1await aio.sleep(0.01)")
+  replaced = replaced.replace(/(while[^:]*:)[ \t]*\n*([ \t]*)/g, "$1\n$2await aio.sleep(0.01)\n$2")
+  //Add sleep to for loops so that they will not hang
+  replaced = replaced.replace(/(for[^:]*:)[ \t]*\n*([ \t]*)/g, "$1\n$2await aio.sleep(0.01)\n$2")
   //Replace user function definitions with async definitions
   replaced = replaced.replace(/def /g, "async def ")
-  //replace user defined function calls with async versions
+  //Replace user defined function calls with async versions
   functionsDefined.forEach((funcDef) => {
     var name = funcDef.replace(/def ([a-zA-Z_][a-zA-Z_0-9]*)/, "$1")
-    var re = new RegExp("(?<!def )(" + name + ")","g");
+    var re = new RegExp("(?<!def |[a-zA-Z_0-9])(" + name + ")(?![a-zA-Z_0-9])","g");
     replaced = replaced.replace(re, "await $1")
   });
+  //Put parentheses around function calls in 'while not' loops. May need to be done in more places.
+  replaced = replaced.replace(/while not await ([^:]*):/g, "while not (await $1):")
 
-  //indent the current script
+  //Indent the current script
   let wrapped = replaced.replace(/\n/g, "\n\t")
-  //wrap the whole script in an async function and call the function at the end
+  //Wrap the whole script in an async function and call the function at the end
   wrapped = "from browser import aio\n\nasync def main():\n\t" + wrapped + "\n\naio.run(main())"
 
   console.log("WRAPPED SCRIPT:")
