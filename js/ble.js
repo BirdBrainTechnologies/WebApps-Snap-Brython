@@ -112,6 +112,7 @@ function findAndConnect() {
     })
     .catch(error => {
       console.error("Device request failed: " + error.message);
+      robotConnecting = null
     });
 }
 
@@ -123,6 +124,7 @@ function findAndConnect() {
 function onConnectionComplete() {
   if (robotConnecting == null || robotConnecting.RX == null || robotConnecting.TX == null) {
     console.error("onConnectionComplete: incomplete connection");
+    robotConnecting = null
     return;
   }
 

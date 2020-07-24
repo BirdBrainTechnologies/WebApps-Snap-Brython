@@ -1888,20 +1888,32 @@ function addEventListeners(usingSnap) {
         //return cache.addAll(FILES_TO_CACHE_1);
         return cache.addAll(FILES_TO_CACHE_1).then(() => {
           if (usingSnap) {
-            cache.addAll(SNAP_FILES_TO_CACHE_1).then(() =>
-            cache.addAll(SNAP_FILES_TO_CACHE_2)).then(() =>
-            cache.addAll(SNAP_FILES_TO_CACHE_3)).then(() =>
-            cache.addAll(SNAP_FILES_TO_CACHE_4));
+            console.log("[ServiceWorker] About to cache snap files")
+            return cache.addAll(SNAP_FILES_TO_CACHE_1).then(() =>
+                    cache.addAll(SNAP_FILES_TO_CACHE_2)).then(() =>
+                    cache.addAll(SNAP_FILES_TO_CACHE_3)).then(() =>
+                    cache.addAll(SNAP_FILES_TO_CACHE_4)).catch(error => {
+                      console.error("Error caching snap files: " + error.message);
+                      throw error;
+                    })
           } else {
-            cache.addAll(BRYTHON_FILES_TO_CACHE_1).then(() =>
-            cache.addAll(BRYTHON_FILES_TO_CACHE_2));
+            console.log("[ServiceWorker] About to cache brython files")
+            return cache.addAll(BRYTHON_FILES_TO_CACHE_1).then(() =>
+                    cache.addAll(BRYTHON_FILES_TO_CACHE_2)).catch(error => {
+                      console.error("Error caching brython files: " + error.message);
+                      throw error;
+                    })
           }
         })
 
       }).catch(error => {
         console.error("Error caching during install event: " + error.message);
+        throw error //errors caught in waitUntil must be rethrown so waitUntil knows the install failed.
       })
     );
+    //After successful install, the service worker normally goes into a waiting
+    // phase where it waits until the old service worker is not running in any
+    // tab to be activated.
     self.skipWaiting();
   });
 

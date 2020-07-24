@@ -35,7 +35,7 @@ NO_CONNECTION = "Error: The device is not connected"
 DISTANCE_FACTOR          = 117/100
 SOUND_FACTOR             = 200/255
 DIAL_FACTOR              = 100/230
-#LIGHT_FACTOR             = 100/255 #also used for Finch -> handled in backend?
+LIGHT_FACTOR             = 100/255
 VOLTAGE_FACTOR            = 3.3/255
 
 #Scaling factors for Finch
@@ -248,7 +248,7 @@ class Microbit:
         if((button != 'A') and (button != 'B')):
             print("Error: Button must be A or B.")
             sys.exit()
-        
+
         buttonState = window.birdbrain.sensorData[self.device_s_no][self.buttonShakeIndex] & 0xF0
         if (button == 'A'):
             return (buttonState == 0x00 or buttonState == 0x20)
