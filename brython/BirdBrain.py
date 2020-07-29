@@ -25,13 +25,10 @@ from browser import window, aio
 ###############################################################
 #Constants
 
-CHAR_FLASH_TIME = 0.3        #Character Flash time
+#Time to wait to make sure the value read from the sensor is recent
+WAIT_BEFORE_SENSOR_READ = 0.05
 
-# Error strings
-CONNECTION_SERVER_CLOSED = "Error: Request to device failed"
-NO_CONNECTION = "Error: The device is not connected"
-
-#Calculations after receveing the raw values for Hummingbird
+#Calculations after receiving the raw values for Hummingbird
 DISTANCE_FACTOR          = 117/100
 SOUND_FACTOR             = 200/255
 DIAL_FACTOR              = 100/230
@@ -215,8 +212,10 @@ class Microbit:
     ############################ INPUTS MICROBIT ###############################
 
 
-    def getAcceleration(self):
+    async def getAcceleration(self):
         """Gives the acceleration of X,Y,Z in m/sec2."""
+
+        await aio.sleep(WAIT_BEFORE_SENSOR_READ)
 
         x = window.birdbrain.getMicrobitAcceleration('X', self.device_s_no)
         y = window.birdbrain.getMicrobitAcceleration('Y', self.device_s_no)
@@ -224,15 +223,19 @@ class Microbit:
         return (x, y, z)
 
 
-    def getCompass(self):
+    async def getCompass(self):
         """Returns values 0-359 indicating the orentation of the Earth's
         magnetic field."""
+
+        await aio.sleep(WAIT_BEFORE_SENSOR_READ)
 
         return window.birdbrain.getMicrobitCompass(self.device_s_no)
 
 
-    def getMagnetometer(self):
+    async def getMagnetometer(self):
         """Return the values of X,Y,Z of a magnetommeter."""
+
+        await aio.sleep(WAIT_BEFORE_SENSOR_READ)
 
         x = window.birdbrain.getMicrobitMagnetometer('X', self.device_s_no)
         y = window.birdbrain.getMicrobitMagnetometer('Y', self.device_s_no)
@@ -240,8 +243,10 @@ class Microbit:
         return (x, y, z)
 
 
-    def getButton(self,button):
+    async def getButton(self,button):
         """Return the status of the button asked. Specify button 'A' or 'B'."""
+
+        await aio.sleep(WAIT_BEFORE_SENSOR_READ)
 
         button = button.upper()
         #Check if the button A and button B are represented in a valid manner
@@ -256,17 +261,21 @@ class Microbit:
             return (buttonState == 0x00 or buttonState == 0x10)
 
 
-    def isShaking(self):
+    async def isShaking(self):
         """Return true if the device is shaking, false otherwise."""
+
+        await aio.sleep(WAIT_BEFORE_SENSOR_READ)
 
         shake = window.birdbrain.sensorData[self.device_s_no][self.buttonShakeIndex];
         return ((shake & 0x01) > 0);
 
 
-    def getOrientation(self):
+    async def getOrientation(self):
         """Return the orentation of the micro:bit. Options include:
         "Screen up", "Screen down", "Tilt left", "Tilt right", "Logo up",
         "Logo down", and "In between"."""
+
+        await aio.sleep(WAIT_BEFORE_SENSOR_READ)
 
         orientations = ["Screen up","Screen down","Tilt left","Tilt right","Logo up","Logo down"]
 
@@ -471,9 +480,11 @@ class Hummingbird(Microbit):
     ########################### HUMMINGBIRD BIT INPUT ##########################
 
 
-    def getSensor(self,port):
+    async def getSensor(self,port):
         """Read the value of the sensor attached to a certain port.
         If the port is not valid, it returns -1."""
+
+        await aio.sleep(WAIT_BEFORE_SENSOR_READ)
 
         # Early return if we can't execute the command because the port is invalid
         if not self.__isPortValid(port,3):
@@ -482,44 +493,44 @@ class Hummingbird(Microbit):
         return window.birdbrain.sensorData[self.device_s_no][port - 1]
 
 
-    def getLight(self, port):
+    async def getLight(self, port):
         """Read the value of the light sensor attached to a certain port."""
 
-        response = self.getSensor(port)
+        response = await self.getSensor(port)
         light_value    = int(response * LIGHT_FACTOR)
         return light_value
 
 
-    def getSound(self, port):
+    async def getSound(self, port):
         """Read the value of the sound sensor attached to a certain port."""
 
-        response = self.getSensor(port)
+        response = await self.getSensor(port)
         sound_value    = int(response *SOUND_FACTOR)
         return sound_value
 
 
-    def getDistance(self, port):
+    async def getDistance(self, port):
         """Read the value of the distance sensor attached to a certain port."""
 
-        response = self.getSensor(port)
+        response = await self.getSensor(port)
         distance_value    = int(response * DISTANCE_FACTOR)
         return distance_value
 
 
-    def getDial(self, port):
+    async def getDial(self, port):
         """Read the value of the dial attached to a certain port."""
 
-        response       = self.getSensor(port)
+        response = await self.getSensor(port)
         dial_value    = int(response *DIAL_FACTOR)
         if(dial_value > 100):
             dial_value = 100
         return dial_value
 
 
-    def getVoltage(self, port):
-        """Read the value of  the dial attached to a certain port."""
+    async def getVoltage(self, port):
+        """Read the voltage of the sensor attached to a certain port."""
 
-        response       = self.getSensor(port)
+        response = await self.getSensor(port)
         voltage_value    = response *VOLTAGE_FACTOR
         return voltage_value
 
@@ -740,8 +751,11 @@ class Finch(Microbit):
     ######## Finch Inputs ########
 
 
-    def getLight(self, direction):
+    async def getLight(self, direction):
         """Read the value of the right or left light sensor ('R' or 'L')."""
+
+        await aio.sleep(WAIT_BEFORE_SENSOR_READ)
+
         direction = self.__formatRightLeft(direction)
         R = self.currentBeak[0]
         G = self.currentBeak[1]
@@ -760,8 +774,11 @@ class Finch(Microbit):
         return round(max(0, min((rawLight - correction), 100)))
 
 
-    def getDistance(self):
+    async def getDistance(self):
         """Read the value of the distance sensor"""
+
+        await aio.sleep(WAIT_BEFORE_SENSOR_READ)
+
         msb = window.birdbrain.sensorData[self.device_s_no][0];
         lsb = window.birdbrain.sensorData[self.device_s_no][1];
         distance = msb << 8 | lsb
@@ -769,10 +786,13 @@ class Finch(Microbit):
         return int(distance * FINCH_DISTANCE)
 
 
-    def getLine(self, direction):
+    async def getLine(self, direction):
         """Read the value of the right or left line sensor ('R' or 'L').
         Returns brightness as a value 0-100 where a larger number
         represents more reflected light."""
+
+        await aio.sleep(WAIT_BEFORE_SENSOR_READ)
+
         direction = self.__formatRightLeft(direction)
         value = 0
         if direction == "Right":
@@ -785,9 +805,12 @@ class Finch(Microbit):
         return (100 - value)
 
 
-    def getEncoder(self, direction):
+    async def getEncoder(self, direction):
         """Read the value of the right or left encoder ('R' or 'L').
         Values are returned in rotations."""
+
+        await aio.sleep(WAIT_BEFORE_SENSOR_READ)
+
         direction = self.__formatRightLeft(direction)
         if direction is None:
             return 0
@@ -818,24 +841,30 @@ class Finch(Microbit):
     # The following methods override those within the Microbit
     # class to return values within the Finch reference frame.
 
-    def getAcceleration(self):
+    async def getAcceleration(self):
         """Gives the acceleration of X,Y,Z in m/sec2, relative
         to the Finch's position."""
+
+        await aio.sleep(WAIT_BEFORE_SENSOR_READ)
 
         x = window.birdbrain.getFinchAcceleration('X', self.device_s_no)
         y = window.birdbrain.getFinchAcceleration('Y', self.device_s_no)
         z = window.birdbrain.getFinchAcceleration('Z', self.device_s_no)
         return (x, y, z)
 
-    def getCompass(self):
+    async def getCompass(self):
         """Returns values 0-359 indicating the orentation of the Earth's
         magnetic field, relative to the Finch's position."""
+
+        await aio.sleep(WAIT_BEFORE_SENSOR_READ)
 
         return window.birdbrain.getFinchCompass(self.device_s_no)
 
 
-    def getMagnetometer(self):
+    async def getMagnetometer(self):
         """Return the values of X,Y,Z of a magnetommeter, relative to the Finch's position."""
+
+        await aio.sleep(WAIT_BEFORE_SENSOR_READ)
 
         x = window.birdbrain.getFinchMagnetometer('X', self.device_s_no)
         y = window.birdbrain.getFinchMagnetometer('Y', self.device_s_no)
@@ -843,10 +872,12 @@ class Finch(Microbit):
         return (x, y, z)
 
 
-    def getOrientation(self):
+    async def getOrientation(self):
         """Return the orentation of the Finch. Options include:
         "Beak up", "Beak down", "Tilt left", "Tilt right", "Level",
         "Upside down", and "In between"."""
+
+        await aio.sleep(WAIT_BEFORE_SENSOR_READ)
 
         orientations = ["Beak up","Beak down","Tilt left","Tilt right","Level","Upside down"]
 

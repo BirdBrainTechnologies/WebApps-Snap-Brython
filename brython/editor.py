@@ -124,6 +124,7 @@ class cOutput:
 
     def flush(self):
         self.cons.value += self.buf
+        self.cons.scrollTop = self.cons.scrollHeight
         self.buf = ''
 
     def __len__(self):

@@ -291,13 +291,13 @@ window.birdbrain.wrapPython = function(src) {
   //Remove comments: We don't need them and they occasionally cause problems with the other changes below
   let replaced = src.replace(/#.*/g, "")
   //Replace birdbrain function calls with async versions
-  replaced = replaced.replace(/([a-zA-Z_][a-zA-Z_0-9]*)\.(setMove|setTurn|setMotors|playNote|setTail|setBeak|setDisplay|print|setPoint|stopAll|setLED|setTriLED|setPositionServo|setRotationServo|stop|resetEncoders)/g, "await $1.$2")
+  replaced = replaced.replace(/([a-zA-Z_][a-zA-Z_0-9]*)\.(setMove|setTurn|setMotors|playNote|setTail|setBeak|setDisplay|print|setPoint|stopAll|setLED|setTriLED|setPositionServo|setRotationServo|stop|resetEncoders|getAcceleration|getCompass|getMagnetometer|getButton|isShaking|getOrientation|getLight|getSound|getDistance|getDial|getVoltage|getLine|getEncoder)/g, "await $1.$2")
   //Replace sleep with async sleep
   replaced = replaced.replace(/(time\.)?sleep/g, "await aio.sleep")
   //Add sleep to while loops so that they will not hang
-  replaced = replaced.replace(/(while[^:]*:)[ \t]*\n*([ \t]*)/g, "$1\n$2await aio.sleep(0.01)\n$2")
+  //replaced = replaced.replace(/(while[^:]*:)[ \t]*\n*([ \t]*)/g, "$1\n$2await aio.sleep(0.01)\n$2")
   //Add sleep to for loops so that they will not hang
-  replaced = replaced.replace(/(for[^:]*:)[ \t]*\n*([ \t]*)/g, "$1\n$2await aio.sleep(0.01)\n$2")
+  //replaced = replaced.replace(/(for[^:]*:)[ \t]*\n*([ \t]*)/g, "$1\n$2await aio.sleep(0.01)\n$2")
   //Replace user function definitions with async definitions
   replaced = replaced.replace(/def /g, "async def ")
   //Replace user defined function calls with async versions

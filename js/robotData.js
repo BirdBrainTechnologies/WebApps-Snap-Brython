@@ -59,7 +59,7 @@ RobotData.prototype.segmentHasChanged = function(startIndex, length) {
  * @param  {type} valueArray new values
  */
 RobotData.prototype.update = function(startIndex, valueArray) {
-  console.log("updateData starting at " + startIndex + " to " + valueArray);
+  //console.log("updateData starting at " + startIndex + " to " + valueArray);
 
   //values must be between 0 and 255
   for(let i = 0; i < valueArray.length; i++) {
@@ -88,7 +88,7 @@ RobotData.prototype.update = function(startIndex, valueArray) {
  */
 RobotData.prototype.updatePending = function() {
   if (this.pendingChanges.length == 0) {
-    console.log("no pending changes found.");
+    //console.log("no pending changes found.");
     return;
   } else if (this.pendingChanges.length > 10) {
     for (let i = 0; i < 2; i++) {
@@ -108,7 +108,7 @@ RobotData.prototype.updatePending = function() {
     }
   }
 
-  console.log("about to make an update. current changes = " + this.pendingChanges.length);
+  //console.log("about to make an update. current changes = " + this.pendingChanges.length);
   const nextChange = this.pendingChanges.shift();
   let newData = this.values.slice();
   for(let i = 0; i < nextChange.valueArray.length; i++) {
@@ -155,7 +155,7 @@ RobotData.prototype.reset = function(startIndex, length) {
  * performed if there is one.
  *
  * @param  {boolean} reset True if the data should be reset after sending. Used for motor data and print arrays so that the same command can be sent again (but is not sent accidentially)
- * @return {Uint8Array}    Data array ready to be sent to the robot 
+ * @return {Uint8Array}    Data array ready to be sent to the robot
  */
 RobotData.prototype.getSendable = function(reset) {
   const sendable = this.values.slice();
