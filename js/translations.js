@@ -17,7 +17,11 @@ const fullTranslationTable = {
     connect_dongle: 'Connect Bluetooth Dongle',
     CompassCalibrate: 'Calibrate Compass',
     Update_firmware: 'Update Firmware',
-    Connection_Failure: 'Connection Failure'
+    Connection_Failure: 'Connection Failure',
+    Incompatible_Browser: 'Incompatible Browser',
+    Use_Chrome: 'Please visit this page in Google Chrome (version 70 or later).',
+    No_Ble: 'No Bluetooth Detected',
+    Ble_Required: 'This app requires Bluetooth.'
   },
   ko: {
     say_this: '(Slot 1 = 안녕!) 말하기',
@@ -30,7 +34,11 @@ const fullTranslationTable = {
     connect_dongle: '블루투스 동글 연결하기',
     CompassCalibrate: '나침반 센서 보정',
     Update_firmware: '펌웨어 업데이트',
-    Connection_Failure: '연결 실패'
+    Connection_Failure: '연결 실패',
+    Incompatible_Browser: '올바르지 않은 브라우저입니다.',
+    Use_Chrome: '이 페이지를 구글 크롬에서 열어주세요(버전 70 또는 그 후).',
+    No_Ble: '블루투스 장치를 찾을 수 없습니다.',
+    Ble_Required: '이 앱은 블루투스 통신이 필요합니다.'
   },
   de: {
     say_this: 'Sage',
@@ -43,7 +51,11 @@ const fullTranslationTable = {
     connect_dongle: 'Verbinde Bluetooth Dongle',
     CompassCalibrate: 'Kompass kalibrieren',
     Update_firmware: 'Firmware Updaten',
-    Connection_Failure: 'Verbindung fehlgeschlagen'
+    Connection_Failure: 'Verbindung fehlgeschlagen',
+    Incompatible_Browser: 'Browser nicht kompatibel',
+    Use_Chrome: 'Bitte besuche diese Seite in Google Chrome (Version 70 oder höher).',
+    No_Ble: 'Kein Bluetooth gefunden',
+    Ble_Required: 'Diese App benötigt Bluetooth'
   },
   pt: {
     say_this: 'Diga Isso',
@@ -56,7 +68,11 @@ const fullTranslationTable = {
     connect_dongle: 'Conecte o Dongle Bluetooth',
     CompassCalibrate: 'Calibrar Bússola',
     Update_firmware: 'Atualizar Firmware',
-    Connection_Failure: 'Falha na Conexão'
+    Connection_Failure: 'Falha na Conexão',
+    Incompatible_Browser: 'Navegador incompatível',
+    Use_Chrome: 'Visite esta página no Google Chrome (versão 70 ou posterior).',
+    No_Ble: 'Nenhum Bluetooth Detectado',
+    Ble_Required: 'Este aplicativo requer Bluetooth.'
   },
   fr: {
     say_this: 'Dites ceci',
@@ -69,7 +85,11 @@ const fullTranslationTable = {
     connect_dongle: 'Connectez le bluetooth dongle',
     CompassCalibrate: 'Calibrer le compas',
     Update_firmware: 'Mettez à Jour le Firmware',
-    Connection_Failure: 'Échec de connexion'
+    Connection_Failure: 'Échec de connexion',
+    Incompatible_Browser: 'Navigateur incompatible',
+    Use_Chrome: 'Veuillez visiter cette page dans Google Chrome (version 70 ou version ultérieure).',
+    No_Ble: 'Aucun Bluetooth détecté',
+    Ble_Required: 'Cette application nécessite Bluetooth.'
   },
   nl: {
     say_this: 'Zeg Dit',
@@ -82,7 +102,11 @@ const fullTranslationTable = {
     connect_dongle: 'Sluit Bluetooth-dongle aan',
     CompassCalibrate: 'Kompas Kalibreren',
     Update_firmware: 'Update Firmware',
-    Connection_Failure: 'Verbindingsfout'
+    Connection_Failure: 'Verbindingsfout',
+    Incompatible_Browser: 'Browser niet compatibel',
+    Use_Chrome: 'Bezoek deze pagina in Google Chrome (versie 70 of hoger).',
+    No_Ble: 'Bluetooth niet gedetecteerd',
+    Ble_Required: 'Deze app vereist Bluetooth.'
   },
   zh_Hans: {
     say_this: '说',
@@ -95,7 +119,11 @@ const fullTranslationTable = {
     connect_dongle: '连接蓝牙',
     CompassCalibrate: '校准指南针',
     Update_firmware: '更新固件',
-    Connection_Failure: '连接失败'
+    Connection_Failure: '连接失败',
+    Incompatible_Browser: '浏览器不兼容。',
+    Use_Chrome: '请使用谷歌浏览器。 (版本号 70或者此后的版本)',
+    No_Ble: '未检测到蓝牙。',
+    Ble_Required: '该设备需要链接蓝牙。'
   },
   zh_Hant: {
     say_this: '說',
@@ -108,7 +136,11 @@ const fullTranslationTable = {
     connect_dongle: '連接藍牙',
     CompassCalibrate: '校準指南針',
     Update_firmware: '更新固件',
-    Connection_Failure: '連接失敗'
+    Connection_Failure: '連接失敗',
+    Incompatible_Browser: '不兼容的瀏覽器',
+    Use_Chrome: '請用Google Chrome瀏覽器（版本70或更高版本）瀏覽此頁面。',
+    No_Ble: '未能檢測到藍牙',
+    Ble_Required: '此應用程式需要藍牙'
   },
   ar: {
     say_this: 'قل هذا',
@@ -121,7 +153,11 @@ const fullTranslationTable = {
     connect_dongle: 'اتصال عن طريق البلوتوث',
     CompassCalibrate: 'معايرة البوصلة',
     Update_firmware: 'تحديث البرامج الثابتة',
-    Connection_Failure: 'فشل الاتصال'
+    Connection_Failure: 'فشل الاتصال',
+    Incompatible_Browser: 'Incompatible Browser',
+    Use_Chrome: 'Please visit this page in Google Chrome (version 70 or later).',
+    No_Ble: 'No Bluetooth Detected',
+    Ble_Required: 'This app requires Bluetooth.'
   },
   da: {
     say_this: 'Sig dette',
@@ -134,7 +170,11 @@ const fullTranslationTable = {
     connect_dongle: 'Forbind bluetooth dongle',
     CompassCalibrate: 'Kalibrér kompas',
     Update_firmware: 'Opdatér Firmware',
-    Connection_Failure: 'Forbindelse mislykket'
+    Connection_Failure: 'Forbindelse mislykket',
+    Incompatible_Browser: 'Incompatible Browser',
+    Use_Chrome: 'Please visit this page in Google Chrome (version 70 or later).',
+    No_Ble: 'No Bluetooth Detected',
+    Ble_Required: 'This app requires Bluetooth.'
   },
   he: {
     say_this: 'להגיד',
@@ -147,7 +187,11 @@ const fullTranslationTable = {
     connect_dongle: 'מחברים הדונגל לבלוטוס',
     CompassCalibrate: 'כיול מצפן',
     Update_firmware: 'עדכון קשוחה',
-    Connection_Failure: 'חיבור נכשל'
+    Connection_Failure: 'חיבור נכשל',
+    Incompatible_Browser: 'דפדפן לא תואם',
+    Use_Chrome: 'אנא בקר באתר זה ב- Google Chrome (גרסה 70 ואילך).',
+    No_Ble: 'לא זוהה Bluetooth',
+    Ble_Required: 'אפליקציה זו דורשת Bluetooth.'
   },
   es: {
     say_this: 'Decir esto',
@@ -160,7 +204,11 @@ const fullTranslationTable = {
     connect_dongle: 'Conectar el dongle del bluethoot',
     CompassCalibrate: 'Calibrar la brujula',
     Update_firmware: 'Actualizar Firmware',
-    Connection_Failure: 'Coneccion fallada'
+    Connection_Failure: 'Coneccion fallada',
+    Incompatible_Browser: 'Navegador no compatible',
+    Use_Chrome: 'Por favor, utiliza Google Chrome (versión 70 o superior) para visitar esta página.',
+    No_Ble: 'Bluetooth no detectado',
+    Ble_Required: 'Esta aplicación requiere Bluetooth.'
   },
   ca: {
     say_this: 'Digues això',
@@ -173,7 +221,11 @@ const fullTranslationTable = {
     connect_dongle: 'Connecta llapis Bluetooth',
     CompassCalibrate: 'Calibratge de la brúixola',
     Update_firmware: 'Actualitza el Firmware',
-    Connection_Failure: 'Error de connexió'
+    Connection_Failure: 'Error de connexió',
+    Incompatible_Browser: 'Navegador no compatible',
+    Use_Chrome: 'Si us plau, utilitza Google Chromve (versió 70 o superior) per visitar aquesta pàgina.',
+    No_Ble: 'Bluetooth no detectat',
+    Ble_Required: 'Aquesta aplicació requereix Bluetooth.'
   },
   fi: {
     say_this: 'Sano tämä',
@@ -186,7 +238,11 @@ const fullTranslationTable = {
     connect_dongle: 'Yhdistä Bluetooth-palikka',
     CompassCalibrate: 'Kalibroi kompassi',
     Update_firmware: 'Päivitä laiteohjelma',
-    Connection_Failure: 'Virhe yhdistettäessä'
+    Connection_Failure: 'Virhe yhdistettäessä',
+    Incompatible_Browser: 'Incompatible Browser',
+    Use_Chrome: 'Please visit this page in Google Chrome (version 70 or later).',
+    No_Ble: 'No Bluetooth Detected',
+    Ble_Required: 'This app requires Bluetooth.'
   },
   sv: {
     say_this: 'Säg detta',
@@ -199,7 +255,11 @@ const fullTranslationTable = {
     connect_dongle: 'Koppla Bluetooth dosa',
     CompassCalibrate: 'Kalibrera kompass',
     Update_firmware: 'Uppdatera Programvara',
-    Connection_Failure: 'Problem med kopplingen'
+    Connection_Failure: 'Problem med kopplingen',
+    Incompatible_Browser: 'Incompatible Browser',
+    Use_Chrome: 'Please visit this page in Google Chrome (version 70 or later).',
+    No_Ble: 'No Bluetooth Detected',
+    Ble_Required: 'This app requires Bluetooth.'
   }
 };
 
@@ -227,7 +287,7 @@ function setLanguage() {
   console.log("window.navigator.language = " + language);
 
   if (language.startsWith("zh")) {
-    if (language == "zh-TW") { language = "zh_Hant"; } // Specify trad chinese
+    if (language == "zh-TW" || language == "zh-tw") { language = "zh_Hant"; } // Specify trad chinese
     else { language = "zh_Hans"; } // Default to simplified chinese for any other variant
   } else {
     language = language.substring(0, 2); // require the 2 letter code.

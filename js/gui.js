@@ -38,11 +38,15 @@ function onLoad() {
     usingChrome = true;
   }
   if (!usingChrome) {
-    showErrorModal(" Incompatible Browser ", "Please visit this page in Google Chrome (version 70 or later)", false);
+    let title = " " + thisLocaleTable["Incompatible_Browser"] + " "
+    let message = thisLocaleTable["Use_Chrome"]
+    showErrorModal(title, message, false);
   } else {
     navigator.bluetooth.getAvailability().then(isAvailable => {
       if (!isAvailable) {
-        showErrorModal(" No Bluetooth Detected ", "This app requires bluetooth", false);
+        let title = " " + thisLocaleTable["No_Ble"] + " "
+        let message = thisLocaleTable["Ble_Required"]
+        showErrorModal(title, message, false);
       }
     });
   }
