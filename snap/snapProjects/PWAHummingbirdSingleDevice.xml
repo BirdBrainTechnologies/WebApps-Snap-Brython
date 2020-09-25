@@ -264,9 +264,7 @@
     <block-definition s="Hummingbird Play Note %&apos;note&apos; for %&apos;beats&apos; beats" type="command" category="sound">
       <header></header>
       <code></code>
-      <translations>ko:Hummingbird _ 번 음을 _ 박자로 연주하기&#xD;de:Hummingbird Spiele Note _ für _ Schläge&#xD;pt:Hummingbird Toque Notas _ por _ Batidas&#xD;fr:Hummingbird Jouer la note _ pour _ battement(s)&#xD;nl:Hummingbird Speel Noot _ voor _
-        Beats&#xD;zh_CN:Hummingbird 演奏 音阶 _ 于 _ 拍&#xD;zh_TW:Hummingbird 演奏 音階 _ 於 _ 拍&#xD;ar:Hummingbird تشغيل الموسيقى _ _&#xD;dk:Hummingbird Spil tone _ i _ slag&#xD;he:Hummingbird נגן תו _ במשך _ פעימות&#xD;es:Hummingbird Emitir un sonido _ por _
-        pulsos&#xD;ca:Hummingbird Toca nota _ durant _ temps&#xD;fi:Hummingbird Soita sävel _ _ iskun ajan&#xD;sv:Hummingbird Spela not _ _&#xD;</translations>
+      <translations>ko:Hummingbird _ 번 음을 _ 박자로 연주하기&#xD;de:Hummingbird Spiele Note _ für _ Schläge&#xD;pt:Hummingbird Toque Notas _ por _ Batidas&#xD;fr:Hummingbird Jouer la note _ pour _ battement(s)&#xD;nl:Hummingbird Speel Noot _ voor _ Beats&#xD;zh_CN:Hummingbird 演奏 音阶 _ 于 _ 拍&#xD;zh_TW:Hummingbird 演奏 音階 _ 於 _ 拍&#xD;ar:Hummingbird تشغيل الموسيقى _ _&#xD;dk:Hummingbird Spil tone _ i _ slag&#xD;he:Hummingbird נגן תו _ במשך _ פעימות&#xD;es:Hummingbird Emitir un sonido _ por _ pulsos&#xD;ca:Hummingbird Toca nota _ durant _ temps&#xD;fi:Hummingbird Soita sävel _ _ iskun ajan&#xD;sv:Hummingbird Spela not _ _&#xD;</translations>
       <inputs>
         <input type="%n">60<options>§_pianoKeyboardMenu</options></input>
         <input type="%n">0.5</input>
@@ -399,8 +397,7 @@
     <block-definition s="micro:bit Button %&apos;button&apos;" type="predicate" category="sensing">
       <header></header>
       <code></code>
-      <translations>ko:micro:bit 버튼 _&#xD;de:micro:bit Knopf _&#xD;pt:micro:bit Tecla _&#xD;fr:micro:bit Bouton _&#xD;nl:micro:bit Knop _&#xD;zh_CN:micro:bit 按钮 _&#xD;zh_TW:micro:bit 按鈕 _&#xD;ar:micro:bit زر _&#xD;dk:micro:bit Knap _&#xD;he:micro:bit לחצן
-        _&#xD;es:micro:bit Pulsador _&#xD;ca:micro:bit Botó _&#xD;fi:micro:bit Painike _&#xD;sv:micro:bit Knapp _&#xD;</translations>
+      <translations>ko:micro:bit 버튼 _&#xD;de:micro:bit Knopf _&#xD;pt:micro:bit Tecla _&#xD;fr:micro:bit Bouton _&#xD;nl:micro:bit Knop _&#xD;zh_CN:micro:bit 按钮 _&#xD;zh_TW:micro:bit 按鈕 _&#xD;ar:micro:bit زر _&#xD;dk:micro:bit Knap _&#xD;he:micro:bit לחצן _&#xD;es:micro:bit Pulsador _&#xD;ca:micro:bit Botó _&#xD;fi:micro:bit Painike _&#xD;sv:micro:bit Knapp _&#xD;</translations>
       <inputs>
         <input type="%txt" readonly="true">A<options>A&#xD;B</options></input>
       </inputs>
@@ -444,8 +441,7 @@
     <block-definition s="micro:bit Compass" type="reporter" category="sensing">
       <header></header>
       <code></code>
-      <translations>ko:micro:bit 나침반 센서&#xD;de:micro:bit Kompass&#xD;pt:micro:bit Bússola&#xD;fr:micro:bit Compas&#xD;nl:micro:bit Kompas&#xD;zh_CN:micro:bit 指南针&#xD;zh_TW:micro:bit 指南針&#xD;ar:micro:bit بوصلة&#xD;dk:micro:bit Kompas&#xD;he:micro:bit
-        מצפן&#xD;es:micro:bit Brujula&#xD;ca:micro:bit Brúixola&#xD;fi:micro:bit Kompassi&#xD;sv:micro:bit Kompass&#xD;</translations>
+      <translations>ko:micro:bit 나침반 센서&#xD;de:micro:bit Kompass&#xD;pt:micro:bit Bússola&#xD;fr:micro:bit Compas&#xD;nl:micro:bit Kompas&#xD;zh_CN:micro:bit 指南针&#xD;zh_TW:micro:bit 指南針&#xD;ar:micro:bit بوصلة&#xD;dk:micro:bit Kompas&#xD;he:micro:bit מצפן&#xD;es:micro:bit Brujula&#xD;ca:micro:bit Brúixola&#xD;fi:micro:bit Kompassi&#xD;sv:micro:bit Kompass&#xD;</translations>
       <inputs></inputs>
       <script>
         <custom-block s="BirdBrain Setup"></custom-block>
@@ -574,9 +570,7 @@
     <block-definition s="Hummingbird Position Servo %&apos;port&apos; %&apos;position&apos; °" type="command" category="motion">
       <header></header>
       <code></code>
-      <translations>ko:Hummingbird 위치 제어 서보 _ _ °&#xD;de:Hummingbird Position Servo _ _ °&#xD;pt:Hummingbird Posição do Servo _ _ °&#xD;fr:Hummingbird Position Servo _ _ °&#xD;nl:Hummingbird Positie-Servo _ _ °&#xD;zh_CN:Hummingbird 位置伺服 _ _
-        °&#xD;zh_TW:Hummingbird 位置伺服 _ _ °&#xD;ar:Hummingbird موقف محرك سيرفو المؤازر _ _&#xD;dk:Hummingbird Positionsservo _ _ °&#xD;he:Hummingbird סרוו כיוון _ _&#xD;es:Hummingbird Servo de posicion _ _ °&#xD;ca:Hummingbird Servo posicional _ _
-        °&#xD;fi:Hummingbird Asentoservo _ _ °&#xD;sv:Hummingbird Positionsservo _ _ °&#xD;</translations>
+      <translations>ko:Hummingbird 위치 제어 서보 _ _ °&#xD;de:Hummingbird Position Servo _ _ °&#xD;pt:Hummingbird Posição do Servo _ _ °&#xD;fr:Hummingbird Position Servo _ _ °&#xD;nl:Hummingbird Positie-Servo _ _ °&#xD;zh_CN:Hummingbird 位置伺服 _ _ °&#xD;zh_TW:Hummingbird 位置伺服 _ _ °&#xD;ar:Hummingbird موقف محرك سيرفو المؤازر _ _&#xD;dk:Hummingbird Positionsservo _ _ °&#xD;he:Hummingbird סרוו כיוון _ _&#xD;es:Hummingbird Servo de posicion _ _ °&#xD;ca:Hummingbird Servo posicional _ _ °&#xD;fi:Hummingbird Asentoservo _ _ °&#xD;sv:Hummingbird Positionsservo _ _ °&#xD;</translations>
       <inputs>
         <input type="%n" readonly="true">1<options>1&#xD;2&#xD;3&#xD;4</options></input>
         <input type="%n">90</input>
@@ -642,9 +636,7 @@
     <block-definition s="Hummingbird Rotation Servo %&apos;port&apos; %&apos;speed&apos; %" type="command" category="motion">
       <header></header>
       <code></code>
-      <translations>ko:Hummingbird 회전속도 제어 서보 _ _ %&#xD;de:Hummingbird Drehung Servo _ _ %&#xD;pt:Hummingbird Rotação do Servo _ _ %&#xD;fr:Hummingbird Rotation Servo _ _ %&#xD;nl:Hummingbird Draai-Servo _ _ %&#xD;zh_CN:Hummingbird 旋转伺服 _ _
-        %&#xD;zh_TW:Hummingbird 旋轉伺服 _ _ %&#xD;ar:Hummingbird فتحة دوران المحرك المؤازر _ _&#xD;dk:Hummingbird Rotationsservo _ _ %&#xD;he:Hummingbird סרוו סיבובים _ _ %&#xD;es:Hummingbird Servo de rotacion _ _ %&#xD;ca:Hummingbird Servo rotacional _ _
-        %&#xD;fi:Hummingbird Kiertoservo _ _ %&#xD;sv:Hummingbird Rotationsservo _ _ %&#xD;</translations>
+      <translations>ko:Hummingbird 회전속도 제어 서보 _ _ %&#xD;de:Hummingbird Drehung Servo _ _ %&#xD;pt:Hummingbird Rotação do Servo _ _ %&#xD;fr:Hummingbird Rotation Servo _ _ %&#xD;nl:Hummingbird Draai-Servo _ _ %&#xD;zh_CN:Hummingbird 旋转伺服 _ _ %&#xD;zh_TW:Hummingbird 旋轉伺服 _ _ %&#xD;ar:Hummingbird فتحة دوران المحرك المؤازر _ _&#xD;dk:Hummingbird Rotationsservo _ _ %&#xD;he:Hummingbird סרוו סיבובים _ _ %&#xD;es:Hummingbird Servo de rotacion _ _ %&#xD;ca:Hummingbird Servo rotacional _ _ %&#xD;fi:Hummingbird Kiertoservo _ _ %&#xD;sv:Hummingbird Rotationsservo _ _ %&#xD;</translations>
       <inputs>
         <input type="%n" readonly="true">1<options>1&#xD;2&#xD;3&#xD;4</options></input>
         <input type="%n">0</input>
@@ -733,8 +725,7 @@
     <block-definition s="Hummingbird LED %&apos;port&apos; %&apos;intensity&apos; %" type="command" category="looks">
       <header></header>
       <code></code>
-      <translations>ko:Hummingbird LED _ _ %&#xD;de:Hummingbird LED _ _ %&#xD;pt:Hummingbird LED _ _ %&#xD;fr:Hummingbird LED _ _ %&#xD;nl:Hummingbird LED _ _ %&#xD;zh_CN:Hummingbird LED _ _ %&#xD;zh_TW:Hummingbird LED _ _ %&#xD;ar:Hummingbird ضوء _
-        _&#xD;dk:Hummingbird LED _ _ %&#xD;he:Hummingbird לד % _ _&#xD;es:Hummingbird LED _ _ %&#xD;ca:Hummingbird LED _ _ %&#xD;fi:Hummingbird LED _ _ %&#xD;sv:Hummingbird LED _ _ %&#xD;</translations>
+      <translations>ko:Hummingbird LED _ _ %&#xD;de:Hummingbird LED _ _ %&#xD;pt:Hummingbird LED _ _ %&#xD;fr:Hummingbird LED _ _ %&#xD;nl:Hummingbird LED _ _ %&#xD;zh_CN:Hummingbird LED _ _ %&#xD;zh_TW:Hummingbird LED _ _ %&#xD;ar:Hummingbird ضوء _ _&#xD;dk:Hummingbird LED _ _ %&#xD;he:Hummingbird לד % _ _&#xD;es:Hummingbird LED _ _ %&#xD;ca:Hummingbird LED _ _ %&#xD;fi:Hummingbird LED _ _ %&#xD;sv:Hummingbird LED _ _ %&#xD;</translations>
       <inputs>
         <input type="%n" readonly="true">1<options>1&#xD;2&#xD;3</options></input>
         <input type="%n">0</input>
@@ -768,9 +759,7 @@
     <block-definition s="Hummingbird Tri-LED %&apos;port&apos; R %&apos;redLED&apos; % G %&apos;greenLED&apos; % B %&apos;blueLED&apos; %" type="command" category="looks">
       <header></header>
       <code></code>
-      <translations>ko:Hummingbird 삼색 LED _ 빨강 _ % 초록 _ % 파랑 _ %&#xD;de:Hummingbird Dreifarben-LED _ R _ % G _ % B _ %&#xD;pt:Hummingbird LED Tricolor _ R _ % G _ % B _ %&#xD;fr:Hummingbird Tri-LED _ R _ % G _ % B _ %&#xD;nl:Hummingbird Tri-LED _ R _ % G _
-        % B _ %&#xD;zh_CN:Hummingbird 三色LED _ 红 _ % 绿 _ % 蓝 _ %&#xD;zh_TW:Hummingbird 三色LED _ 紅 _ % 綠 _ % 藍 _ %&#xD;ar:Hummingbird ضوء الصمام الثلاثي _ _ _ _&#xD;dk:Hummingbird Tri-LED _ R _ % G _ % B _ %&#xD;he:Hummingbird לד שלושה צבעים % _ R _ % G _ % B
-        _&#xD;es:Hummingbird Led tricolor _ R _ % G _ % B _ %&#xD;ca:Hummingbird Tri-LED _ vermell _ % verd _ % blau _ %&#xD;fi:Hummingbird Tri-LED _ R _ % G _ % B _ %&#xD;sv:Hummingbird Tri-LED _ R _ % G _ % B _ %&#xD;</translations>
+      <translations>ko:Hummingbird 삼색 LED _ 빨강 _ % 초록 _ % 파랑 _ %&#xD;de:Hummingbird Dreifarben-LED _ R _ % G _ % B _ %&#xD;pt:Hummingbird LED Tricolor _ R _ % G _ % B _ %&#xD;fr:Hummingbird Tri-LED _ R _ % G _ % B _ %&#xD;nl:Hummingbird Tri-LED _ R _ % G _ % B _ %&#xD;zh_CN:Hummingbird 三色LED _ 红 _ % 绿 _ % 蓝 _ %&#xD;zh_TW:Hummingbird 三色LED _ 紅 _ % 綠 _ % 藍 _ %&#xD;ar:Hummingbird ضوء الصمام الثلاثي _ _ _ _&#xD;dk:Hummingbird Tri-LED _ R _ % G _ % B _ %&#xD;he:Hummingbird לד שלושה צבעים % _ R _ % G _ % B _&#xD;es:Hummingbird Led tricolor _ R _ % G _ % B _ %&#xD;ca:Hummingbird Tri-LED _ vermell _ % verd _ % blau _ %&#xD;fi:Hummingbird Tri-LED _ R _ % G _ % B _ %&#xD;sv:Hummingbird Tri-LED _ R _ % G _ % B _ %&#xD;</translations>
       <inputs>
         <input type="%n" readonly="true">1<options>1&#xD;2</options></input>
         <input type="%n">0</input>
@@ -813,8 +802,7 @@
     <block-definition s="micro:bit Print %&apos;string&apos;" type="command" category="looks">
       <header></header>
       <code></code>
-      <translations>ko:micro:bit 출력 _&#xD;de:micro:bit Drucke _&#xD;pt:micro:bit Imprimir _&#xD;fr:micro:bit Imprimer _&#xD;nl:micro:bit Schrijf _&#xD;zh_CN:micro:bit 打印 _&#xD;zh_TW:micro:bit 打印 _&#xD;ar:micro:bit طباعة _&#xD;dk:micro:bit Vis
-        _&#xD;he:micro:bit הדפס _&#xD;es:micro:bit Imprimir _&#xD;ca:micro:bit Escriu _&#xD;fi:micro:bit Näytä teksti _&#xD;sv:micro:bit Visa text _&#xD;</translations>
+      <translations>ko:micro:bit 출력 _&#xD;de:micro:bit Drucke _&#xD;pt:micro:bit Imprimir _&#xD;fr:micro:bit Imprimer _&#xD;nl:micro:bit Schrijf _&#xD;zh_CN:micro:bit 打印 _&#xD;zh_TW:micro:bit 打印 _&#xD;ar:micro:bit طباعة _&#xD;dk:micro:bit Vis _&#xD;he:micro:bit הדפס _&#xD;es:micro:bit Imprimir _&#xD;ca:micro:bit Escriu _&#xD;fi:micro:bit Näytä teksti _&#xD;sv:micro:bit Visa text _&#xD;</translations>
       <inputs>
         <input type="%txt">Hello</input>
       </inputs>
@@ -853,11 +841,7 @@
       category="looks">
       <header></header>
       <code></code>
-      <translations>ko:micro:bit 보이기 _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _&#xD;de:micro:bit LED Anzeige _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _&#xD;pt:micro:bit Visor _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
-        _ _ _ _ _ _&#xD;fr:micro:bit Display _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _&#xD;nl:micro:bit Scherm _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _&#xD;zh_CN:micro:bit 显示 _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
-        _ _ _ _ _ _ _&#xD;zh_TW:micro:bit 顯示 _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _&#xD;ar:micro:bit عرض _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _&#xD;dk:micro:bit Display _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
-        _ _ _ _ _ _&#xD;he:micro:bit מסך _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _&#xD;es:micro:bit Monitor _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _&#xD;ca:micro:bit Pantalla _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
-        _ _ _ _ _ _ _&#xD;fi:micro:bit Näytä _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _&#xD;sv:micro:bit Skärm _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _&#xD;</translations>
+      <translations>ko:micro:bit 보이기 _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _&#xD;de:micro:bit LED Anzeige _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _&#xD;pt:micro:bit Visor _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _&#xD;fr:micro:bit Display _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _&#xD;nl:micro:bit Scherm _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _&#xD;zh_CN:micro:bit 显示 _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _&#xD;zh_TW:micro:bit 顯示 _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _&#xD;ar:micro:bit عرض _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _&#xD;dk:micro:bit Display _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _&#xD;he:micro:bit מסך _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _&#xD;es:micro:bit Monitor _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _&#xD;ca:micro:bit Pantalla _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _&#xD;fi:micro:bit Näytä _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _&#xD;sv:micro:bit Skärm _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _&#xD;</translations>
       <inputs>
         <input type="%b">false</input>
         <input type="%b">false</input>
