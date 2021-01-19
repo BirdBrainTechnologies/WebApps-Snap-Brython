@@ -493,6 +493,12 @@
                         </comment>
                     </block>
                 </block>
+                <block s="doSetVar">
+                  <l>note</l>
+                  <block s="reportRound">
+                    <block var="note"/>
+                  </block>
+                </block>
                 <block s="doRun">
                   <block s="reportJSFunction">
                       <list>
