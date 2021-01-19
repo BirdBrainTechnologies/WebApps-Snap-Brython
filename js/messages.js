@@ -126,3 +126,142 @@ function sendMessage(message) {
   //console.log(message);
   messagePort.postMessage(message);
 }
+
+
+//FINCHBLOX
+var allFinchBloxFiles = {};
+var currentFinchBloxFileName;
+
+function parseFinchBloxRequest(request) {
+  console.log("FinchBlox request string " + JSON.stringify(request));
+  let status = 200;
+  let responseBody = "";
+
+  let path = request.request.split("/");
+  let query = path[1].split("?")
+  switch (path[0]) {
+    case "settings":
+      console.error("got settings request for " + path[1]);
+      break;
+    case "properties":
+      console.error("got properties request for " + path[1]);
+      break;
+    case "ui":
+      console.error("got ui request for " + path[1]);
+      break;
+    case "sound":
+      console.error("got sound request for " + path[1]);
+      break;
+    case "tablet":
+      switch (path[1]) {
+        case "availableSensors":
+          responseBody = "";
+          break;
+        default:
+          console.error("got tablet request for " + path[1]);
+      }
+
+      break;
+    case "data":
+      switch (query[0]) {
+        case "files":
+          responseBody = '{"files":[]}';
+          break;
+        case "new":
+          if (query[1].startsWith("filename=")) {
+            let filename = query[1].split("=").pop();
+            let projectContent = request.body
+            console.error("Create new file " + filename + " with contents: " + projectContent);
+            //TODO: check if name already exists
+            allFinchBloxFiles[filename] = projectContent;
+          } else {
+            console.error("Bad new file request for " + query[1]);
+          }
+          break;
+        case "open":
+          if (query[1].startsWith("filename=")) {
+            let filename = query[1].split("=").pop();
+            let projectContent = allFinchBloxFiles[filename];
+            console.log("Open file " + filename + " with contents: " + projectContent);
+
+            CallbackManager.data.open(filename, projectContent);
+
+            responseBody = filename + " successfully opened."
+            currentFinchBloxFileName = filename;
+          } else {
+            console.error("Bad open file request for " + query[1]);
+          }
+          break;
+        case "autoSave":
+          //TODO: Save this somewhere
+          allFinchBloxFiles[currentFinchBloxFileName] = request.body
+          break;
+        default:
+          console.error("got data request for " + path[1]);
+      }
+      break;
+    case "debug":
+      switch (path[1]) {
+        case "log":
+          console.error("DEBUG LOG: " + request.body);
+          break;
+        default:
+          console.error("got debug request for " + path[1]);
+      }
+      break;
+    case "robot":
+      switch(query[0]) {
+        case "startDiscover":
+          findAndConnect();
+          break;
+        case "stopDiscover":
+          break;
+        case "connect":
+          //TODO: fill in when ble scanning is implemented
+          break;
+        case "out":
+          handleFinchBloxRobotOutput(path)
+          break;
+        default:
+          console.error("unknown robot request " + path[1]);
+      }
+      break;
+    default:
+      console.error("Unhandled FinchBlox request for " + path[0]);
+  }
+
+  console.log("Sending response for " + request.id + " with body '" + responseBody + "'")
+  CallbackManager.httpResponse(request.id, status, responseBody);
+
+}
+
+
+/**
+ * handleFinchBloxRobotOutput - Handles requests for robot output from
+ * FinchBlox.
+ *
+ * @param  {[string]} path the request from FinchBlox
+ */
+function handleFinchBloxRobotOutput(path) {
+  let fullCommand = path[2].split("?")
+  let params = fullCommand[1].split("&")
+  let robot = "A";
+  let msg = {
+     robot: robot
+  }
+
+  switch (fullCommand[0]) {
+    case "beak":
+      msg.cmd = "triled"
+      msg.port = 1
+      msg.red = params[2].split("=")[1]
+      msg.green = params[3].split("=")[1]
+      msg.blue = params[4].split("=")[1]
+      break;
+    default:
+      console.error("Unhandled robot out: " + fullCommand[0])
+  }
+
+
+  parseMessage(msg);
+}

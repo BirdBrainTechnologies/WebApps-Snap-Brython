@@ -36,17 +36,35 @@ function findAndConnect() {
   if (robotConnecting || robots.length == MAX_CONNECTIONS) {
     return;
   }
+
+  let bleFilters = [{
+    services: ["6e400001-b5a3-f393-e0a9-e50e24dcca9e"]
+  }]
+  //acceptAllDevices: true
+  if (FinchBlox) {
+    bleFilters = [{
+      namePrefix: "FN"
+    }]
+  }
+
   navigator.bluetooth.requestDevice({
-      //acceptAllDevices: true
-      filters: [{
-        services: ["6e400001-b5a3-f393-e0a9-e50e24dcca9e"]
-        //namePrefix: "FN"
-      }]
+      filters: bleFilters
     })
     .then(device => {
 
       //once the user has selected a device, check that it is a supported device.
       console.log("User selected " + device.name);
+
+      //This block is temporary until ble scanning is implemented. For now, we
+      // will send the requested device to the dialog so that finchblox can set
+      // the device up.
+      if (FinchBlox) {
+        console.log("Discovered " + device.name);
+        let fancyName = getDeviceFancyName(device.name)
+        fancyName = fancyName.slice(0, -6)
+        CallbackManager.robot.discovered('[{"id":"' + device.name + '", "device":"Finch", "name":"' + fancyName + '", "RSSI":0}]')
+      }
+
       const type = Robot.getTypeFromName(device.name);
       if (type == null) {
         return Promise.reject(new Error("Device selected is not of a supported type."));

@@ -57,6 +57,16 @@ function onLoad() {
  * user.
  */
 function updateConnectedDevices() {
+  if (FinchBlox) {
+    console.log("Updating FinchBlox connected devices")
+
+    let guiDevice = RowDialog.currentDialog.discoveredDevices[0];
+    RowDialog.currentDialog.selectDevice(guiDevice)
+    CallbackManager.robot.updateStatus(robotConnecting.device.name, true)
+
+    return;
+  }
+
   $('#robots-connected').empty();
   $('#robots-connected-snap').empty();
 
@@ -181,6 +191,10 @@ function displayConnectedDevice(robot) {
  * possible.
  */
 function loadIDE() {
+  if (FinchBlox) {
+    console.log("Not loading IDE - FinchBlox.")
+    return;
+  }
   //const useSnap = ($('#snap-slider').prop('checked'))
 
   updateInternetStatus();
@@ -304,12 +318,15 @@ function updateBatteryStatus() {
 
       switch (robot.batteryLevel) {
         case Robot.batteryLevel.HIGH:
+          if (FinchBlox) { CallbackManager.robot.updateBatteryStatus(robot.device.name, "2") }
           $(battSelector).addClass("fa-battery-full");
           break;
         case Robot.batteryLevel.MEDIUM:
+          if (FinchBlox) { CallbackManager.robot.updateBatteryStatus(robot.device.name, "1") }
           $(battSelector).addClass("fa-battery-half");
           break;
         case Robot.batteryLevel.LOW:
+          if (FinchBlox) { CallbackManager.robot.updateBatteryStatus(robot.device.name, "0") }
           $(battSelector).addClass("fa-battery-quarter");
           break;
         default: //UNKNOWN

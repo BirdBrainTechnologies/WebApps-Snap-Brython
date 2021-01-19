@@ -1899,7 +1899,14 @@ const BRYTHON_FILES_TO_CACHE_2 = [
   'brython/src/Lib/site-packages/ui/widget.py'
 ];
 
-function addEventListeners(usingSnap) {
+const FINCHBLOX_FILES_TO_CACHE = [
+  'MyCSS.css',
+  'MyCSS_rtl.css',
+  'FinchBlox.html',
+  'js/all.js'
+];
+
+function addEventListeners(usingSnap, usingFinchBlox) {
   //The install event is called once per service worker.
   //Changes to the service worker script count as a new service worker
   self.addEventListener('install', (evt) => {
@@ -1917,6 +1924,12 @@ function addEventListeners(usingSnap) {
                     cache.addAll(SNAP_FILES_TO_CACHE_3)).then(() =>
                     cache.addAll(SNAP_FILES_TO_CACHE_4)).catch(error => {
                       console.error("Error caching snap files: " + error.message);
+                      throw error;
+                    })
+          } else if (usingFinchBlox) {
+            console.log("[ServiceWorker] About to cache FinchBlox files")
+            return cache.addAll(FINCHBLOX_FILES_TO_CACHE).catch(error => {
+                      console.error("Error caching FinchBlox files: " + error.message);
                       throw error;
                     })
           } else {

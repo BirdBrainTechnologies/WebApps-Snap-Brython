@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+  <meta charset="UTF-8" />
+
+  <!-- iOS meta tags and icons -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="apple-mobile-web-app-title" content="BirdBrain PWA">
+  <link rel="apple-touch-icon" href="img/icon_152x152.png">
+
+  <!-- PWA manifest -->
+  <link rel="manifest" href="manifest-finchblox.json">
+  <!-- PWA info -->
+  <meta name="theme-color" content="#089BAB" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FinchBlox</title>
+  <meta name="description" content="A Web App from BirdBrain Technologies. Use FinchBlox to program your Finch Robot 2.0.">
+  <link rel="icon"  type="image/png" href="img/icon_32x32.png">
+
+  <link href="MyCSS.css" rel="stylesheet" type="text/css" />
+  <link href="css/fonts.css" rel="stylesheet" type="text/css">
+  <script type="text/javascript" src="js/all.js"></script>
+  <script>
+    GuiElements.isPWA = true;
+  </script>
+  <script src="js/jquery.js" ></script>
+
+  <!--Prevents webview from scrolling/zooming. (FinchBlox/BirdBlox specific - is this necessary for the web app?)
+		From: http://stackoverflow.com/questions/7733703/how-do-i-disable-scrolling-on-an-ipad-webapp-->
+  <meta name="viewport" content="user-scalable=1.0,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="format-detection" content="telephone=no">
+  <meta http-equiv="content-type" content="text/html;charset=utf-8">
+
+</head>
+
+<!-- Most of the body should be the same as other versions of FinchBlox/BirdBlox -->
+<body style="padding:0px;margin:0px;" class="mainBody">
+
+  <!--<span id="debug2" class="noselect">hi</span>-->
+  <!--<img src="layout.png" style="width:100%;display:none;" id="testImage"/>-->
+  <svg id="backSvg" class="mainSvg" xmlns:xlink="http://www.w3.org/2000/xlink">
+    <defs id="SvgDefs">
+    </defs>
+    <!--<image xlink:href="Screenshot.png" x="0" y="0" height="356px" width="259px"/>-->
+  </svg>
+  <div id="paletteScrollDiv" class="divLayer">
+  </div>
+  <svg id="middleSvg" class="mainSvg" xmlns:xlink="http://www.w3.org/2000/xlink">
+    <!--<image xlink:href="Screenshot.png" x="0" y="0" height="356px" width="259px"/>-->
+  </svg>
+  <div id="frontScrollDiv" class="divLayer">
+  </div>
+  <svg id="frontSvg" class="mainSvg" xmlns:xlink="http://www.w3.org/2000/xlink">
+  </svg>
+  <div id="overlayOverlayScrollDiv" class="divLayer">
+  </div>
+  <span id="debug" class="noselect" style="color:#fff; position:absolute; margin-left:300px;">NoJS</span>
+
+  <!-- Web app specific from here down -->
+  <div id="butInstall" class="fa-stack" aria-label="Install" hidden>
+    <a id="btn-install" class="btn btn-orange">
+      <i class="fas fa-download fa-lg"></i>
+    </a>
+  </div>
+
+  <!-- Include main code -->
+  <script>const useSnap=false;</script>
+  <script src="js/install.js"></script>
+  <script src="js/fancyNames.js"></script>
+  <script src="js/translations.js"></script>
+  <script src="js/robot.js"></script>
+  <script src="js/robotData.js"></script>
+  <script src="js/messages.js"></script>
+  <script src="js/ble.js"></script>
+  <script src="js/gui.js"></script>
+
+<!--  <script>
+    // Register service worker.
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('service-worker-finchblox.js')
+          .then((reg) => {
+            console.log('Service worker registered.', reg);
+          }).catch(error => {
+            console.error("Error registering service worker: " + error.message);
+          });
+        onLoad();
+      });
+    }
+  </script>-->
+
+</body>
+
+</html>
