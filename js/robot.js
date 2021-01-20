@@ -36,6 +36,7 @@ function Robot(device, devLetter) {
   this.isCalibrating = false;
   this.setAllTimeToAdd = 0;
   this.isConnected = true;
+  this.currentSensorData = [];
 
   //Robot state arrays
   this.initializeDataArrays();
@@ -406,9 +407,9 @@ Robot.prototype.setLED = function(port, intensity) {
  * values. Hummingbird and Finch only.
  *
  * @param  {number} port  Position of the LED to set (1-triLedCount)
- * @param  {number} red   Red intensity (0-100)
- * @param  {number} green Green intensity (0-100)
- * @param  {number} blue  Blue intensity (0-100)
+ * @param  {number} red   Red intensity (0-255)
+ * @param  {number} green Green intensity (0-255)
+ * @param  {number} blue  Blue intensity (0-255)
  */
 Robot.prototype.setTriLED = function(port, red, green, blue) {
   //microbits do not have any trileds
@@ -564,9 +565,15 @@ Robot.prototype.setSymbol = function(symbolString) {
   let iData = 2
   let shift = 0
 
-  //Convert the true/false string to bits. Requires 4 data bytes.
+  //Convert the true/false or bit string to bits. Requires 4 data bytes.
   for (let i = 24; i >= 0; i--) {
-    data[iData] = (sa[i] == "true") ? (data[iData] | (1 << shift)) : (data[iData] & ~(1 << shift));
+    let bit = false;
+    if (FinchBlox) {
+      bit = ( symbolString.charAt(i) == "1" )
+    } else {
+      bit = ( sa[i] == "true" )
+    }
+    data[iData] = bit ? (data[iData] | (1 << shift)) : (data[iData] & ~(1 << shift));
     if (shift == 0) {
       shift = 7
       iData += 1
@@ -648,6 +655,8 @@ Robot.prototype.startCalibration = function() {
  * @param  {Uint8Array} data Incoming data
  */
 Robot.prototype.receiveSensorData = function(data) {
+  this.currentSensorData = data
+
   const batteryIndex = Robot.propertiesFor[this.type].batteryIndex;
   const batteryFactor = Robot.propertiesFor[this.type].batteryFactor;
   const batteryConstant = Robot.propertiesFor[this.type].batteryConstant;
