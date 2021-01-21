@@ -133,11 +133,104 @@ function sendMessage(message) {
 
 //FINCHBLOX
 if (typeof FinchBlox === undefined) { var FinchBlox = false }
-var allFinchBloxFiles = {};
-var currentFinchBloxFileName;
+//var allFinchBloxFiles = {};
+//var currentFinchBloxFileName;
 var currentFinchBloxBeak = [0,0,0];
 //var finchBloxUserDisconnecting = false;
 var fbAudio = null;
+var fbFiles = new FB_Files()
+
+function FB_Files() {
+  console.log(TabManager.tabList)
+  console.log("Initializing FB_Files")
+  console.log(localStorage.finchBloxFileNames)
+  console.log(Object.keys(localStorage))
+  if (localStorage.currentFbFile) {
+    //this.currentFile = localStorage.currentFbFile
+  } else {
+    //localStorage.finchBloxFileNames = null
+  }
+}
+FB_Files.prototype.newFile = function(filename, contents) {
+  //check if the filename already exists
+  if (Object.keys(localStorage).includes(filename)) {
+    console.error("filename " + filename + " already exists.")
+    return
+  }
+
+  let allFileNames = []
+  if (localStorage.finchBloxFileNames) {
+    allFileNames = localStorage.finchBloxFileNames.split(",")
+  }
+  allFileNames.push(filename)
+  localStorage.finchBloxFileNames = allFileNames.toString()
+  console.log(localStorage.finchBloxFileNames)
+  console.log(Object.keys(localStorage))
+  //localStorage.finchBloxFileNames.push(filename)
+  localStorage[filename] = contents
+}
+FB_Files.prototype.getFileNames = function() {
+  if (localStorage.finchBloxFileNames) {
+    let filenames = localStorage.finchBloxFileNames.replace(/,/g, '","')
+    let filesString = '{"files":["' + filenames + '"]}'
+    return filesString
+  } else {
+    return '{"files":[]}'
+  }
+}
+FB_Files.prototype.openFile = function(filename) {
+  let projectContent = localStorage[filename]
+
+  if (projectContent) {
+    console.log("Opening file " + filename + " with contents: " + projectContent);
+    localStorage.currentFbFile = filename
+    CallbackManager.data.open(filename, projectContent);
+  } else {
+    console.error("No contents found for file named " + filename)
+  }
+}
+FB_Files.prototype.autoSave = function(projectContent) {
+  localStorage[localStorage.currentFbFile] = projectContent
+}
+FB_Files.prototype.getAvailableName = function(nameRequested) {
+  let alreadySanitized = true; //false triggers popup to remove invalid characters
+  let alreadyAvailable = true; //false triggers popup to choose another name
+  if (Object.keys(localStorage).includes(nameRequested)) {
+    let parts = nameRequested.split("_")
+    let lastPart = parseInt(parts[parts.length - 2])
+    if (isNaN(lastPart)) {
+      parts.splice(parts.length-1, 0, "1")
+    } else {
+      lastPart = lastPart + 1
+      parts[parts.length - 2] = lastPart.toString()
+    }
+    let nameToCheck = parts.join("_")
+    console.log("The name " + nameRequested + " is already taken. Checking " + nameToCheck)
+    return this.getAvailableName(nameToCheck)
+  } else {
+    return '{"availableName":"' + nameRequested + '", "alreadySanitized":' + alreadySanitized + ', "alreadyAvailable":' + alreadyAvailable + '}'
+  }
+}
+FB_Files.prototype.rename = function(request){
+  let oldName = request.split("&")[0].split("=").pop();
+  let newName = request.split("&")[1].split("=").pop();
+  if (Object.keys(localStorage).includes(newName)) {
+    console.error("A file named " + newName + " already exists.")
+    return;
+  }
+  this.newFile(newName, localStorage[oldName])
+  this.deleteFile(oldName)
+  this.openFile(newName)
+}
+FB_Files.prototype.deleteFile = function(filename) {
+  let fn = localStorage.finchBloxFileNames.split(",")
+  let remainingFileNames = fn.filter(value => {
+    return value != filename
+  })
+  localStorage.finchBloxFileNames = remainingFileNames.toString()
+  delete localStorage[filename]
+}
+
 
 //https://code.tutsplus.com/tutorials/the-web-audio-api-adding-sound-to-your-web-app--cms-23790
 function FB_Audio() {
@@ -225,6 +318,12 @@ function parseFinchBloxRequest(request) {
             console.error("Requested to play unknown sound file " + soundFile)
           }
           break;
+        case "names":
+          //FinchBlox does not have any sound effects or recordings
+          break;
+        case "stopAll":
+          //Since FinchBlox doesn't play any substantial sounds, there is nothing to stop.
+          break;
         default:
           console.error("got sound request for " + path[1]);
       }
@@ -232,46 +331,48 @@ function parseFinchBloxRequest(request) {
     case "tablet":
       switch (path[1]) {
         case "availableSensors":
-          responseBody = "";
-          break;
+          //Apparently, this response is expected to take some time. If the
+          // response comes too quickly, there are errors because some things
+          // have not yet been set up.
+          setTimeout(function(){
+            CallbackManager.httpResponse(request.id, status, "");
+          }, 1000)
+          return;
         default:
           console.error("got tablet request for " + path[1]);
       }
 
       break;
     case "data":
+      let filename;
       switch (query[0]) {
         case "files":
-          responseBody = '{"files":[]}';
+          responseBody = fbFiles.getFileNames();
           break;
         case "new":
-          if (query[1].startsWith("filename=")) {
-            let filename = query[1].split("=").pop();
-            let projectContent = request.body
-            console.error("Create new file " + filename + " with contents: " + projectContent);
-            //TODO: check if name already exists
-            allFinchBloxFiles[filename] = projectContent;
-          } else {
-            console.error("Bad new file request for " + query[1]);
-          }
+          filename = query[1].split("=").pop();
+          let projectContent = request.body
+          fbFiles.newFile(filename, projectContent)
           break;
         case "open":
-          if (query[1].startsWith("filename=")) {
-            let filename = query[1].split("=").pop();
-            let projectContent = allFinchBloxFiles[filename];
-            console.log("Open file " + filename + " with contents: " + projectContent);
-
-            CallbackManager.data.open(filename, projectContent);
-
-            responseBody = filename + " successfully opened."
-            currentFinchBloxFileName = filename;
-          } else {
-            console.error("Bad open file request for " + query[1]);
-          }
+          filename = query[1].split("=").pop();
+          fbFiles.openFile(filename)
+          //TODO: What if opening fails?
           break;
         case "autoSave":
-          //TODO: Save this somewhere
-          allFinchBloxFiles[currentFinchBloxFileName] = request.body
+          fbFiles.autoSave(request.body)
+          break;
+        case "getAvailableName":
+          filename = query[1].split("&")[0].split("=").pop();
+          responseBody = fbFiles.getAvailableName(filename)
+          break;
+        case "rename":
+          fbFiles.rename(query[1])
+          break;
+        case "delete":
+          filename = query[1].split("&")[0].split("=").pop();
+          fbFiles.deleteFile(filename)
+          CallbackManager.data.close()
           break;
         default:
           console.error("got data request for " + path[1]);

@@ -1903,7 +1903,8 @@ const FINCHBLOX_FILES_TO_CACHE = [
   'MyCSS.css',
   'MyCSS_rtl.css',
   'FinchBlox.html',
-  'js/all.js'
+  'js/all.js',
+  'click2.wav'
 ];
 
 function addEventListeners(usingSnap, usingFinchBlox) {
