@@ -1903,8 +1903,16 @@ const FINCHBLOX_FILES_TO_CACHE = [
   'MyCSS.css',
   'MyCSS_rtl.css',
   'FinchBlox.html',
+  'manifest-finchblox.json',
   'js/all.js',
-  'click2.wav'
+  'js/finchblox.js'
+  'click2.wav',
+  'img/fb_icon_32x32.png',
+  'img/fb_icon_128x128.png',
+  'img/fb_icon_152x152.png',
+  'img/fb_icon_192x192.png',
+  'img/fb_icon_256x256.png',
+  'img/fb_icon_512x512.png'
 ];
 
 function addEventListeners(usingSnap, usingFinchBlox) {
