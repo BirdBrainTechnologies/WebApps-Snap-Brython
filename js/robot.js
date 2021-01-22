@@ -36,6 +36,7 @@ function Robot(device, devLetter) {
   this.isCalibrating = false;
   this.setAllTimeToAdd = 0;
   this.isConnected = true;
+  this.isReconnecting = false;
   this.currentSensorData = [];
 
   //Robot state arrays
@@ -221,6 +222,11 @@ Robot.prototype.externalDisconnect = function() {
   console.log("setting isConnected to false for " + this.fancyName)
   this.isConnected = false;
   this.devLetter = "X"
+
+  setTimeout(function() {
+    console.log("Attempting to reconnect to " + this.fancyName)
+    connectToRobot(this.device)
+  }.bind(this), 1000)
 }
 
 /**
@@ -230,9 +236,19 @@ Robot.prototype.externalDisconnect = function() {
  * @param  {type} devLetter New device letter for the robot
  */
 Robot.prototype.reconnect = function(device, devLetter) {
-  this.isConnected = true;
+  this.isReconnecting = true
   this.device = device
-  this.devLetter = devLetter;
+  this.devLetter = devLetter
+}
+
+/**
+ * Robot.prototype.completeReconnection - This is called when the reconnection
+ * process is successfully completed.
+ */
+Robot.prototype.completeReconnection = function() {
+  this.isConnected = true;
+  this.isReconnecting = false;
+  closeErrorModal()
 }
 
 /**

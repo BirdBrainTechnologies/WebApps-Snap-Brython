@@ -4,20 +4,12 @@
 
  var currentFinchBloxBeak = [0,0,0];
  var fbAudio = null;
- var fbFiles = new FB_Files()
+ //var fbFiles = new FB_Files()
+ //console.log(localStorage.finchBloxFileNames)
+ //console.log(Object.keys(localStorage))
 
- function FB_Files() {
-   console.log(TabManager.tabList)
-   console.log("Initializing FB_Files")
-   console.log(localStorage.finchBloxFileNames)
-   console.log(Object.keys(localStorage))
-   if (localStorage.currentFbFile) {
-     //this.currentFile = localStorage.currentFbFile
-   } else {
-     //localStorage.finchBloxFileNames = null
-   }
- }
- FB_Files.prototype.newFile = function(filename, contents) {
+ function FB_Files() {}
+ FB_Files.newFile = function(filename, contents) {
    //check if the filename already exists
    if (Object.keys(localStorage).includes(filename)) {
      console.error("filename " + filename + " already exists.")
@@ -30,12 +22,10 @@
    }
    allFileNames.push(filename)
    localStorage.finchBloxFileNames = allFileNames.toString()
-   console.log(localStorage.finchBloxFileNames)
-   console.log(Object.keys(localStorage))
-   //localStorage.finchBloxFileNames.push(filename)
+
    localStorage[filename] = contents
  }
- FB_Files.prototype.getFileNames = function() {
+ FB_Files.getFileNames = function() {
    if (localStorage.finchBloxFileNames) {
      let filenames = localStorage.finchBloxFileNames.replace(/,/g, '","')
      let filesString = '{"files":["' + filenames + '"]}'
@@ -44,7 +34,7 @@
      return '{"files":[]}'
    }
  }
- FB_Files.prototype.openFile = function(filename) {
+ FB_Files.openFile = function(filename) {
    let projectContent = localStorage[filename]
 
    if (projectContent) {
@@ -55,21 +45,26 @@
      console.error("No contents found for file named " + filename)
    }
  }
- FB_Files.prototype.autoSave = function(projectContent) {
+ FB_Files.autoSave = function(projectContent) {
    localStorage[localStorage.currentFbFile] = projectContent
  }
- FB_Files.prototype.getAvailableName = function(nameRequested) {
+ FB_Files.getAvailableName = function(nameRequested) {
    let alreadySanitized = true; //false triggers popup to remove invalid characters
    let alreadyAvailable = true; //false triggers popup to choose another name
    if (Object.keys(localStorage).includes(nameRequested)) {
      let parts = nameRequested.split("_")
-     let lastPart = parseInt(parts[parts.length - 2])
-     if (isNaN(lastPart)) {
-       parts.splice(parts.length-1, 0, "1")
+
+     let numParts = parts[parts.length - 2].split("(")
+     let currentNum = parseInt(numParts[numParts.length-1])
+     if (numParts.length > 1 && !isNaN(currentNum)) {
+       currentNum = currentNum + 1
+       numParts[numParts.length-1] = currentNum + ")"
      } else {
-       lastPart = lastPart + 1
-       parts[parts.length - 2] = lastPart.toString()
+       currentNum = 1
+       numParts.push(currentNum + ")")
      }
+     parts[parts.length - 2] = numParts.join("(")
+
      let nameToCheck = parts.join("_")
      console.log("The name " + nameRequested + " is already taken. Checking " + nameToCheck)
      return this.getAvailableName(nameToCheck)
@@ -77,7 +72,7 @@
      return '{"availableName":"' + nameRequested + '", "alreadySanitized":' + alreadySanitized + ', "alreadyAvailable":' + alreadyAvailable + '}'
    }
  }
- FB_Files.prototype.rename = function(request){
+ FB_Files.rename = function(request){
    let oldName = request.split("&")[0].split("=").pop();
    let newName = request.split("&")[1].split("=").pop();
    if (Object.keys(localStorage).includes(newName)) {
@@ -88,7 +83,7 @@
    this.deleteFile(oldName)
    this.openFile(newName)
  }
- FB_Files.prototype.deleteFile = function(filename) {
+ FB_Files.deleteFile = function(filename) {
    let fn = localStorage.finchBloxFileNames.split(",")
    let remainingFileNames = fn.filter(value => {
      return value != filename
@@ -100,16 +95,12 @@
 
  //https://code.tutsplus.com/tutorials/the-web-audio-api-adding-sound-to-your-web-app--cms-23790
  function FB_Audio() {
-   // Create the audio context
+   // Create the audio context and volume
    this.context = new AudioContext();
-   //this.oscillator = this.context.createOscillator()
-   //this.oscillator.type = 'triangle'
    this.volume = this.context.createGain();
-   //this.volume.gain.value = 0.1;
-   //this.oscillator.connect(this.volume)
    this.volume.connect(this.context.destination)
 
-
+   //Set up sound effects
    //https://developer.mozilla.org/en-US/docs/Web/API/Web_Audio_API/Using_Web_Audio_API
    this.click2Element = document.getElementById("click2")
    const track = this.context.createMediaElementSource(this.click2Element);
@@ -213,31 +204,31 @@
        let filename;
        switch (query[0]) {
          case "files":
-           responseBody = fbFiles.getFileNames();
+           responseBody = FB_Files.getFileNames();
            break;
          case "new":
            filename = query[1].split("=").pop();
            let projectContent = request.body
-           fbFiles.newFile(filename, projectContent)
+           FB_Files.newFile(filename, projectContent)
            break;
          case "open":
            filename = query[1].split("=").pop();
-           fbFiles.openFile(filename)
+           FB_Files.openFile(filename)
            //TODO: What if opening fails?
            break;
          case "autoSave":
-           fbFiles.autoSave(request.body)
+           FB_Files.autoSave(request.body)
            break;
          case "getAvailableName":
            filename = query[1].split("&")[0].split("=").pop();
-           responseBody = fbFiles.getAvailableName(filename)
+           responseBody = FB_Files.getAvailableName(filename)
            break;
          case "rename":
-           fbFiles.rename(query[1])
+           FB_Files.rename(query[1])
            break;
          case "delete":
            filename = query[1].split("&")[0].split("=").pop();
-           fbFiles.deleteFile(filename)
+           FB_Files.deleteFile(filename)
            CallbackManager.data.close()
            break;
          default:
@@ -256,14 +247,7 @@
      case "robot":
        switch(query[0]) {
          case "startDiscover":
-           //This prevents the automatic scan FinchBlox wants to do when a robot disconnects.
-           /*if (finchBloxUserDisconnecting) {
-             console.log("not starting discover and setting disconnecting to false")
-             CallbackManager.robot.stopDiscover()
-             finchBloxUserDisconnecting = false
-           } else {*/
-             findAndConnect();
-           //}
+           findAndConnect();
            break;
          case "stopDiscover":
            //TODO: fill in when ble scanning is implemented
@@ -297,7 +281,6 @@
 
    console.log("Sending response for " + request.id + " with body '" + responseBody + "'")
    CallbackManager.httpResponse(request.id, status, responseBody);
-
  }
 
 

@@ -37,20 +37,22 @@ function findAndConnect() {
     return;
   }
 
-  let bleFilters = [{
-    services: ["6e400001-b5a3-f393-e0a9-e50e24dcca9e"]
-  }]
-  //acceptAllDevices: true
+  //Other ways to scan...
+  //let bleFilters = [{ services: ["6e400001-b5a3-f393-e0a9-e50e24dcca9e"] }]
+  //let bleFilters = [{ acceptAllDevices: true }]
+  let bleFilters = [
+    { namePrefix: "FN" },
+    { namePrefix: "BB" },
+    { namePrefix: "MB" }
+  ]
   if (FinchBlox) {
-    bleFilters = [{
-      namePrefix: "FN"
-    }]
+    bleFilters = [{ namePrefix: "FN" }]
   }
 
   navigator.bluetooth.requestDevice({
-      filters: bleFilters
-    })
-    .then(device => {
+    filters: bleFilters,
+    optionalServices: ["6e400001-b5a3-f393-e0a9-e50e24dcca9e"]
+  }).then(device => {
 
       //once the user has selected a device, check that it is a supported device.
       console.log("User selected " + device.name);
@@ -70,27 +72,31 @@ function findAndConnect() {
         return Promise.reject(new Error("Device selected is not of a supported type."));
       }
 
+      connectToRobot(device)
+
+    }).catch(error => {
+      console.error("Error requesting device: " + error.message)
+    })
+}
+
+function connectToRobot(device) {
       //if the device is supported, assign it a letter and Robot object.
       const devLetter = getNextDevLetter();
       console.log("setting dev letter " + devLetter);
-      let robotNotAlreadyInList = true;
       for (let i = 0; i < robots.length; i++) {
         if (robots[i].device.name == device.name) {
           robotConnecting = robots[i];
           robotConnecting.reconnect(device, devLetter);
           robots.splice(i, 1);
-          robotNotAlreadyInList = false;
         }
       }
-      if (robotNotAlreadyInList) {
+      if (robotConnecting == null) {
         robotConnecting = new Robot(device, devLetter);
       }
       //Get a notification if this device disconnects.
       device.addEventListener('gattserverdisconnected', onDisconnected);
       //Attempt to connect to remote GATT Server.
-      return device.gatt.connect();
-    })
-    .then(server => {
+      device.gatt.connect().then(server => {
       // Get the Service
       console.log("getting service")
       return server.getPrimaryService("6e400001-b5a3-f393-e0a9-e50e24dcca9e");
@@ -130,7 +136,15 @@ function findAndConnect() {
     })
     .catch(error => {
       console.error("Device request failed: " + error.message);
+      let r = robotConnecting
       robotConnecting = null
+      if (r.isReconnecting) {
+        console.error("Should attempt to reconnect...")
+        setTimeout(function() {
+          console.error("Attempting to reconnect again to " + r.fancyName)
+          connectToRobot(r.device)
+        }, 1000)
+      }
     });
 }
 
@@ -147,6 +161,8 @@ function onConnectionComplete() {
   }
 
   console.log("Connection to " + robotConnecting.fancyName + " complete. Starting sensor polling.")
+
+  if (robotConnecting.isReconnecting) { robotConnecting.completeReconnection() }
 
   //Start polling sensors
   var pollStart = Uint8Array.of(0x62, 0x67);
@@ -177,14 +193,11 @@ function onDisconnected(event) {
         robot: robots[i].devLetter,
         connectionLost: true
       });
-      //robots.splice(i, 1);
       robots[i].externalDisconnect();
       updateConnectedDevices();
       let cf = " " + thisLocaleTable["Connection_Failure"];
       let msg = robots[i].fancyName + cf;
       showErrorModal(cf, msg, true)
-      //In the case that the robot is still in the list, it has disconnected
-      // from outside the app. Start some sort of auto reconnect here?
     }
   }
 }

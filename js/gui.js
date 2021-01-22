@@ -6,7 +6,11 @@
 /**
  * Global variables/constants and initial setup.
  */
-if (typeof FinchBlox === undefined) { var FinchBlox = false } //If the finchblox frontend hasn't been loaded, then this isn't finchblox.
+ 
+//If the finchblox frontend hasn't been loaded, then this isn't finchblox.
+if (FinchBlox === undefined) { var FinchBlox = false }
+console.log("FinchBlox == " + FinchBlox)
+
 const header = document.getElementById('main-header');
 const finder = document.getElementById('finder');
 const connected = document.getElementById('connected');
@@ -61,14 +65,14 @@ function updateConnectedDevices() {
   if (FinchBlox) {
     console.log("Updating FinchBlox connected devices")
 
-    if (robotConnecting != null) {
+    if (robotConnecting != null && RowDialog.currentDialog != null) {
       let guiDevice = RowDialog.currentDialog.discoveredDevices[0];
       RowDialog.currentDialog.selectDevice(guiDevice)
     }
 
     const robotA = getRobotByLetter("A")
     if (robotA != null) {
-      CallbackManager.robot.updateStatus(robotA.device.name, true)
+      CallbackManager.robot.updateStatus(robotA.device.name, robotA.isConnected)
     }
 
     return;
