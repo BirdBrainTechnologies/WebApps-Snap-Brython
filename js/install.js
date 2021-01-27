@@ -17,12 +17,14 @@
  */
 'use strict';
 
-let deferredInstallPrompt = null;
-const installButton = document.getElementById('butInstall');
-installButton.addEventListener('click', installPWA);
+if (FinchBlox === undefined || !FinchBlox) {
+  let deferredInstallPrompt = null;
+  const installButton = document.getElementById('butInstall');
+  installButton.addEventListener('click', installPWA);
 
-// CODELAB: Add event listener for beforeinstallprompt event
-window.addEventListener('beforeinstallprompt', saveBeforeInstallPromptEvent);
+  // CODELAB: Add event listener for beforeinstallprompt event
+  window.addEventListener('beforeinstallprompt', saveBeforeInstallPromptEvent);
+}
 
 /**
  * Event handler for beforeinstallprompt event.
@@ -74,5 +76,5 @@ window.addEventListener('appinstalled', logAppInstalled);
  */
 function logAppInstalled(evt) {
   // CODELAB: Add code to log the event
-  console.log('BlueBird was installed.', evt);
+  console.log('Web App was installed.', evt);
 }

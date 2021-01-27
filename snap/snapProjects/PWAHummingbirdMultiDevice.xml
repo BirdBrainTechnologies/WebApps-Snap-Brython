@@ -800,7 +800,7 @@
 
                       const angle = 180.0 + ((Math.atan2(xpp, ypp)) * (180 / Math.PI)) //convert result to degrees
 
-                      return ((Math.round(angle) + 180) % 360) //turn so that beak points north
+                      return Math.round(angle)
                     }
                   }
 

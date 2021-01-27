@@ -222,6 +222,8 @@ Robot.prototype.externalDisconnect = function() {
   console.log("setting isConnected to false for " + this.fancyName)
   this.isConnected = false;
   this.devLetter = "X"
+  this.RX = null
+  this.TX = null 
 
   setTimeout(function() {
     console.log("Attempting to reconnect to " + this.fancyName)

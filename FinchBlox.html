@@ -21,6 +21,7 @@
   <link rel="icon"  type="image/png" href="img/fb_icon_32x32.png">
 
   <link href="MyCSS.css" rel="stylesheet" type="text/css" />
+  		<link href="fontawesome/css/all.min.css" rel="stylesheet" type="text/css">
   <link href="css/fonts.css" rel="stylesheet" type="text/css">
   <link href="css/custom.css" rel="stylesheet" type="text/css">
   <script type="text/javascript" src="js/all.js"></script>
@@ -62,11 +63,6 @@
   <span id="debug" class="noselect" style="color:#fff; position:absolute; margin-left:300px;">NoJS</span>
 
   <!-- Web app specific from here down -->
-  <div id="butInstall" class="fa-stack" aria-label="Install" hidden>
-    <a id="btn-install" class="btn btn-orange">
-      <i class="fas fa-download fa-lg"></i>
-    </a>
-  </div>
 
   <!-- Include main code -->
   <script>const useSnap=false;</script>
@@ -86,12 +82,14 @@
     // Register service worker.
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
+        console.log("About to register service worker...")
         navigator.serviceWorker.register('service-worker-finchblox.js')
           .then((reg) => {
             console.log('Service worker registered.', reg);
           }).catch(error => {
             console.error("Error registering service worker: " + error.message);
           });
+        console.log("Calling onLoad()...")
         onLoad();
       });
     }

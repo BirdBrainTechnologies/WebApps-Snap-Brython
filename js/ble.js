@@ -194,10 +194,10 @@ function onDisconnected(event) {
         connectionLost: true
       });
       robots[i].externalDisconnect();
-      updateConnectedDevices();
       let cf = " " + thisLocaleTable["Connection_Failure"];
       let msg = robots[i].fancyName + cf;
       showErrorModal(cf, msg, true)
+      updateConnectedDevices();
     }
   }
 }

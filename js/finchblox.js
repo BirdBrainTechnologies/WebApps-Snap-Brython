@@ -251,7 +251,13 @@ function parseFinchBloxRequest(request) {
     case "robot":
       switch (query[0]) {
         case "startDiscover":
-          findAndConnect();
+          /*if (robots[0] == null) {
+            findAndConnect();
+          }*/
+          console.log("startDiscover error modal = " + document.getElementById("errorModal"))
+          if (document.getElementById("errorModal") == null) {
+            findAndConnect();
+          }
           break;
         case "stopDiscover":
           //TODO: fill in when ble scanning is implemented

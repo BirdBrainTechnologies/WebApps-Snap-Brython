@@ -86,7 +86,7 @@ function parseMessage(message) {
       }
       break;
     case "motors": //FinchBlox specific
-      robot.setMotors(message.speedL, message.ticksL, message.speedR, message.ticksR);
+      robot.setMotors(message.speedL * 100/36, message.ticksL, message.speedR * 100/36, message.ticksR);
       break;
     case "stopFinch":
       robot.setMotors(0, 0, 0, 0);

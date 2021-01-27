@@ -6,7 +6,7 @@
 /**
  * Global variables/constants and initial setup.
  */
- 
+
 //If the finchblox frontend hasn't been loaded, then this isn't finchblox.
 if (FinchBlox === undefined) { var FinchBlox = false }
 console.log("FinchBlox == " + FinchBlox)
@@ -70,9 +70,11 @@ function updateConnectedDevices() {
       RowDialog.currentDialog.selectDevice(guiDevice)
     }
 
-    const robotA = getRobotByLetter("A")
-    if (robotA != null) {
-      CallbackManager.robot.updateStatus(robotA.device.name, robotA.isConnected)
+    if (robots.length > 1) {
+      console.error("MORE THAN ONE ROBOT CONNECTED?")
+    } else if (robots.length == 1) {
+      console.log("Updating connected for " + robots[0].fancyName + " to " + robots[0].isConnected)
+      CallbackManager.robot.updateStatus(robots[0].device.name, robots[0].isConnected)
     }
 
     return;
@@ -562,9 +564,11 @@ function closeVideoModals() {
 
 /**
  * closeErrorModal - Function for closing an error modal. Called by clicking
- * the x on the modal.
+ * the x on the modal, or automatically when no longer needed.
  */
 function closeErrorModal() {
   let modal = document.getElementById("errorModal");
-  modal.parentNode.removeChild(modal)
+  if (modal != null) {
+    modal.parentNode.removeChild(modal)
+  }
 }
