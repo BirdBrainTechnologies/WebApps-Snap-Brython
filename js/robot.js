@@ -18,11 +18,10 @@ const FINCH_INITIAL_MOTOR_ARRAY = [0, 0, 0, 1, 0, 0, 0, 1];
  * Robot - Initializer called when a new robot is connected.
  *
  * @param  {Object} device    Device object from navigator.bluetooth
- * @param  {string} devLetter Character to identify device with (A, B, or C)
  */
-function Robot(device, devLetter) {
+function Robot(device) {
   this.device = device;
-  this.devLetter = devLetter;
+  this.devLetter = "X";
   this.fancyName = getDeviceFancyName(device.name);
   this.batteryLevel = Robot.batteryLevel.UNKNOWN
   this.RX = null; //receiving
@@ -35,7 +34,7 @@ function Robot(device, devLetter) {
   this.printTimer = null;
   this.isCalibrating = false;
   this.setAllTimeToAdd = 0;
-  this.isConnected = true;
+  this.isConnected = false;
   this.isReconnecting = false;
   this.currentSensorData = [];
 
@@ -199,19 +198,28 @@ Robot.prototype.isA = function(type) {
   else return false
 }
 
+Robot.prototype.setDisconnected = function() {
+  this.isConnected = false;
+  this.devLetter = "X"
+  this.RX = null
+  this.TX = null
+  this.batteryLevel = Robot.batteryLevel.UNKNOWN
+  if (this.setAllInterval != null) {
+    clearInterval(this.setAllInterval)
+  }
+  updateConnectedDevices();
+}
+
 /**
  * Robot.prototype.disconnect - Disconnect this robot and remove it from the
  * list.
  */
-Robot.prototype.disconnect = function() {
+Robot.prototype.userDisconnect = function() {
+  console.log("User disconnected " + this.fancyName)
   var index = robots.indexOf(this);
   if (index !== -1) robots.splice(index, 1);
-  console.log("after disconnect: " + robots.length);
-  if (this.setAllInterval != null) {
-    clearInterval(this.setAllInterval)
-  }
   this.device.gatt.disconnect();
-  updateConnectedDevices();
+  this.setDisconnected()
 }
 
 /**
@@ -219,38 +227,13 @@ Robot.prototype.disconnect = function() {
  * (rather than the user disconnecting through the app)
  */
 Robot.prototype.externalDisconnect = function() {
-  console.log("setting isConnected to false for " + this.fancyName)
-  this.isConnected = false;
-  this.devLetter = "X"
-  this.RX = null
-  this.TX = null 
+  this.setDisconnected()
 
   setTimeout(function() {
     console.log("Attempting to reconnect to " + this.fancyName)
-    connectToRobot(this.device)
+    this.isReconnecting = true
+    connectToRobot(this)
   }.bind(this), 1000)
-}
-
-/**
- * Robot.prototype.reconnect - Connect again. Only used in the case of external
- * disconnect.
- *
- * @param  {type} devLetter New device letter for the robot
- */
-Robot.prototype.reconnect = function(device, devLetter) {
-  this.isReconnecting = true
-  this.device = device
-  this.devLetter = devLetter
-}
-
-/**
- * Robot.prototype.completeReconnection - This is called when the reconnection
- * process is successfully completed.
- */
-Robot.prototype.completeReconnection = function() {
-  this.isConnected = true;
-  this.isReconnecting = false;
-  closeErrorModal()
 }
 
 /**
@@ -265,7 +248,7 @@ Robot.prototype.write = function(data) {
   }
 
   if (this.writeInProgress) {
-    console.log("Write already in progress. data = " + data)
+    //console.log("Write already in progress. data = " + data)
     if (data != null) {
       //console.log(data);
       this.dataQueue.push(data);
@@ -331,7 +314,7 @@ Robot.prototype.sendSetAll = function() {
         symbolSet = (this.ledDisplayData.values[1] == 0x80)
         //if (!symbolSet) { flashSet = true; }
         if (!symbolSet) { flashSet = (this.ledDisplayData.values[1] != 0) }
-        console.log("Found new led display data. Symbol? " + symbolSet + " flash? " + flashSet);
+        //console.log("Found new led display data. Symbol? " + symbolSet + " flash? " + flashSet);
         ledArray = Array.prototype.slice.call(this.ledDisplayData.getSendable(flashSet), 2);
       }
       //const motorsChanged = !Robot.dataIsEqual(this.motorsData, this.oldMotorsData);
@@ -367,7 +350,7 @@ Robot.prototype.sendSetAll = function() {
         //const cmdArray = [0xD2, mode].concat(motorArray, Array.prototype.slice.call(this.ledDisplayData, 2))
 
         const cmdArray = [0xD2, mode].concat(motorArray, ledArray);
-        console.log("Sending " + cmdArray);
+        //console.log("Sending " + cmdArray);
         const command = new Uint8Array(cmdArray)
         this.write(command);
       }
@@ -694,7 +677,7 @@ Robot.prototype.receiveSensorData = function(data) {
     }
     if (newLevel != this.batteryLevel) {
       this.batteryLevel = newLevel
-      updateBatteryStatus(this)
+      updateBatteryStatus()
     }
   }
 

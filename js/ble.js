@@ -6,9 +6,8 @@
  /**
   *  Global variables/constants
   */
-const MAX_CONNECTIONS = 3; //If increased, make sure to update getNextDevLetter
-var robots = [] //Robot array representing all currently connected robots
-var robotConnecting = null; //Robot that is in the process of connecting
+var robots = [] //Robot array representing all currently known robots
+
 
 /*
 About getting the ble state... Cannot really determine whether ble is turned on
@@ -33,8 +32,19 @@ https://bugs.chromium.org/p/chromium/issues/detail?id=577953
  * device if it is of a recognized type.
  */
 function findAndConnect() {
-  if (robotConnecting || robots.length == MAX_CONNECTIONS) {
+  if (getNextDevLetter() == null) {
+    console.error("No more connections available.")
     return;
+  }
+
+  //When the user opens the chooser, cancel any robots currently
+  // looking to reconnect.
+  for (let i = 0; i < robots.length; i++) {
+    if (robots[i].isReconnecting && robots[i] != robot) {
+      //This should cancel the connect attempt, but it doesn't seem to work.
+      robots[i].device.gatt.disconnect();
+      robots[i].isReconnecting = false;
+    }
   }
 
   //Other ways to scan...
@@ -55,55 +65,49 @@ function findAndConnect() {
   }).then(device => {
 
       //once the user has selected a device, check that it is a supported device.
-      console.log("User selected " + device.name);
-
-      //This block is temporary until ble scanning is implemented. For now, we
-      // will send the requested device to the dialog so that finchblox can set
-      // the device up.
-      if (FinchBlox) {
-        console.log("Discovered " + device.name);
-        let fancyName = getDeviceFancyName(device.name)
-        fancyName = fancyName.slice(0, -6)
-        CallbackManager.robot.discovered('[{"id":"' + device.name + '", "device":"Finch", "name":"' + fancyName + '", "RSSI":0}]')
-      }
-
       const type = Robot.getTypeFromName(device.name);
       if (type == null) {
         return Promise.reject(new Error("Device selected is not of a supported type."));
       }
 
-      connectToRobot(device)
+      let robot = getRobotByName(device.name)
+      if (robot == null) {
+        robot = new Robot(device)
+        robots.push(robot);
+      }
+
+      //This block is temporary until ble scanning is implemented. For now, we
+      // will send the requested device to the dialog so that finchblox can set
+      // the device up.
+      if (FinchBlox) {
+        finchBloxNotifyDiscovered(device)
+        finchBloxRobot = robot
+      }
+
+      connectToRobot(robot)
 
     }).catch(error => {
       console.error("Error requesting device: " + error.message)
+      updateConnectedDevices()
     })
 }
 
-function connectToRobot(device) {
-      //if the device is supported, assign it a letter and Robot object.
-      const devLetter = getNextDevLetter();
-      console.log("setting dev letter " + devLetter);
-      for (let i = 0; i < robots.length; i++) {
-        if (robots[i].device.name == device.name) {
-          robotConnecting = robots[i];
-          robotConnecting.reconnect(device, devLetter);
-          robots.splice(i, 1);
-        }
-      }
-      if (robotConnecting == null) {
-        robotConnecting = new Robot(device, devLetter);
-      }
-      //Get a notification if this device disconnects.
-      device.addEventListener('gattserverdisconnected', onDisconnected);
-      //Attempt to connect to remote GATT Server.
-      device.gatt.connect().then(server => {
+function connectToRobot(robot) {
+
+  robot.devLetter = getNextDevLetter();
+  let device = robot.device
+
+  //Get a notification if this device disconnects.
+  device.addEventListener('gattserverdisconnected', onDisconnected);
+  //Attempt to connect to remote GATT Server.
+  device.gatt.connect().then(server => {
       // Get the Service
-      console.log("getting service")
+      //console.log("getting service")
       return server.getPrimaryService("6e400001-b5a3-f393-e0a9-e50e24dcca9e");
     })
     .then(service => {
-      console.log("getting characteristic from ")
-      console.log(service)
+      //console.log("getting characteristic from ")
+      //console.log(service)
 
       // Get receiving Characteristic
       service.getCharacteristic("6e400003-b5a3-f393-e0a9-e50e24dcca9e")
@@ -111,10 +115,10 @@ function connectToRobot(device) {
         .then(characteristic => {
           characteristic.addEventListener('characteristicvaluechanged',
             onCharacteristicValueChanged);
-          console.log('Notifications have been started.');
-          robotConnecting.RX = characteristic;
-          if (robotConnecting.TX != null) {
-            onConnectionComplete();
+          //console.log('Notifications have been started.');
+          robot.RX = characteristic;
+          if (robot.TX != null) {
+            onConnectionComplete(robot);
           }
         })
         .catch(error => {
@@ -124,9 +128,9 @@ function connectToRobot(device) {
       // Get sending Characteristic
       service.getCharacteristic("6e400002-b5a3-f393-e0a9-e50e24dcca9e")
         .then(characteristic => {
-          robotConnecting.TX = characteristic;
-          if (robotConnecting.RX != null) {
-            onConnectionComplete();
+          robot.TX = characteristic;
+          if (robot.RX != null) {
+            onConnectionComplete(robot);
           }
         })
         .catch(error => {
@@ -136,14 +140,13 @@ function connectToRobot(device) {
     })
     .catch(error => {
       console.error("Device request failed: " + error.message);
-      let r = robotConnecting
-      robotConnecting = null
-      if (r.isReconnecting) {
-        console.error("Should attempt to reconnect...")
+
+      if (robot.isReconnecting) {
+        //console.error("Should attempt to reconnect...")
         setTimeout(function() {
-          console.error("Attempting to reconnect again to " + r.fancyName)
-          connectToRobot(r.device)
-        }, 1000)
+          console.log("Attempting to reconnect again to " + robot.fancyName)
+          connectToRobot(robot)
+        }, 2000)
       }
     });
 }
@@ -153,29 +156,32 @@ function connectToRobot(device) {
  * and TX characteristics discovered. Starts polling for sensor data, adds the
  * device to the array of connected robots, and loads the snap iframe.
  */
-function onConnectionComplete() {
-  if (robotConnecting == null || robotConnecting.RX == null || robotConnecting.TX == null) {
+function onConnectionComplete(robot) {
+  if (robot == null || robot.RX == null || robot.TX == null) {
     console.error("onConnectionComplete: incomplete connection");
-    robotConnecting = null
+    robot = null
     return;
   }
 
-  console.log("Connection to " + robotConnecting.fancyName + " complete. Starting sensor polling.")
+  //console.log("Connection to " + robot.fancyName + " complete. Starting sensor polling.")
 
-  if (robotConnecting.isReconnecting) { robotConnecting.completeReconnection() }
+  robot.isConnected = true;
+  robot.isReconnecting = false;
+  closeErrorModal()
 
   //Start polling sensors
   var pollStart = Uint8Array.of(0x62, 0x67);
   var pollStop = Uint8Array.of(0x62, 0x73);
-  robotConnecting.write(pollStart);
+  robot.write(pollStart);
 
   //Start the setAll timer
-  robotConnecting.startSetAll();
+  robot.startSetAll();
 
-  //Add robot to the list and open snap
-  robots.push(robotConnecting);
+  if (!robots.includes(robot)) { robots.push(robot) }
+  if (FinchBlox) { finchBloxRobot = robot }
   updateConnectedDevices();
-  robotConnecting = null;
+  updateBatteryStatus()
+  //open snap or brython.
   loadIDE();
 }
 
@@ -186,18 +192,17 @@ function onConnectionComplete() {
  */
 function onDisconnected(event) {
   let device = event.target;
-  console.log('Device ' + device.name + ' is disconnected.');
+  //console.log('Device ' + device.name + ' is disconnected.');
   for (let i = 0; i < robots.length; i++) {
     if (robots[i].device.name == device.name) {
       sendMessage({
         robot: robots[i].devLetter,
         connectionLost: true
       });
-      robots[i].externalDisconnect();
       let cf = " " + thisLocaleTable["Connection_Failure"];
       let msg = robots[i].fancyName + cf;
       showErrorModal(cf, msg, true)
-      updateConnectedDevices();
+      robots[i].externalDisconnect();
     }
   }
 }
@@ -259,7 +264,7 @@ function getRobotByLetter(letter) {
 
 /**
  * getNextDevLetter - Returns the next available id letter starting with A and
- * ending with C.
+ * ending with C. Max 3 connections.
  *
  * @return {?string}  Next available id letter of null if they are all taken
  */

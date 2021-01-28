@@ -4,6 +4,7 @@
 
 var currentFinchBloxBeak = [0, 0, 0];
 var fbAudio = null;
+var finchBloxRobot = null;
 //var fbFiles = new FB_Files()
 //console.log(localStorage.finchBloxFileNames)
 //console.log(Object.keys(localStorage))
@@ -38,7 +39,7 @@ FB_Files.openFile = function(filename) {
   let projectContent = localStorage[filename]
 
   if (projectContent) {
-    console.log("Opening file " + filename + " with contents: " + projectContent);
+    //console.log("Opening file " + filename + " with contents: " + projectContent);
     localStorage.currentFbFile = filename
     CallbackManager.data.open(filename, projectContent);
   } else {
@@ -140,7 +141,8 @@ FB_Audio.prototype.playNote = function(requestString) {
 
 
 function parseFinchBloxRequest(request) {
-  const robot = getRobotByLetter("A");
+  //const robot = getRobotByLetter("A");
+  const robot = finchBloxRobot
   //console.log("FinchBlox request string " + JSON.stringify(request));
   let status = 200;
   let responseBody = "";
@@ -254,8 +256,9 @@ function parseFinchBloxRequest(request) {
           /*if (robots[0] == null) {
             findAndConnect();
           }*/
-          console.log("startDiscover error modal = " + document.getElementById("errorModal"))
-          if (document.getElementById("errorModal") == null) {
+          //console.log("startDiscover error modal = " + document.getElementById("errorModal"))
+          //if (document.getElementById("errorModal") == null) {
+          if (RowDialog.currentDialog != null && RowDialog.currentDialog.constructor == DiscoverDialog) {
             findAndConnect();
           }
           break;
@@ -277,8 +280,10 @@ function parseFinchBloxRequest(request) {
           }
           break;
         case "disconnect":
+          console.log("finchblox disconnect request.")
           if (robot != null) {
-            robot.disconnect()
+            robot.userDisconnect()
+            finchBloxRobot = null
             //TODO: Should this be done in the FinchBlox frontend?
             DeviceManager.removeAllDevices()
           }
@@ -395,4 +400,35 @@ function getFinchBloxRobotInput(path, robot) {
   }
 
   return response
+}
+
+/**
+ * finchBloxNotifyDiscovered - Tell the frontend which device was 'discovered'.
+ * Currently, this will be the device selected in the chooser, or the device
+ * that has reconnected automatically.
+ *
+ * @param  {Object} device ble device connecting
+ */
+function finchBloxNotifyDiscovered(device) {
+  console.log("Discovered " + device.name);
+  let fancyName = getDeviceFancyName(device.name)
+  fancyName = fancyName.slice(0, -6)
+  CallbackManager.robot.discovered('[{"id":"' + device.name + '", "device":"Finch", "name":"' + fancyName + '", "RSSI":0}]')
+}
+
+/**
+ * finchBloxSetDevice - Set the device in the frontend
+ *
+ * @return {boolean}  true if set successfully
+ */
+function finchBloxSetFrontendDevice() {
+  if (RowDialog.currentDialog != null &&
+    RowDialog.currentDialog.discoveredDevices != null &&
+    RowDialog.currentDialog.discoveredDevices.length > 0) {
+    let guiDevice = RowDialog.currentDialog.discoveredDevices[0];
+    RowDialog.currentDialog.selectDevice(guiDevice)
+    return true
+  } else {
+    return false
+  }
 }

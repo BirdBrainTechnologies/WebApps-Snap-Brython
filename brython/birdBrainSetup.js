@@ -17,7 +17,7 @@ window.birdbrain.robotType = {
   C: 3
 };
 
-console.log("setting up message channel")
+//console.log("setting up message channel")
 window.birdbrain.messageChannel = new MessageChannel();
 window.birdbrain.messageChannel.port1.onmessage = function(e) {
   //console.log("Got a message: ");
@@ -321,11 +321,11 @@ window.birdbrain.wrapPython = function(src) {
 
 function onFileChoice() {
   var input = document.getElementById('chooseFile')
-  console.log("found " + input.files.length + " files.")
-  console.log(input.files[0].name + " " + input.files[0].size + " " + input.files[0].type)
+  //console.log("found " + input.files.length + " files.")
+  //console.log(input.files[0].name + " " + input.files[0].size + " " + input.files[0].type)
   input.files[0].text().then(contents => {
-    console.log("found contents:")
-    console.log(contents)
+    //console.log("found contents:")
+    //console.log(contents)
     var container = document.getElementById('loadedScript');
     container.value = contents;
     container.click();

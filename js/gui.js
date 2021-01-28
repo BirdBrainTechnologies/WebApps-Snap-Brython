@@ -63,18 +63,24 @@ function onLoad() {
  */
 function updateConnectedDevices() {
   if (FinchBlox) {
-    console.log("Updating FinchBlox connected devices")
+    console.log("Updating FinchBlox connected devices. robots.length = " + robots.length)
 
-    if (robotConnecting != null && RowDialog.currentDialog != null) {
-      let guiDevice = RowDialog.currentDialog.discoveredDevices[0];
-      RowDialog.currentDialog.selectDevice(guiDevice)
+    if (RowDialog.currentDialog) {
+      if (!finchBloxSetFrontendDevice()) {
+        if (finchBloxRobot == null) {
+          console.log("no finchblox robot. closing dialog.")
+          RowDialog.currentDialog.closeDialog()
+        } else {
+          console.log("device automatically reconnected. Updating frontend.")
+          finchBloxNotifyDiscovered(finchBloxRobot.device)
+          finchBloxSetFrontendDevice()
+        }
+      }
     }
 
-    if (robots.length > 1) {
-      console.error("MORE THAN ONE ROBOT CONNECTED?")
-    } else if (robots.length == 1) {
-      console.log("Updating connected for " + robots[0].fancyName + " to " + robots[0].isConnected)
-      CallbackManager.robot.updateStatus(robots[0].device.name, robots[0].isConnected)
+    if (finchBloxRobot != null) {
+      console.log("Updating connected for " + finchBloxRobot.fancyName + " to " + finchBloxRobot.isConnected)
+      CallbackManager.robot.updateStatus(finchBloxRobot.device.name, finchBloxRobot.isConnected)
     }
 
     return;
@@ -84,7 +90,7 @@ function updateConnectedDevices() {
   $('#robots-connected-snap').empty();
 
   //hide the find robots button if we are already connected to the max.
-  if (robots.length == MAX_CONNECTIONS) {
+  if (getNextDevLetter() == null) {
     $('#find-button').hide();
   } else {
     $('#find-button').show();
@@ -185,7 +191,7 @@ function displayConnectedDevice(robot) {
 
   el.find('.button-disconnect').click(function() {
     console.log("button-disconnect");
-    robot.disconnect();
+    robot.userDisconnect();
   });
 
   robot.displayElement = el; //TODO: need this?
@@ -326,7 +332,7 @@ function updateBatteryStatus() {
 
   robots.forEach(function (robot) {
     if (robot.isConnected) {
-      console.log("Updating battery status for " + robot.devLetter + " of type " + robot.type + " to " + robot.batteryLevel)
+      //console.log("Updating battery status for " + robot.devLetter + " of type " + robot.type + " to " + robot.batteryLevel)
       battSelector = '.button-battery-' + robot.devLetter + ' i';
 
       switch (robot.batteryLevel) {
