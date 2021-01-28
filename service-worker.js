@@ -1905,7 +1905,7 @@ const FINCHBLOX_FILES_TO_CACHE = [
   'FinchBlox.html',
   'manifest-finchblox.json',
   'js/all.js',
-  'js/finchblox.js'
+  'js/finchblox.js',
   'click2.wav',
   'img/fb_icon_32x32.png',
   'img/fb_icon_128x128.png',
