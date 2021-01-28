@@ -284,7 +284,7 @@ function translateStrings() {
  */
 function setLanguage() {
   language = window.navigator.language;
-  console.log("window.navigator.language = " + language);
+  //console.log("window.navigator.language = " + language);
 
   if (language.startsWith("zh")) {
     if (language == "zh-TW" || language == "zh-tw") { language = "zh_Hant"; } // Specify trad chinese
@@ -295,17 +295,17 @@ function setLanguage() {
   // Convert old code for Hebrew to new
   if (language == "iw") { language = "he"; }
 
-  console.log("Language code used: " + language);
+  //console.log("Language code used: " + language);
 
   thisLocaleTable = fullTranslationTable[language];
   if (thisLocaleTable === null) {
-    console.log("Language unsupported. Defaulting to English (en)");
+    //console.log("Language unsupported. Defaulting to English (en)");
     language = "en";
     thisLocaleTable = fullTranslationTable[language]; // populate the locale phrases
   }
 
-  console.log("thisLocaleTable:");
-  console.log(thisLocaleTable);
+  //console.log("thisLocaleTable:");
+  //console.log(thisLocaleTable);
 
   translateStrings();
 }

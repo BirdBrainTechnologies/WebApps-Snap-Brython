@@ -17,14 +17,12 @@
  */
 'use strict';
 
-if (FinchBlox === undefined || !FinchBlox) {
-  let deferredInstallPrompt = null;
-  const installButton = document.getElementById('butInstall');
-  installButton.addEventListener('click', installPWA);
+let deferredInstallPrompt = null;
+const installButton = document.getElementById('butInstall');
+installButton.addEventListener('click', installPWA);
 
-  // CODELAB: Add event listener for beforeinstallprompt event
-  window.addEventListener('beforeinstallprompt', saveBeforeInstallPromptEvent);
-}
+// CODELAB: Add event listener for beforeinstallprompt event
+window.addEventListener('beforeinstallprompt', saveBeforeInstallPromptEvent);
 
 /**
  * Event handler for beforeinstallprompt event.
@@ -34,7 +32,7 @@ if (FinchBlox === undefined || !FinchBlox) {
  */
 function saveBeforeInstallPromptEvent(evt) {
   // CODELAB: Add code to save event & show the install button.
-  console.log("Ready to install: showing install button")
+  //console.log("Ready to install: showing install button")
   deferredInstallPrompt = evt;
   installButton.removeAttribute('hidden');
 }
@@ -55,13 +53,13 @@ function installPWA(evt) {
   deferredInstallPrompt.userChoice
       .then((choice) => {
         if (choice.outcome === 'accepted') {
-          console.log('User accepted the A2HS prompt', choice);
+          //console.log('User accepted the A2HS prompt', choice);
         } else {
-          console.log('User dismissed the A2HS prompt', choice);
+          //console.log('User dismissed the A2HS prompt', choice);
         }
         deferredInstallPrompt = null;
       }).catch(error => {
-            console.log(error.message);
+            console.error(error.message);
       });
 }
 

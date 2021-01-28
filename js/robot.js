@@ -28,7 +28,6 @@ function Robot(device) {
   this.TX = null; //sending
   this.displayElement = null;
   this.type = Robot.getTypeFromName(device.name);
-  console.log("type set to " + this.type);
   this.writeInProgress = false;
   this.dataQueue = [];
   this.printTimer = null;
@@ -61,6 +60,7 @@ Robot.propertiesFor = {
     setAllLength: 20,
     triLedCount: 5,
     buzzerIndex: 16,
+    buzzerBytes: 4,
     stopCommand: new Uint8Array([0xDF]),
     calibrationCommand: new Uint8Array([0xCE, 0xFF, 0xFF, 0xFF]),
     calibrationIndex: 16,
@@ -76,6 +76,7 @@ Robot.propertiesFor = {
     setAllLength: 19,
     triLedCount: 2,
     buzzerIndex: 15,
+    buzzerBytes: 4,
     stopCommand: new Uint8Array([0xCB, 0xFF, 0xFF, 0xFF]),
     calibrationCommand: new Uint8Array([0xCE, 0xFF, 0xFF, 0xFF]),
     calibrationIndex: 7,
@@ -90,8 +91,9 @@ Robot.propertiesFor = {
     setAllLetter: 0x90,
     setAllLength: 8,
     triLedCount: 0,
-    buzzerIndex: null, //no buzzer on the micro:bit
-    stopCommand: new Uint8Array([144, 0, 0, 0, 0, 0, 0, 0]),
+    buzzerIndex: 1,
+    buzzerBytes: 5,
+    stopCommand: new Uint8Array([0xCB, 0xFF, 0xFF, 0xFF]),
     calibrationCommand: new Uint8Array([0xCE, 0xFF, 0xFF, 0xFF]),
     calibrationIndex: 7,
     batteryIndex: null, //no battery monitoring for micro:bit
@@ -167,7 +169,7 @@ Robot.prototype.initializeDataArrays = function() {
  * to the robot. Stops the current timer if one is running.
  */
 Robot.prototype.startSetAll = function() {
-  console.log("Starting setAll. interval=" + (MIN_SET_ALL_INTERVAL + this.setAllTimeToAdd));
+  //console.log("Starting setAll. interval=" + (MIN_SET_ALL_INTERVAL + this.setAllTimeToAdd));
   if (this.setAllInterval != null) {
     clearInterval(this.setAllInterval)
   }
@@ -215,7 +217,7 @@ Robot.prototype.setDisconnected = function() {
  * list.
  */
 Robot.prototype.userDisconnect = function() {
-  console.log("User disconnected " + this.fancyName)
+  //console.log("User disconnected " + this.fancyName)
   var index = robots.indexOf(this);
   if (index !== -1) robots.splice(index, 1);
   this.device.gatt.disconnect();
@@ -230,7 +232,7 @@ Robot.prototype.externalDisconnect = function() {
   this.setDisconnected()
 
   setTimeout(function() {
-    console.log("Attempting to reconnect to " + this.fancyName)
+    //console.log("Attempting to reconnect to " + this.fancyName)
     this.isReconnecting = true
     connectToRobot(this)
   }.bind(this), 1000)
@@ -268,7 +270,7 @@ Robot.prototype.write = function(data) {
     data = this.dataQueue.shift();
     //console.log(data);
     if (this.dataQueue.length > 10) {
-      console.log("Too many writes queued (" + this.dataQueue.length + "). Increasing interval between setAll attempts...")
+      //console.log("Too many writes queued (" + this.dataQueue.length + "). Increasing interval between setAll attempts...")
       this.increaseSetAllInterval();
     }
   }
@@ -380,7 +382,7 @@ Robot.prototype.sendSetAll = function() {
 Robot.prototype.setLED = function(port, intensity) {
   //Only Hummingbird bits have single color leds
   if (!this.isA(Robot.ofType.HUMMINGBIRDBIT)) {
-    console.log("setLED called but robot is not a hummingbird.");
+    //console.log("setLED called but robot is not a hummingbird.");
     return;
   }
 
@@ -415,12 +417,12 @@ Robot.prototype.setLED = function(port, intensity) {
 Robot.prototype.setTriLED = function(port, red, green, blue) {
   //microbits do not have any trileds
   if (this.isA(Robot.ofType.MICROBIT)) {
-    console.log("setTriLED called on a robot of type microbit");
+    //console.log("setTriLED called on a robot of type microbit");
     return;
   }
   if (port == "all") { //finch tail requests only
     if (this.type != Robot.ofType.FINCH) {
-      console.log("setTriLED port=all only for finch tail leds.");
+      //console.log("setTriLED port=all only for finch tail leds.");
       return;
     }
 
@@ -429,7 +431,7 @@ Robot.prototype.setTriLED = function(port, red, green, blue) {
 
   } else {
     if (port < 1 || port > Robot.propertiesFor[this.type].triLedCount){
-      console.log("setTriLED invalid port: " + port);
+      //console.log("setTriLED invalid port: " + port);
       return;
     }
     var index;
@@ -442,7 +444,7 @@ Robot.prototype.setTriLED = function(port, red, green, blue) {
         index = 1 + portAdjust;
         break;
       default:
-        console.log("setTriLED invalid robot type: " + this.type);
+        console.error("setTriLED invalid robot type: " + this.type);
         return;
     }
 
@@ -459,11 +461,12 @@ Robot.prototype.setTriLED = function(port, red, green, blue) {
  */
 Robot.prototype.setServo = function(port, value) {
   if (!this.isA(Robot.ofType.HUMMINGBIRDBIT)) {
-    console.log("Only hummingbirds have servos.")
+    //console.log("Only hummingbirds have servos.")
     return
   }
   if (port < 1 || port > 4) {
-    console.log("setServo invalid port: " + port);
+    //console.log("setServo invalid port: " + port);
+    return
   }
 
   this.setAllData.update(port + 8, [value]);
@@ -480,7 +483,7 @@ Robot.prototype.setServo = function(port, value) {
  */
 Robot.prototype.setMotors = function(speedL, ticksL, speedR, ticksR) {
   if (!this.isA(Robot.ofType.FINCH)) {
-    console.log("Only finches have motors.")
+    //console.log("Only finches have motors.")
     return
   }
 
@@ -522,7 +525,7 @@ Robot.prototype.setMotors = function(speedL, ticksL, speedR, ticksR) {
 Robot.prototype.setBuzzer = function(note, duration) {
   var index = Robot.propertiesFor[this.type].buzzerIndex
   if (index == null) {
-    console.log("setBuzzer invalid robot type: " + this.type);
+    //console.log("setBuzzer invalid robot type: " + this.type);
     return;
   }
 
@@ -530,9 +533,12 @@ Robot.prototype.setBuzzer = function(note, duration) {
   let period = (1/frequency) * 1000000
   //TODO: check if period is in range?
 
-  this.setAllData.update(index, [
-    period >> 8, period & 0x00ff, duration >> 8, duration & 0x00ff
-  ])
+  let buzzerArray = [period >> 8, period & 0x00ff, duration >> 8, duration & 0x00ff]
+  if (this.isA(Robot.ofType.MICROBIT)) {
+    buzzerArray.splice(3, 0, 0x20)
+  }
+
+  this.setAllData.update(index, buzzerArray)
 }
 
 /**
@@ -540,13 +546,14 @@ Robot.prototype.setBuzzer = function(note, duration) {
  * that a note is only sent to the robot once.
  */
 Robot.prototype.clearBuzzerBytes = function() {
-  var index = Robot.propertiesFor[this.type].buzzerIndex
-  if (index == null) {
-    console.log("clearBuzzerBytes invalid robot type: " + this.type);
+  let index = Robot.propertiesFor[this.type].buzzerIndex
+  let bytes = Robot.propertiesFor[this.type].buzzerBytes
+  if (index == null || bytes == null) {
+    //console.log("clearBuzzerBytes invalid robot type: " + this.type);
     return;
   }
 
-  this.setAllData.reset(index, index + 4);
+  this.setAllData.reset(index, index + bytes);
 }
 
 /**

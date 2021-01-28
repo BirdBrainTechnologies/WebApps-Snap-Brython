@@ -69,7 +69,7 @@
                       C: 3
                     };
 
-                    console.log("setting up message channel")
+                    //console.log("setting up message channel")
                     window.birdbrain.messageChannel = new MessageChannel();
                     window.birdbrain.messageChannel.port1.onmessage = function (e) {
                         //console.log("Got a message: ");
@@ -477,7 +477,7 @@
 
                       const angle = 180.0 + ((Math.atan2(xpp, ypp)) * (180 / Math.PI)) //convert result to degrees
 
-                      return Math.round(angle) 
+                      return Math.round(angle)
                     }
                   }
 

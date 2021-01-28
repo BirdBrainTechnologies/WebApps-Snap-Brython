@@ -67,7 +67,7 @@ FB_Files.getAvailableName = function(nameRequested) {
     parts[parts.length - 2] = numParts.join("(")
 
     let nameToCheck = parts.join("_")
-    console.log("The name " + nameRequested + " is already taken. Checking " + nameToCheck)
+    //console.log("The name " + nameRequested + " is already taken. Checking " + nameToCheck)
     return this.getAvailableName(nameToCheck)
   } else {
     return '{"availableName":"' + nameRequested + '", "alreadySanitized":' + alreadySanitized + ', "alreadyAvailable":' + alreadyAvailable + '}'
@@ -280,7 +280,7 @@ function parseFinchBloxRequest(request) {
           }
           break;
         case "disconnect":
-          console.log("finchblox disconnect request.")
+          //console.log("finchblox disconnect request.")
           if (robot != null) {
             robot.userDisconnect()
             finchBloxRobot = null
@@ -381,7 +381,7 @@ function getFinchBloxRobotInput(path, robot) {
           correction = 1.06871493e-02 * R + 1.94526614e-02 * G + 6.12409825e-02 * B + 4.01343475e-04 * R * G + 4.25761981e-04 * R * B + 6.46091068e-04 * G * B + -4.41056971e-06 * R * G * B;
           break;
         default:
-          console.log("unknown light port " + port);
+          console.error("unknown light port " + port);
           return 0;
       }
 
@@ -410,7 +410,7 @@ function getFinchBloxRobotInput(path, robot) {
  * @param  {Object} device ble device connecting
  */
 function finchBloxNotifyDiscovered(device) {
-  console.log("Discovered " + device.name);
+  //console.log("Discovered " + device.name);
   let fancyName = getDeviceFancyName(device.name)
   fancyName = fancyName.slice(0, -6)
   CallbackManager.robot.discovered('[{"id":"' + device.name + '", "device":"Finch", "name":"' + fancyName + '", "RSSI":0}]')

@@ -109,7 +109,7 @@ function parseMessage(message) {
 
       break;
     default:
-      console.log("Command not implemented: " + message.cmd);
+      console.error("Command not implemented: " + message.cmd);
   }
 }
 

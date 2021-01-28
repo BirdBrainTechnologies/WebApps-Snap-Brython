@@ -9,7 +9,7 @@
 
 //If the finchblox frontend hasn't been loaded, then this isn't finchblox.
 if (FinchBlox === undefined) { var FinchBlox = false }
-console.log("FinchBlox == " + FinchBlox)
+//console.log("FinchBlox == " + FinchBlox)
 
 const header = document.getElementById('main-header');
 const finder = document.getElementById('finder');
@@ -37,9 +37,9 @@ $('#btn-collapse-section').on('click', function(e) { expandIDE(); })
 function onLoad() {
   let user = navigator.userAgent;
   let usingChrome = false;
-  console.log(user);
+  //console.log(user);
   if (user.includes("Chrome")) {
-    console.log("Found chrome")
+    //console.log("Found chrome")
     usingChrome = true;
   }
   if (!usingChrome) {
@@ -63,15 +63,13 @@ function onLoad() {
  */
 function updateConnectedDevices() {
   if (FinchBlox) {
-    console.log("Updating FinchBlox connected devices. robots.length = " + robots.length)
+    //console.log("Updating FinchBlox connected devices. robots.length = " + robots.length)
 
     if (RowDialog.currentDialog) {
       if (!finchBloxSetFrontendDevice()) {
         if (finchBloxRobot == null) {
-          console.log("no finchblox robot. closing dialog.")
           RowDialog.currentDialog.closeDialog()
         } else {
-          console.log("device automatically reconnected. Updating frontend.")
           finchBloxNotifyDiscovered(finchBloxRobot.device)
           finchBloxSetFrontendDevice()
         }
@@ -79,7 +77,7 @@ function updateConnectedDevices() {
     }
 
     if (finchBloxRobot != null) {
-      console.log("Updating connected for " + finchBloxRobot.fancyName + " to " + finchBloxRobot.isConnected)
+      //console.log("Updating connected for " + finchBloxRobot.fancyName + " to " + finchBloxRobot.isConnected)
       CallbackManager.robot.updateStatus(finchBloxRobot.device.name, finchBloxRobot.isConnected)
     }
 
@@ -125,7 +123,7 @@ function displayConnectedDevice(robot) {
   var deviceLetter = robot.devLetter;
   var batteryDisplay = "style=\"display:inline-block\"";
   var el = null;
-  console.log("displayConnectedDevice " + deviceFancyName + " " + robot.isConnected)
+  //console.log("displayConnectedDevice " + deviceFancyName + " " + robot.isConnected)
   if (robot.isConnected) {
 
     switch (robot.type) {
@@ -167,7 +165,7 @@ function displayConnectedDevice(robot) {
     );
 
     el.find('.button-calibrate').click(function() {
-      console.log("button-calibrate");
+      //console.log("button-calibrate");
       robot.startCalibration();
       showCalibrationModal(robot.type);
     });
@@ -190,7 +188,7 @@ function displayConnectedDevice(robot) {
   }
 
   el.find('.button-disconnect').click(function() {
-    console.log("button-disconnect");
+    //console.log("button-disconnect");
     robot.userDisconnect();
   });
 
@@ -211,7 +209,7 @@ function displayConnectedDevice(robot) {
  */
 function loadIDE() {
   if (FinchBlox) {
-    console.log("Not loading IDE - FinchBlox.")
+    //console.log("Not loading IDE - FinchBlox.")
     return;
   }
   //const useSnap = ($('#snap-slider').prop('checked'))
@@ -272,7 +270,7 @@ function loadIDE() {
       iframe.src = "snap/snap.html#open:snapProjects/" + projectName + ".xml&editMode&lang=" + language;
     }
 
-    console.log("opening iframe with src=" + iframe.src);
+    //console.log("opening iframe with src=" + iframe.src);
     iframe.addEventListener('load', iframeOnLoadHandler, false)
   }
 
@@ -284,7 +282,7 @@ function loadIDE() {
  * iframeOnLoadHandler - Hide the spinner once the iframe has loaded.
  */
 function iframeOnLoadHandler() {
-  console.log("iframe has loaded")
+  //console.log("iframe has loaded")
   $('#ideLoading').css("display", "none");
 }
 
@@ -549,7 +547,7 @@ function closeVideoModals() {
   if (videosOpen > 0) {
     for (var i = 0; i < videosOpen; i++) {
       const videoElement = document.getElementsByTagName("video")[i];
-      console.log("removing video " + videoElement.id);
+      //console.log("removing video " + videoElement.id);
       //Fully unload the video.
       //see https://stackoverflow.com/questions/3258587/how-to-properly-unload-destroy-a-video-element
       videoElement.pause();

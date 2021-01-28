@@ -40,7 +40,7 @@ function findAndConnect() {
   //When the user opens the chooser, cancel any robots currently
   // looking to reconnect.
   for (let i = 0; i < robots.length; i++) {
-    if (robots[i].isReconnecting && robots[i] != robot) {
+    if (robots[i].isReconnecting) {
       //This should cancel the connect attempt, but it doesn't seem to work.
       robots[i].device.gatt.disconnect();
       robots[i].isReconnecting = false;
@@ -51,18 +51,17 @@ function findAndConnect() {
   //let bleFilters = [{ services: ["6e400001-b5a3-f393-e0a9-e50e24dcca9e"] }]
   //let bleFilters = [{ acceptAllDevices: true }]
   let bleFilters = [
-    { namePrefix: "FN" },
-    { namePrefix: "BB" },
-    { namePrefix: "MB" }
+    { namePrefix: "FN", services: ["6e400001-b5a3-f393-e0a9-e50e24dcca9e"] },
+    { namePrefix: "BB", services: ["6e400001-b5a3-f393-e0a9-e50e24dcca9e"] },
+    { namePrefix: "MB", services: ["6e400001-b5a3-f393-e0a9-e50e24dcca9e"] }
   ]
   if (FinchBlox) {
-    bleFilters = [{ namePrefix: "FN" }]
+    bleFilters = [
+      { namePrefix: "FN", services: ["6e400001-b5a3-f393-e0a9-e50e24dcca9e"] }
+    ]
   }
 
-  navigator.bluetooth.requestDevice({
-    filters: bleFilters,
-    optionalServices: ["6e400001-b5a3-f393-e0a9-e50e24dcca9e"]
-  }).then(device => {
+  navigator.bluetooth.requestDevice({ filters: bleFilters }).then(device => {
 
       //once the user has selected a device, check that it is a supported device.
       const type = Robot.getTypeFromName(device.name);
