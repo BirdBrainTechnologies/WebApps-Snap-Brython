@@ -218,10 +218,11 @@ Robot.prototype.setDisconnected = function() {
  */
 Robot.prototype.userDisconnect = function() {
   //console.log("User disconnected " + this.fancyName)
-  var index = robots.indexOf(this);
-  if (index !== -1) robots.splice(index, 1);
-  this.device.gatt.disconnect();
+  //var index = robots.indexOf(this);
+  //if (index !== -1) robots.splice(index, 1);
   this.setDisconnected()
+  this.device.gatt.disconnect();
+
 }
 
 /**

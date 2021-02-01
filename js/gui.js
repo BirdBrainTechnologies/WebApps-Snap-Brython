@@ -63,9 +63,9 @@ function onLoad() {
  */
 function updateConnectedDevices() {
   if (FinchBlox) {
-    //console.log("Updating FinchBlox connected devices. robots.length = " + robots.length)
+    //console.log("Updating FinchBlox connected devices. robots.length = " + robots.length + " finchbloxrobot = " + (finchBloxRobot ? finchBloxRobot.fancyName : null))
 
-    if (RowDialog.currentDialog) {
+    if (RowDialog.currentDialog && RowDialog.currentDialog.constructor == DiscoverDialog) {
       if (!finchBloxSetFrontendDevice()) {
         if (finchBloxRobot == null) {
           RowDialog.currentDialog.closeDialog()

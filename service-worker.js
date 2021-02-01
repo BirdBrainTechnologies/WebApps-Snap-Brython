@@ -1992,8 +1992,8 @@ function addEventListeners(usingSnap, usingFinchBlox) {
         return cache.match(evt.request, options)
           .then((response) => {
             let success = (response != undefined);
-            console.log("[ServiceWorker] Fetch: found in cache? " + success + " Requested url: " + evt.request.url);
-            console.log(response);
+            //console.log("[ServiceWorker] Fetch: found in cache? " + success + " Requested url: " + evt.request.url);
+            //console.log(response);
             //return the cached page if possible otherwise get from network
             return response || fetch(evt.request);
           }).catch(error => {

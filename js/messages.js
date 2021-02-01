@@ -30,7 +30,8 @@ function onMessage(e) {
  * @param  {Object} message Object containing command information
  */
 function parseMessage(message) {
-  const robot = getRobotByLetter(message.robot);
+  let robot = getRobotByLetter(message.robot);
+  if (FinchBlox) { robot = finchBloxRobot }
   if (robot == null) {
     console.error("Unable to find robot " + message.robot);
     return;

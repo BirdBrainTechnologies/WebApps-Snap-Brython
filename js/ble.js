@@ -139,14 +139,14 @@ function connectToRobot(robot) {
     })
     .catch(error => {
       console.error("Device request failed: " + error.message);
-
-      if (robot.isReconnecting) {
+      robot.isReconnecting = false
+      /*if (robot.isReconnecting) {
         //console.error("Should attempt to reconnect...")
         setTimeout(function() {
           console.log("Attempting to reconnect again to " + robot.fancyName)
           connectToRobot(robot)
         }, 2000)
-      }
+      }*/
     });
 }
 
@@ -177,7 +177,9 @@ function onConnectionComplete(robot) {
   robot.startSetAll();
 
   if (!robots.includes(robot)) { robots.push(robot) }
-  if (FinchBlox) { finchBloxRobot = robot }
+  if (FinchBlox && RowDialog.currentDialog && RowDialog.currentDialog.constructor == DiscoverDialog) {
+    finchBloxRobot = robot
+  }
   updateConnectedDevices();
   updateBatteryStatus()
   //open snap or brython.
@@ -193,7 +195,7 @@ function onDisconnected(event) {
   let device = event.target;
   //console.log('Device ' + device.name + ' is disconnected.');
   for (let i = 0; i < robots.length; i++) {
-    if (robots[i].device.name == device.name) {
+    if (robots[i].device.name == device.name && robots[i].isConnected) {
       sendMessage({
         robot: robots[i].devLetter,
         connectionLost: true
