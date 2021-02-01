@@ -177,7 +177,7 @@ function onConnectionComplete(robot) {
   robot.startSetAll();
 
   if (!robots.includes(robot)) { robots.push(robot) }
-  if (FinchBlox && RowDialog.currentDialog && RowDialog.currentDialog.constructor == DiscoverDialog) {
+  if (FinchBlox && fbFrontend.RowDialog.currentDialog && fbFrontend.RowDialog.currentDialog.constructor == fbFrontend.DiscoverDialog) {
     finchBloxRobot = robot
   }
   updateConnectedDevices();

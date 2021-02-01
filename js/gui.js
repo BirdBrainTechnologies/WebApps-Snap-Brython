@@ -65,10 +65,10 @@ function updateConnectedDevices() {
   if (FinchBlox) {
     //console.log("Updating FinchBlox connected devices. robots.length = " + robots.length + " finchbloxrobot = " + (finchBloxRobot ? finchBloxRobot.fancyName : null))
 
-    if (RowDialog.currentDialog && RowDialog.currentDialog.constructor == DiscoverDialog) {
+    if (fbFrontend.RowDialog.currentDialog && fbFrontend.RowDialog.currentDialog.constructor == fbFrontend.DiscoverDialog) {
       if (!finchBloxSetFrontendDevice()) {
         if (finchBloxRobot == null) {
-          RowDialog.currentDialog.closeDialog()
+          fbFrontend.RowDialog.currentDialog.closeDialog()
         } else {
           finchBloxNotifyDiscovered(finchBloxRobot.device)
           finchBloxSetFrontendDevice()
@@ -78,7 +78,7 @@ function updateConnectedDevices() {
 
     if (finchBloxRobot != null) {
       //console.log("Updating connected for " + finchBloxRobot.fancyName + " to " + finchBloxRobot.isConnected)
-      CallbackManager.robot.updateStatus(finchBloxRobot.device.name, finchBloxRobot.isConnected)
+      fbFrontend.CallbackManager.robot.updateStatus(finchBloxRobot.device.name, finchBloxRobot.isConnected)
     }
 
     return;
@@ -335,15 +335,15 @@ function updateBatteryStatus() {
 
       switch (robot.batteryLevel) {
         case Robot.batteryLevel.HIGH:
-          if (FinchBlox) { CallbackManager.robot.updateBatteryStatus(robot.device.name, "2") }
+          if (FinchBlox) { fbFrontend.CallbackManager.robot.updateBatteryStatus(robot.device.name, "2") }
           $(battSelector).addClass("fa-battery-full");
           break;
         case Robot.batteryLevel.MEDIUM:
-          if (FinchBlox) { CallbackManager.robot.updateBatteryStatus(robot.device.name, "1") }
+          if (FinchBlox) { fbFrontend.CallbackManager.robot.updateBatteryStatus(robot.device.name, "1") }
           $(battSelector).addClass("fa-battery-half");
           break;
         case Robot.batteryLevel.LOW:
-          if (FinchBlox) { CallbackManager.robot.updateBatteryStatus(robot.device.name, "0") }
+          if (FinchBlox) { fbFrontend.CallbackManager.robot.updateBatteryStatus(robot.device.name, "0") }
           $(battSelector).addClass("fa-battery-quarter");
           break;
         default: //UNKNOWN

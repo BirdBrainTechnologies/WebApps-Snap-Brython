@@ -5,9 +5,8 @@
 var currentFinchBloxBeak = [0, 0, 0];
 var fbAudio = null;
 var finchBloxRobot = null;
-//var fbFiles = new FB_Files()
-//console.log(localStorage.finchBloxFileNames)
-//console.log(Object.keys(localStorage))
+const fbFrontend = document.getElementById('frontend').contentWindow
+
 
 function FB_Files() {}
 FB_Files.newFile = function(filename, contents) {
@@ -41,7 +40,7 @@ FB_Files.openFile = function(filename) {
   if (projectContent) {
     //console.log("Opening file " + filename + " with contents: " + projectContent);
     localStorage.currentFbFile = filename
-    CallbackManager.data.open(filename, projectContent);
+    fbFrontend.CallbackManager.data.open(filename, projectContent);
   } else {
     console.error("No contents found for file named " + filename)
   }
@@ -198,7 +197,7 @@ function parseFinchBloxRequest(request) {
           // response comes too quickly, there are errors because some things
           // have not yet been set up.
           setTimeout(function() {
-            CallbackManager.httpResponse(request.id, status, "");
+            fbFrontend.CallbackManager.httpResponse(request.id, status, "");
           }, 1000)
           return;
         default:
@@ -235,7 +234,7 @@ function parseFinchBloxRequest(request) {
         case "delete":
           filename = query[1].split("&")[0].split("=").pop();
           FB_Files.deleteFile(filename)
-          CallbackManager.data.close()
+          fbFrontend.CallbackManager.data.close()
           break;
         default:
           console.error("got data request for " + path[1]);
@@ -258,7 +257,7 @@ function parseFinchBloxRequest(request) {
           }*/
           //console.log("startDiscover error modal = " + document.getElementById("errorModal"))
           //if (document.getElementById("errorModal") == null) {
-          if (RowDialog.currentDialog != null && RowDialog.currentDialog.constructor == DiscoverDialog) {
+          if (fbFrontend.RowDialog.currentDialog != null && fbFrontend.RowDialog.currentDialog.constructor == fbFrontend.DiscoverDialog) {
             findAndConnect();
           }
           break;
@@ -285,7 +284,7 @@ function parseFinchBloxRequest(request) {
             robot.userDisconnect()
             finchBloxRobot = null
             //TODO: Should this be done in the FinchBlox frontend?
-            DeviceManager.removeAllDevices()
+            fbFrontend.DeviceManager.removeAllDevices()
           }
           break;
         default:
@@ -297,7 +296,7 @@ function parseFinchBloxRequest(request) {
   }
 
   //console.log("Sending response for " + request.id + " with body '" + responseBody + "'")
-  CallbackManager.httpResponse(request.id, status, responseBody);
+  fbFrontend.CallbackManager.httpResponse(request.id, status, responseBody);
 }
 
 
@@ -413,7 +412,7 @@ function finchBloxNotifyDiscovered(device) {
   //console.log("Discovered " + device.name);
   let fancyName = getDeviceFancyName(device.name)
   fancyName = fancyName.slice(0, -6)
-  CallbackManager.robot.discovered('[{"id":"' + device.name + '", "device":"Finch", "name":"' + fancyName + '", "RSSI":0}]')
+  fbFrontend.CallbackManager.robot.discovered('[{"id":"' + device.name + '", "device":"Finch", "name":"' + fancyName + '", "RSSI":0}]')
 }
 
 /**
@@ -422,11 +421,11 @@ function finchBloxNotifyDiscovered(device) {
  * @return {boolean}  true if set successfully
  */
 function finchBloxSetFrontendDevice() {
-  if (RowDialog.currentDialog != null &&
-    RowDialog.currentDialog.discoveredDevices != null &&
-    RowDialog.currentDialog.discoveredDevices.length > 0) {
-    let guiDevice = RowDialog.currentDialog.discoveredDevices[0];
-    RowDialog.currentDialog.selectDevice(guiDevice)
+  if (fbFrontend.RowDialog.currentDialog != null &&
+    fbFrontend.RowDialog.currentDialog.discoveredDevices != null &&
+    fbFrontend.RowDialog.currentDialog.discoveredDevices.length > 0) {
+    let guiDevice = fbFrontend.RowDialog.currentDialog.discoveredDevices[0];
+    fbFrontend.RowDialog.currentDialog.selectDevice(guiDevice)
     return true
   } else {
     return false
