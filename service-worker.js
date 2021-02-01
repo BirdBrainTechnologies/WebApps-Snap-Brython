@@ -1900,13 +1900,16 @@ const BRYTHON_FILES_TO_CACHE_2 = [
 ];
 
 const FINCHBLOX_FILES_TO_CACHE = [
-  'MyCSS.css',
-  'MyCSS_rtl.css',
   'FinchBlox.html',
   'manifest-finchblox.json',
-  'js/all.js',
   'js/finchblox.js',
-  'click2.wav',
+  'finchblox/all.js',
+  'finchblox/click2.wav',
+  'finchblox/Fonts/Nunito-ExtraBold.ttf',
+  'finchblox/Fonts/Nunito-Regular.ttf',
+  'finchblox/HummingbirdDragAndDrop.html',
+  'finchblox/MyCSS.css',
+  'finchblox/MyCSS_rtl.css',
   'img/fb_icon_32x32.png',
   'img/fb_icon_128x128.png',
   'img/fb_icon_152x152.png',
