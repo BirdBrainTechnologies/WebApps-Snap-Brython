@@ -34,7 +34,7 @@ function Robot(device) {
   this.isCalibrating = false;
   this.setAllTimeToAdd = 0;
   this.isConnected = false;
-  this.isReconnecting = false;
+  //this.isReconnecting = false; //uncomment for autoreconnect
   this.currentSensorData = [];
 
   //Robot state arrays
@@ -232,11 +232,12 @@ Robot.prototype.userDisconnect = function() {
 Robot.prototype.externalDisconnect = function() {
   this.setDisconnected()
 
-  setTimeout(function() {
+  //uncomment for autoreconnect
+  /*setTimeout(function() {
     //console.log("Attempting to reconnect to " + this.fancyName)
     this.isReconnecting = true
     connectToRobot(this)
-  }.bind(this), 1000)
+  }.bind(this), 1000)*/
 }
 
 /**

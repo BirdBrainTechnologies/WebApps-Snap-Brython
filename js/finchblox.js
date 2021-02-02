@@ -5,10 +5,20 @@
 var currentFinchBloxBeak = [0, 0, 0];
 var fbAudio = null;
 var finchBloxRobot = null;
+var noFilesLoadedYet = true;
 const fbFrontend = document.getElementById('frontend').contentWindow
 
-
+/**
+ * FB_Files - All of the file handling methods for FinchBlox. All files and
+ * file information is stored in localStorage.
+ */
 function FB_Files() {}
+/**
+ * FB_Files.newFile - Create a new file with the given name and contents
+ *
+ * @param  {string} filename name of the file
+ * @param  {string} contents the xml file contents
+ */
 FB_Files.newFile = function(filename, contents) {
   //check if the filename already exists
   if (Object.keys(localStorage).includes(filename)) {
@@ -25,6 +35,12 @@ FB_Files.newFile = function(filename, contents) {
 
   localStorage[filename] = contents
 }
+/**
+ * FB_Files.getFileNames - return a JSON list of the names of all currently
+ * saved files.
+ *
+ * @return {string}  JSON file name list
+ */
 FB_Files.getFileNames = function() {
   if (localStorage.finchBloxFileNames) {
     let filenames = localStorage.finchBloxFileNames.replace(/,/g, '","')
@@ -34,7 +50,20 @@ FB_Files.getFileNames = function() {
     return '{"files":[]}'
   }
 }
+/**
+ * FB_Files.openFile - Finds the file with the given filename and sends its
+ * name and contents to the frontend.
+ *
+ * @param  {string} filename name of the file to open
+ */
 FB_Files.openFile = function(filename) {
+  if (noFilesLoadedYet) {
+    noFilesLoadedYet = false;
+    if (localStorage.currentFbFile != null) {
+      filename = localStorage.currentFbFile
+    }
+  }
+
   let projectContent = localStorage[filename]
 
   if (projectContent) {
@@ -45,9 +74,21 @@ FB_Files.openFile = function(filename) {
     console.error("No contents found for file named " + filename)
   }
 }
+/**
+ * FB_Files.autoSave - Saves the current file with the given contents.
+ *
+ * @param  {string} projectContent xml contents of the file
+ */
 FB_Files.autoSave = function(projectContent) {
   localStorage[localStorage.currentFbFile] = projectContent
 }
+/**
+ * FB_Files.getAvailableName - Checks the requested file name for availability.
+ * Finds a similar name that is available if necessary
+ *
+ * @param  {string} nameRequested the file name to check
+ * @return {string}               JSON response to send to frontend
+ */
 FB_Files.getAvailableName = function(nameRequested) {
   let alreadySanitized = true; //false triggers popup to remove invalid characters
   let alreadyAvailable = true; //false triggers popup to choose another name
@@ -72,6 +113,11 @@ FB_Files.getAvailableName = function(nameRequested) {
     return '{"availableName":"' + nameRequested + '", "alreadySanitized":' + alreadySanitized + ', "alreadyAvailable":' + alreadyAvailable + '}'
   }
 }
+/**
+ * FB_Files.rename - Rename a specified file
+ *
+ * @param  {string} request Request from frontend. Includes current name and new name.
+ */
 FB_Files.rename = function(request) {
   let oldName = request.split("&")[0].split("=").pop();
   let newName = request.split("&")[1].split("=").pop();
@@ -83,6 +129,11 @@ FB_Files.rename = function(request) {
   this.deleteFile(oldName)
   this.openFile(newName)
 }
+/**
+ * FB_Files.deleteFile - Delete the specified file
+ *
+ * @param  {string} filename Name of the file to delete
+ */
 FB_Files.deleteFile = function(filename) {
   let fn = localStorage.finchBloxFileNames.split(",")
   let remainingFileNames = fn.filter(value => {
@@ -92,8 +143,11 @@ FB_Files.deleteFile = function(filename) {
   delete localStorage[filename]
 }
 
-
-//https://code.tutsplus.com/tutorials/the-web-audio-api-adding-sound-to-your-web-app--cms-23790
+/**
+ * FB_Audio - An audio object to handle all of FinchBlox's sound effects (eg.
+ * block snaps and keyboard sounds)
+ * See https://code.tutsplus.com/tutorials/the-web-audio-api-adding-sound-to-your-web-app--cms-23790
+ */
 function FB_Audio() {
   // Create the audio context and volume
   this.context = new AudioContext();
@@ -106,6 +160,11 @@ function FB_Audio() {
   const track = this.context.createMediaElementSource(this.click2Element);
   track.connect(this.context.destination);
 }
+/**
+ * FB_Audio.prototype.playNote - Play a tone of a given duration and frequency
+ *
+ * @param  {string} requestString Frontend request specifying note and duration.
+ */
 FB_Audio.prototype.playNote = function(requestString) {
   let parts = requestString.split("&")
   let note = parts[0].split("=")[1]
@@ -138,7 +197,12 @@ FB_Audio.prototype.playNote = function(requestString) {
   osc2.stop(startTime + duration)
 }
 
-
+/**
+ * parseFinchBloxRequest - Parse and handle requests coming from the FinchBlox
+ * frontend.
+ *
+ * @param  {string} request The frontend request
+ */
 function parseFinchBloxRequest(request) {
   //const robot = getRobotByLetter("A");
   const robot = finchBloxRobot
@@ -252,11 +316,6 @@ function parseFinchBloxRequest(request) {
     case "robot":
       switch (query[0]) {
         case "startDiscover":
-          /*if (robots[0] == null) {
-            findAndConnect();
-          }*/
-          //console.log("startDiscover error modal = " + document.getElementById("errorModal"))
-          //if (document.getElementById("errorModal") == null) {
           if (fbFrontend.RowDialog.currentDialog != null && fbFrontend.RowDialog.currentDialog.constructor == fbFrontend.DiscoverDialog) {
             findAndConnect();
           }
@@ -353,6 +412,13 @@ function handleFinchBloxRobotOutput(path) {
   parseMessage(msg);
 }
 
+/**
+ * getFinchBloxRobotInput - Handles requests for sensor data.
+ *
+ * @param  {[string]} path  request array
+ * @param  {Object} robot The robot to get sensor data from
+ * @return {string}       sensor value
+ */
 function getFinchBloxRobotInput(path, robot) {
   //const robot = getRobotByLetter("A");
   let params = path[1].split("?")[1].split("&")
@@ -381,10 +447,10 @@ function getFinchBloxRobotInput(path, robot) {
           break;
         default:
           console.error("unknown light port " + port);
-          return 0;
+          return "0";
       }
 
-      return Math.round(Math.max(0, Math.min(100, (raw - correction)))).toString();
+      response = Math.round(Math.max(0, Math.min(100, (raw - correction)))).toString();
       break;
     case "distance":
       let msb = robot.currentSensorData[0]
@@ -430,4 +496,16 @@ function finchBloxSetFrontendDevice() {
   } else {
     return false
   }
+}
+
+/**
+ * finchBloxFullScreen - Make the finchBlox web app go full screen. Requires
+ * a user gesture (such as a button click).
+ */
+function finchBloxFullScreen() {
+  document.getElementById('frontend').requestFullscreen().then(v => {
+    console.log("Now in fullscreen mode")
+  }).catch(error => {
+    console.error("error " + error.message)
+  })
 }

@@ -37,15 +37,16 @@ function findAndConnect() {
     return;
   }
 
+  //uncomment for autoreconnect
   //When the user opens the chooser, cancel any robots currently
   // looking to reconnect.
-  for (let i = 0; i < robots.length; i++) {
+  /*for (let i = 0; i < robots.length; i++) {
     if (robots[i].isReconnecting) {
       //This should cancel the connect attempt, but it doesn't seem to work.
       robots[i].device.gatt.disconnect();
       robots[i].isReconnecting = false;
     }
-  }
+  }*/
 
   //Other ways to scan...
   //let bleFilters = [{ services: ["6e400001-b5a3-f393-e0a9-e50e24dcca9e"] }]
@@ -139,7 +140,7 @@ function connectToRobot(robot) {
     })
     .catch(error => {
       console.error("Device request failed: " + error.message);
-      robot.isReconnecting = false
+      //robot.isReconnecting = false //uncomment for autoreconnect
       /*if (robot.isReconnecting) {
         //console.error("Should attempt to reconnect...")
         setTimeout(function() {
@@ -165,7 +166,7 @@ function onConnectionComplete(robot) {
   //console.log("Connection to " + robot.fancyName + " complete. Starting sensor polling.")
 
   robot.isConnected = true;
-  robot.isReconnecting = false;
+  //robot.isReconnecting = false; //uncomment for autoreconnect
   closeErrorModal()
 
   //Start polling sensors
