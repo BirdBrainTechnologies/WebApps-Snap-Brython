@@ -34,11 +34,11 @@ function Robot(device) {
   this.isCalibrating = false;
   this.setAllTimeToAdd = 0;
   this.isConnected = false;
+  this.userDisconnected = false;
   //this.isReconnecting = false; //uncomment for autoreconnect
   this.currentSensorData = [];
-
-  //Robot state arrays
-  this.initializeDataArrays();
+  this.isInitialized = false;
+  this.hasV2Microbit = false;
 }
 
 /**
@@ -68,7 +68,8 @@ Robot.propertiesFor = {
     batteryFactor: 0.00937, //0.0376,
     batteryConstant: 320,
     greenThreshold: 3.51375, //3.386,
-    yellowThreshold: 3.3732 //3.271
+    yellowThreshold: 3.3732, //3.271
+    getFirmwareCommand: new Uint8Array([0xD4])
   },
   //hummingbird bit
   2: {
@@ -84,7 +85,8 @@ Robot.propertiesFor = {
     batteryFactor: 0.0406,
     batteryConstant: 0,
     greenThreshold: 4.75,
-    yellowThreshold: 4.4
+    yellowThreshold: 4.4,
+    getFirmwareCommand: new Uint8Array([0xCF])
   },
   //micro:bit
   3: {
@@ -100,7 +102,8 @@ Robot.propertiesFor = {
     batteryFactor: null,
     batteryConstant: null,
     greenThreshold: null,
-    yellowThreshold: null
+    yellowThreshold: null,
+    getFirmwareCommand: new Uint8Array([0xCF])
   }
 }
 
@@ -108,9 +111,9 @@ Robot.propertiesFor = {
  * Enum for battery level options
  */
 Robot.batteryLevel = {
-  HIGH: 1,
-  MEDIUM: 2,
-  LOW: 3,
+  HIGH: 2,
+  MEDIUM: 1,
+  LOW: 0,
   UNKNOWN: 4
 }
 
@@ -148,6 +151,18 @@ Robot.initialSetAllFor = function(type) {
     array[12] = 0xFF;
   }
   return array;
+}
+
+Robot.prototype.initialize = function() {
+  //Robot state arrays
+  this.initializeDataArrays();
+  this.isConnected = true;
+  this.userDisconnected = false;
+  //this.isReconnecting = false; //uncomment for autoreconnect
+  this.isInitialized = false;
+
+  //Read the current robot's firmware version to determine if it includes a V2 micro:bit
+  this.write(Robot.propertiesFor[this.type].getFirmwareCommand)
 }
 
 /**
@@ -220,6 +235,7 @@ Robot.prototype.userDisconnect = function() {
   //console.log("User disconnected " + this.fancyName)
   //var index = robots.indexOf(this);
   //if (index !== -1) robots.splice(index, 1);
+  this.userDisconnected = true;
   this.setDisconnected()
   this.device.gatt.disconnect();
 
@@ -665,7 +681,35 @@ Robot.prototype.startCalibration = function() {
  * @param  {Uint8Array} data Incoming data
  */
 Robot.prototype.receiveSensorData = function(data) {
+  if (!this.isInitialized) {
+    //This data is the response to the get firmware version command.
+    this.hasV2Microbit = data[3] == 0x22
+
+    //Start polling sensors
+    var pollStart = Uint8Array.of(0x62, 0x67);
+    if (this.hasV2Microbit) {
+      console.log(this.fancyName + " has a V2 micro:bit")
+      //trigger V2 specific notifications
+      pollStart = Uint8Array.of(0x62, 0x70);
+    } else {
+      console.log(this.fancyName + " does not have a V2 micro:bit")
+    }
+    var pollStop = Uint8Array.of(0x62, 0x73);
+    this.write(pollStart);
+
+    //Start the setAll timer
+    this.startSetAll();
+    this.isInitialized = true
+    return
+  }
+
   this.currentSensorData = data
+  sendMessage({
+    robot: this.devLetter,
+    robotType: this.type,
+    sensorData: data,
+    hasV2Microbit: this.hasV2Microbit
+  });
 
   const batteryIndex = Robot.propertiesFor[this.type].batteryIndex;
   const batteryFactor = Robot.propertiesFor[this.type].batteryFactor;
@@ -674,16 +718,23 @@ Robot.prototype.receiveSensorData = function(data) {
   const yellowThreshold = Robot.propertiesFor[this.type].yellowThreshold;
 
   if (batteryIndex != null) { //null for micro:bit which does not have battery monitoring
-    const rawVoltage = data[batteryIndex]
-    const voltage = batteryFactor * (rawVoltage + batteryConstant)//rawVoltage * batteryFactor
     var newLevel = Robot.batteryLevel.UNKNOWN
-    if (voltage > greenThreshold) {
-      newLevel = Robot.batteryLevel.HIGH
-    } else if (voltage > yellowThreshold) {
-      newLevel = Robot.batteryLevel.MEDIUM
+    if (this.hasV2Microbit) {
+      newLevel = data[batteryIndex] & 0x2
+      //Battery level 3 represents a complete charge and is not currently handled.
+      if (newLevel == 3) { newLevel = Robot.batteryLevel.HIGH }
     } else {
-      newLevel = Robot.batteryLevel.LOW
+      const rawVoltage = data[batteryIndex]
+      const voltage = batteryFactor * (rawVoltage + batteryConstant)//rawVoltage * batteryFactor
+      if (voltage > greenThreshold) {
+        newLevel = Robot.batteryLevel.HIGH
+      } else if (voltage > yellowThreshold) {
+        newLevel = Robot.batteryLevel.MEDIUM
+      } else {
+        newLevel = Robot.batteryLevel.LOW
+      }
     }
+
     if (newLevel != this.batteryLevel) {
       this.batteryLevel = newLevel
       updateBatteryStatus()

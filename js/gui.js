@@ -53,6 +53,23 @@ function onLoad() {
         let message = thisLocaleTable["Ble_Required"]
         showErrorModal(title, message, false);
       }
+
+      if (navigator.userAgent.includes("Windows")) {
+        let count = 1
+        if (localStorage.visitCount) {
+          count = parseInt(localStorage.visitCount) + 1
+        }
+        localStorage.visitCount = count.toString()
+        //if (count == 2 || !isAvailable) {
+        if (count < 3) {
+          let title = " Beta Software "
+          let message = "This is beta software. We would love to hear about your experience! (<a href=\"https://www.birdbraintechnologies.com/contact/\">Contact Us</a>)"
+          showErrorModal(title, message, true)
+        }
+        console.log("Windows detected. This browser has visited " + localStorage.visitCount + " times.")
+      }
+    }).catch(error => {
+      console.error("Unable to determine whether bluetooth is available. Error: " + error.message)
     });
   }
 }
@@ -106,7 +123,9 @@ function updateConnectedDevices() {
     }*/
 
     robots.forEach(robot => {
-      displayConnectedDevice(robot);
+      if(!robot.userDisconnected) {
+        displayConnectedDevice(robot);
+      }
     })
   }
 }
@@ -173,8 +192,9 @@ function displayConnectedDevice(robot) {
     el = $(
 
       "             <div class=\"row robot-item\">" +
-      "               <div class=\"col-xs-10 name\">" + thisLocaleTable["Connection_Failure"] + ": " + deviceFancyName + "</div>" +
-      "               <div class=\"col-xs-2 buttons\">" +
+      "               <div class=\"col-xs-2 img\"></div>" +
+      "               <div class=\"col-xs-6 name\">" + thisLocaleTable["Connection_Failure"] + ": " + deviceFancyName + "</div>" +
+      "               <div class=\"col-xs-4 buttons\">" +
       //Disconnect Button
       "                 <a class=\"button\" href=\"#\"><span class=\"button-disconnect fa-stack fa-2x\">" +
       "                   <i class=\"fas fa-circle fa-stack-2x\"></i>" +
@@ -217,7 +237,7 @@ function loadIDE() {
   updateInternetStatus();
 
   let projectName = "";
-  if (robots.length == 1) {
+  if (getConnectedRobotCount() == 1) {
     if (robots[0].type == Robot.ofType.FINCH) {
       projectName = "PWAFinchSingleDevice";
     } else {
@@ -242,9 +262,10 @@ function loadIDE() {
     }
     iframe = document.createElement("iframe");
     iframe.frameBorder = "0";
-    if (robots.length == 2) {
+    let displayed = getDisplayedRobotCount()
+    if (displayed == 2) {
       iframe.setAttribute("style", "width: 100%; height: 80vh;")
-    } else if (robots.length == 3) {
+    } else if (displayed >= 3) {
       iframe.setAttribute("style", "width: 100%; height: 72vh;")
     }
     let div = document.getElementById('snap-div');
@@ -415,7 +436,8 @@ function showErrorModal(title, content, shouldAddCloseBtn) {
   let span = section.getElementsByTagName('span')[0];
   span.textContent = title;
   let div = section.getElementsByTagName('div')[1];
-  div.textContent = content;
+  //div.textContent = content;
+  div.innerHTML = content;
   div.setAttribute("style", "position: relative; opacity: 1; background-color: rgba(255,255,255, 0.75); text-align: center; padding: 2em 2em 2em 2em;")
 
   if (shouldAddCloseBtn) {

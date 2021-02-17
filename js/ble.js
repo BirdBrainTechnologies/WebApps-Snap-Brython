@@ -164,18 +164,10 @@ function onConnectionComplete(robot) {
   }
 
   //console.log("Connection to " + robot.fancyName + " complete. Starting sensor polling.")
+  robot.initialize()
 
-  robot.isConnected = true;
-  //robot.isReconnecting = false; //uncomment for autoreconnect
   closeErrorModal()
 
-  //Start polling sensors
-  var pollStart = Uint8Array.of(0x62, 0x67);
-  var pollStop = Uint8Array.of(0x62, 0x73);
-  robot.write(pollStart);
-
-  //Start the setAll timer
-  robot.startSetAll();
 
   if (!robots.includes(robot)) { robots.push(robot) }
   if (FinchBlox && fbFrontend.RowDialog.currentDialog && fbFrontend.RowDialog.currentDialog.constructor == fbFrontend.DiscoverDialog) {
@@ -224,11 +216,6 @@ function onCharacteristicValueChanged(event) {
   const robot = getRobotByName(deviceName)
   if (robot != null && dataArray != null) {
     robot.receiveSensorData(dataArray)
-    sendMessage({
-      robot: robot.devLetter,
-      robotType: robot.type,
-      sensorData: dataArray
-    });
   }
 }
 
@@ -305,6 +292,34 @@ function devLetterUsed(letter) {
 }
 
 /**
+ * getConnectedRobotCount - Returns a count of the number of currently
+ * connected robots.
+ *
+ * @return {number}  Number of connected robots
+ */
+function getConnectedRobotCount() {
+  let count = 0;
+  for (let i = 0; i < robots.length; i++) {
+    if (robots[i].isConnected) { count += 1; }
+  }
+  return count;
+}
+
+/**
+ * getDisplayedRobotCount - Returns the number of robots that are currently
+ * displayed in the list.
+ *
+ * @return {type}  description
+ */
+function getDisplayedRobotCount() {
+  let count = 0;
+  for (let i = 0; i < robots.length; i++) {
+    if (!robots[i].userDisconnected) { count += 1; }
+  }
+  return count;
+}
+
+/**
  * allRobotsAreFinches - Checks whether all connected robots are finches.
  *
  * @return {boolean}  True if all connected robots are finches
@@ -312,7 +327,9 @@ function devLetterUsed(letter) {
 function allRobotsAreFinches() {
   let onlyFinches = true;
   for (let i = 0; i < robots.length; i++) {
-    if (robots[i].type != Robot.ofType.FINCH) { onlyFinches = false; }
+    if (robots[i].isConnected && robots[i].type != Robot.ofType.FINCH) {
+      onlyFinches = false;
+    }
   }
   return onlyFinches;
 }
@@ -325,7 +342,9 @@ function allRobotsAreFinches() {
 function noRobotsAreFinches() {
   let noFinches = true;
   for (let i = 0; i < robots.length; i++) {
-    if (robots[i].type == Robot.ofType.FINCH) { noFinches = false; }
+    if (robots[i].isConnected && robots[i].type == Robot.ofType.FINCH) {
+      noFinches = false;
+    }
   }
   return noFinches;
 }
