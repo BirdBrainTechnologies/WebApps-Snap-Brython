@@ -244,21 +244,54 @@ class Microbit:
 
 
     async def getButton(self,button):
-        """Return the status of the button asked. Specify button 'A' or 'B'."""
+        """Return the status of the button asked. Specify button 'A', 'B', or
+        'Logo'. Logo available for V2 micro:bit only."""
 
         await aio.sleep(WAIT_BEFORE_SENSOR_READ)
 
         button = button.upper()
         #Check if the button A and button B are represented in a valid manner
-        if((button != 'A') and (button != 'B')):
-            print("Error: Button must be A or B.")
+        if((button != 'A') and (button != 'B') and (button != 'LOGO')):
+            print("Error: Button must be A, B, or Logo.")
             sys.exit()
 
         buttonState = window.birdbrain.sensorData[self.device_s_no][self.buttonShakeIndex] & 0xF0
         if (button == 'A'):
             return (buttonState == 0x00 or buttonState == 0x20)
-        else:
+        elif (button == 'B'):
             return (buttonState == 0x00 or buttonState == 0x10)
+        else:
+            if window.birdbrain.microbitIsV2[self.device_s_no]:
+                return (((window.birdbrain.sensorData[self.device_s_no][self.buttonShakeIndex] >> 1) & 0x1) == 0x0)
+            else:
+                print("Error: Logo only available on V2 micro:bit.")
+                sys.exit()
+
+
+    async def getSound(self):
+        """Return the current sound level as an integer between 1 and 100.
+        Available for V2 micro:bit only."""
+
+        if not window.birdbrain.microbitIsV2[self.device_s_no]:
+            print("Error: getSound only available for V2 micro:bit.")
+            sys.exit()
+
+        await aio.sleep(WAIT_BEFORE_SENSOR_READ)
+
+        return window.birdbrain.sensorData[self.device_s_no][14]
+
+
+    async def getTemperature(self):
+        """Return the current temperature as an integer in degrees Celcius.
+        Available for V2 micro:bit only."""
+
+        if not window.birdbrain.microbitIsV2[self.device_s_no]:
+            print("Error: getTemperature only available for V2 micro:bit.")
+            sys.exit()
+
+        await aio.sleep(WAIT_BEFORE_SENSOR_READ)
+
+        return window.birdbrain.sensorData[self.device_s_no][15]
 
 
     async def isShaking(self):
@@ -321,6 +354,10 @@ class Hummingbird(Microbit):
         """This function checks whether a port is within the given bounds.
         It returns a boolean value that is either true or false and prints
         an error if necessary."""
+
+        if not type(port) is int:
+            print("Error: Port must be specified as an int.")
+            return False
 
         if ((port < 1) or (port > portMax)):
             print("Error: Please choose a port value between 1 and " + str(portMax))
@@ -503,6 +540,9 @@ class Hummingbird(Microbit):
 
     async def getSound(self, port):
         """Read the value of the sound sensor attached to a certain port."""
+
+        if port == "microbit" or port == "micro:bit" or port == "Microbit":
+            return await Microbit.getSound(self)
 
         response = await self.getSensor(port)
         sound_value    = int(response *SOUND_FACTOR)
@@ -779,6 +819,9 @@ class Finch(Microbit):
 
         await aio.sleep(WAIT_BEFORE_SENSOR_READ)
 
+        if window.birdbrain.microbitIsV2[self.device_s_no]:
+            return window.birdbrain.sensorData[self.device_s_no][1];
+
         msb = window.birdbrain.sensorData[self.device_s_no][0];
         lsb = window.birdbrain.sensorData[self.device_s_no][1];
         distance = msb << 8 | lsb
@@ -890,5 +933,30 @@ class Finch(Microbit):
         #If we are in a state in which none of the above seven states are true
         return "In between"
 
+
+    async def getSound(self):
+        """Return the current sound level as an integer between 1 and 100.
+        Available for V2 micro:bit only."""
+
+        if not window.birdbrain.microbitIsV2[self.device_s_no]:
+            print("Error: getSound only available for V2 micro:bit.")
+            sys.exit()
+
+        await aio.sleep(WAIT_BEFORE_SENSOR_READ)
+
+        return window.birdbrain.sensorData[self.device_s_no][0]
+
+
+    async def getTemperature(self):
+        """Return the current temperature as an integer in degrees Celcius.
+        Available for V2 micro:bit only."""
+
+        if not window.birdbrain.microbitIsV2[self.device_s_no]:
+            print("Error: getTemperature only available for V2 micro:bit.")
+            sys.exit()
+
+        await aio.sleep(WAIT_BEFORE_SENSOR_READ)
+
+        return window.birdbrain.sensorData[self.device_s_no][6] >> 2
 
     ######## END class Finch ########

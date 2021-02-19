@@ -7,6 +7,10 @@ window.birdbrain.sensorData = {};
 window.birdbrain.sensorData.A = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 window.birdbrain.sensorData.B = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 window.birdbrain.sensorData.C = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+window.birdbrain.microbitIsV2 = {};
+window.birdbrain.microbitIsV2.A = false;
+window.birdbrain.microbitIsV2.B = false;
+window.birdbrain.microbitIsV2.C = false;
 window.birdbrain.robotType = {
   FINCH: 1,
   HUMMINGBIRDBIT: 2,
@@ -35,6 +39,7 @@ window.birdbrain.messageChannel.port1.onmessage = function(e) {
       }
       window.birdbrain.sensorData[robot] = e.data.sensorData;
       window.birdbrain.robotType[robot] = e.data.robotType;
+      window.birdbrain.microbitIsV2[robot] = e.data.hasV2Microbit;
       window.birdbrain.isConnected[robot] = true;
     }
 
@@ -291,7 +296,7 @@ window.birdbrain.wrapPython = function(src) {
   //Remove comments: We don't need them and they occasionally cause problems with the other changes below
   let replaced = src.replace(/#.*/g, "")
   //Replace birdbrain function calls with async versions
-  replaced = replaced.replace(/([a-zA-Z_][a-zA-Z_0-9]*)\.(setMove|setTurn|setMotors|playNote|setTail|setBeak|setDisplay|print|setPoint|stopAll|setLED|setTriLED|setPositionServo|setRotationServo|stop|resetEncoders|getAcceleration|getCompass|getMagnetometer|getButton|isShaking|getOrientation|getLight|getSound|getDistance|getDial|getVoltage|getLine|getEncoder)/g, "await $1.$2")
+  replaced = replaced.replace(/([a-zA-Z_][a-zA-Z_0-9]*)\.(setMove|setTurn|setMotors|playNote|setTail|setBeak|setDisplay|print|setPoint|stopAll|setLED|setTriLED|setPositionServo|setRotationServo|stop|resetEncoders|getAcceleration|getCompass|getMagnetometer|getButton|isShaking|getOrientation|getLight|getSound|getDistance|getDial|getVoltage|getLine|getEncoder|getTemperature)/g, "await $1.$2")
   //Replace sleep with async sleep
   replaced = replaced.replace(/(time\.)?sleep/g, "await aio.sleep")
   //Add sleep to while loops so that they will not hang
