@@ -757,14 +757,23 @@
                             <l>sensor</l>
                         </list>
                         <l>
-                          if (window.birdbrain.getFinchSorT === undefined) {
-                            window.birdbrain.getFinchSorT = function (sensor, robot) {
+                          if (window.birdbrain.getSoundOrTemp === undefined) {
+                            window.birdbrain.getSoundOrTemp = function (sensor, robot) {
                               if (window.birdbrain.microbitIsV2[robot]) {
+                                const type = window.birdbrain.robotType[robot];
                                 switch(sensor) {
                                   case "Sound":
-                                    return window.birdbrain.sensorData[robot][0];
+                                    if (type == window.birdbrain.robotType.FINCH) {
+                                      return window.birdbrain.sensorData[robot][0];
+                                    } else {
+                                      return window.birdbrain.sensorData[robot][14];
+                                    }
                                   case "Temperature":
-                                    return (window.birdbrain.sensorData[robot][6] &gt;&gt; 2);
+                                    if (type == window.birdbrain.robotType.FINCH) {
+                                      return (window.birdbrain.sensorData[robot][6] &gt;&gt; 2);
+                                    } else {
+                                      return window.birdbrain.sensorData[robot][15];
+                                    }
                                 }
                               } else {
                                 return "V2 micro:bit required"
@@ -772,7 +781,7 @@
                             }
                           }
 
-                          return window.birdbrain.getFinchSorT(sensor, 'A');
+                          return window.birdbrain.getSoundOrTemp(sensor, 'A');
                         </l>
                     </block>
                     <list>

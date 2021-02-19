@@ -719,7 +719,7 @@ Robot.prototype.receiveSensorData = function(data) {
 
   if (batteryIndex != null) { //null for micro:bit which does not have battery monitoring
     var newLevel = Robot.batteryLevel.UNKNOWN
-    if (this.hasV2Microbit) {
+    if (this.hasV2Microbit && this.isA(Robot.ofType.FINCH)) {
       newLevel = data[batteryIndex] & 0x2
       //Battery level 3 represents a complete charge and is not currently handled.
       if (newLevel == 3) { newLevel = Robot.batteryLevel.HIGH }
