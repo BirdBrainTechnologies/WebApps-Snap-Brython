@@ -8,7 +8,6 @@
   */
 var robots = [] //Robot array representing all currently known robots
 
-
 /*
 About getting the ble state... Cannot really determine whether ble is turned on
 in the computer - the ble chooser takes care of that and gives instructions
@@ -56,6 +55,9 @@ function findAndConnect() {
     { namePrefix: "BB", services: ["6e400001-b5a3-f393-e0a9-e50e24dcca9e"] },
     { namePrefix: "MB", services: ["6e400001-b5a3-f393-e0a9-e50e24dcca9e"] }
   ]
+  if (useSnap) {
+    bleFilters.push({ namePrefix: "GB", services: ["6e400001-b5a3-f393-e0a9-e50e24dcca9e"] })
+  }
   if (FinchBlox) {
     bleFilters = [
       { namePrefix: "FN", services: ["6e400001-b5a3-f393-e0a9-e50e24dcca9e"] }
@@ -63,6 +65,11 @@ function findAndConnect() {
   }
 
   navigator.bluetooth.requestDevice({ filters: bleFilters }).then(device => {
+
+      //Note: If a robot changes name from one scan to the next, this
+      // device.name property still remains the same. The app must be reloaded
+      // to see the new name.
+      //console.log("User selected " + device.name)
 
       //once the user has selected a device, check that it is a supported device.
       const type = Robot.getTypeFromName(device.name);
@@ -305,6 +312,13 @@ function getConnectedRobotCount() {
   return count;
 }
 
+function getFirstConnectedRobot() {
+  for (let i = 0; i < robots.length; i++) {
+    if (robots[i].isConnected) { return robots[i] }
+  }
+  return null
+}
+
 /**
  * getDisplayedRobotCount - Returns the number of robots that are currently
  * displayed in the list.
@@ -332,6 +346,16 @@ function allRobotsAreFinches() {
     }
   }
   return onlyFinches;
+}
+
+function allRobotsAreGlowBoards() {
+  let onlyGB = true;
+  for (let i = 0; i < robots.length; i++) {
+    if (robots[i].isConnected && !robots[i].isA(Robot.ofType.GLOWBOARD)) {
+      onlyGB = false;
+    }
+  }
+  return onlyGB;
 }
 
 /**

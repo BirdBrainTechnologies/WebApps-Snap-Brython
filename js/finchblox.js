@@ -453,9 +453,13 @@ function getFinchBloxRobotInput(path, robot) {
       response = Math.round(Math.max(0, Math.min(100, (raw - correction)))).toString();
       break;
     case "distance":
-      let msb = robot.currentSensorData[0]
-      let lsb = robot.currentSensorData[1]
-      response = ((msb << 8) | lsb).toString()
+      if (robot.hasV2Microbit) {
+        response = (robot.currentSensorData[1]).toString()
+      } else {
+        let msb = robot.currentSensorData[0]
+        let lsb = robot.currentSensorData[1]
+        response = ((msb << 8) | lsb).toString()
+      }
       break;
     case "isMoving":
       response = (robot.currentSensorData[4] > 127) ? "1" : "0"

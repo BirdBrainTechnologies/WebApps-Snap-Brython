@@ -109,6 +109,14 @@ function parseMessage(message) {
       robot.setLED(message.port, message.intensity);
 
       break;
+    case "glowboard":
+      robot.setGlowBoard(message.color, message.brightness, message.symbolString)
+
+      break;
+    case "setPoint":
+      robot.setGBPoint(message.xPos, message.yPos, message.color, message.brightness)
+
+      break;
     default:
       console.error("Command not implemented: " + message.cmd);
   }

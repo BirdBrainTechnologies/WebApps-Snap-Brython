@@ -35,14 +35,7 @@ $('#btn-collapse-section').on('click', function(e) { expandIDE(); })
  * Called right after the service worker registration is started.
  */
 function onLoad() {
-  let user = navigator.userAgent;
-  let usingChrome = false;
-  //console.log(user);
-  if (user.includes("Chrome")) {
-    //console.log("Found chrome")
-    usingChrome = true;
-  }
-  if (!usingChrome) {
+  if (!("bluetooth" in navigator)) {
     let title = " " + thisLocaleTable["Incompatible_Browser"] + " "
     let message = thisLocaleTable["Use_Chrome"]
     showErrorModal(title, message, false);
@@ -152,6 +145,10 @@ function displayConnectedDevice(robot) {
         break;
       case Robot.ofType.FINCH:
         deviceImage = "img/img-finch.svg";
+        break;
+      case Robot.ofType.GLOWBOARD:
+        deviceImage = "img/img-glowboard.svg";
+        break;
     }
 
     el = $(
@@ -237,8 +234,11 @@ function loadIDE() {
   updateInternetStatus();
 
   let projectName = "";
-  if (getConnectedRobotCount() == 1) {
-    if (robots[0].type == Robot.ofType.FINCH) {
+  if (allRobotsAreGlowBoards()) {
+    projectName = "PWAGlowBoardMultiDevice";
+  } else if (getConnectedRobotCount() == 1) {
+    let r = getFirstConnectedRobot()
+    if (r.isA(Robot.ofType.FINCH)) {
       projectName = "PWAFinchSingleDevice";
     } else {
       projectName = "PWAHummingbirdSingleDevice";

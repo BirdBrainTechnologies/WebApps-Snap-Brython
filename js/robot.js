@@ -48,6 +48,7 @@ Robot.ofType = {
   FINCH: 1,
   HUMMINGBIRDBIT: 2,
   MICROBIT: 3,
+  GLOWBOARD: 4,
 }
 
 /**
@@ -104,6 +105,23 @@ Robot.propertiesFor = {
     greenThreshold: null,
     yellowThreshold: null,
     getFirmwareCommand: new Uint8Array([0xCF])
+  },
+  //GlowBoard
+  4: {
+    setAllLetter: 0x50,
+    setAllLength: 80,
+    triLedCount: 0,
+    buzzerIndex: null,
+    buzzerBytes: null,
+    stopCommand: new Uint8Array([0x51, 0x02]),
+    calibrationCommand: null,
+    calibrationIndex: null,
+    batteryIndex: 6,
+    batteryFactor: 0.41,
+    batteryConstant: 0,
+    greenThreshold: 223,
+    yellowThreshold: 210,
+    getFirmwareCommand: null
   }
 }
 
@@ -130,6 +148,8 @@ Robot.getTypeFromName = function(name) {
     return Robot.ofType.HUMMINGBIRDBIT
   } else if (name.startsWith("MB")) {
     return Robot.ofType.MICROBIT
+  } else if (name.startsWith("GB")) {
+    return Robot.ofType.GLOWBOARD
   } else return null;
 }
 
@@ -150,6 +170,15 @@ Robot.initialSetAllFor = function(type) {
     array[11] = 0xFF;
     array[12] = 0xFF;
   }
+  if (type == Robot.ofType.GLOWBOARD) {
+    array[1] = 0b01100000 //96 mode dim
+    array[20] = array[0]
+    array[21] = 0b01100101 //101 mode red
+    array[40] = array[0]
+    array[41] = 0b01101010 //106 mode green
+    array[60] = array[0]
+    array[61] = 0b01101111 //111 mode blue
+  }
   return array;
 }
 
@@ -161,8 +190,14 @@ Robot.prototype.initialize = function() {
   //this.isReconnecting = false; //uncomment for autoreconnect
   this.isInitialized = false;
 
-  //Read the current robot's firmware version to determine if it includes a V2 micro:bit
-  this.write(Robot.propertiesFor[this.type].getFirmwareCommand)
+  if (Robot.propertiesFor[this.type].getFirmwareCommand != null) {
+    //Read the current robot's firmware version to determine if it includes a V2 micro:bit
+    this.write(Robot.propertiesFor[this.type].getFirmwareCommand)
+  } else {
+    this.write(Uint8Array.of(0x62, 0x67));
+    this.startSetAll();
+    this.isInitialized = true;
+  }
 }
 
 /**
@@ -189,10 +224,12 @@ Robot.prototype.startSetAll = function() {
     clearInterval(this.setAllInterval)
   }
 
-  this.setAllInterval = setInterval(
-    this.sendSetAll.bind(this),
-    MIN_SET_ALL_INTERVAL + this.setAllTimeToAdd
-  );
+  let interval = MIN_SET_ALL_INTERVAL + this.setAllTimeToAdd
+  if (this.isA(Robot.ofType.GLOWBOARD)) {
+    interval = MIN_SET_ALL_INTERVAL + this.setAllTimeToAdd
+  }
+
+  this.setAllInterval = setInterval( this.sendSetAll.bind(this), interval );
 }
 
 /**
@@ -268,13 +305,13 @@ Robot.prototype.write = function(data) {
   }
 
   if (this.writeInProgress) {
-    //console.log("Write already in progress. data = " + data)
+    console.log("Write already in progress. data = " + data)
     if (data != null) {
       //console.log(data);
       this.dataQueue.push(data);
     }
     setTimeout(function() {
-      //console.log("Timeout. data queue length = " + this.dataQueue.length);
+      console.log("Timeout. data queue length = " + this.dataQueue.length);
       this.write()
     }.bind(this), MIN_SET_ALL_INTERVAL);
     return;
@@ -292,14 +329,21 @@ Robot.prototype.write = function(data) {
       this.increaseSetAllInterval();
     }
   }
-  this.TX.writeValue(data).then(_ => {
+
+  let writeMethod = this.TX.writeValue
+  if ("writeValueWithoutResponse" in this.TX) { //Available in Chrome 85+
+    writeMethod = this.TX.writeValueWithoutResponse
+  }
+
+  writeMethod.call(this.TX, data).then(_ => {
       //console.log('Wrote to ' + this.fancyName + ":");
       //console.log(data);
       this.writeInProgress = false;
     }).catch(error => {
-      console.error("Error writting to " + this.fancyName + ": " + error);
+      console.error("Error writing to " + this.fancyName + ": " + error);
       this.writeInProgress = false;
     });
+
 }
 
 /**
@@ -308,6 +352,29 @@ Robot.prototype.write = function(data) {
  * a setInterval set up in the initializer (setAllInterval).
  */
 Robot.prototype.sendSetAll = function() {
+  if (this.isA(Robot.ofType.GLOWBOARD)) {
+    console.log("setall")
+    if (this.setAllData.isNew) {
+      const data = this.setAllData.getSendable();
+
+      console.log("sending setDim " + data.slice(0,20))
+      this.write(data.slice(0,20))
+      setTimeout(function() {
+        console.log("sending setRed " + data.slice(20,40))
+        this.write(data.slice(20,40))
+      }.bind(this), MIN_SET_ALL_INTERVAL/4)
+      setTimeout(function() {
+        console.log("sending setGreen " + data.slice(40,60))
+        this.write(data.slice(40,60))
+      }.bind(this), MIN_SET_ALL_INTERVAL/2)
+      setTimeout(function() {
+        console.log("sending setBlue " + data.slice(60,80))
+        this.write(data.slice(60,80))
+      }.bind(this), MIN_SET_ALL_INTERVAL*3/4)
+    }
+
+    return
+  }
   //var setAllChanged = !Robot.dataIsEqual(this.setAllData, this.oldSetAllData);
 
   //console.log("sendSetAll " + setAllChanged + " " + this.setAllData + " " + this.oldSetAllData);
@@ -611,6 +678,113 @@ Robot.prototype.setSymbol = function(symbolString) {
   this.ledDisplayData.update(0, data);
 }
 
+Robot.prototype.setGlowBoard = function(color, brightness, symbolString) {
+  if (!this.isA(Robot.ofType.GLOWBOARD)) {
+    console.error("setGlowBoard only available for GlowBoards.")
+    return
+  }
+
+  //console.log("set Glowboard! " + symbolString)
+
+  let data = [];
+  const sa = symbolString.split("/")
+  let iData = 2
+  let shift = 7
+
+  //Convert the true/false or bit string to bits. Requires 4 data bytes.
+  for (let i = 0; i < 144; i++) {
+    let bit = ( sa[i] == "true" )
+    data[iData] = bit ? (data[iData] | (1 << shift)) : (data[iData] & ~(1 << shift));
+    if (shift == 0) {
+      shift = 7
+      iData += 1
+    } else {
+      shift -= 1
+    }
+  }
+
+  let fullArray = this.setAllData.values.slice(); //TODO: don't pull data this way - there may be pending changes
+  let setArrayValues = function(set, offset) {
+    console.log("setArrayValues: " + set + ", " + offset + ", " + data)
+    for (let i = 2; i < 20; i++) {
+      if (set) {
+        fullArray[i + offset] = fullArray[i + offset] | data[i]
+      } else {
+        fullArray[i + offset] = fullArray[i + offset] & ~data[i]
+      }
+    }
+  }
+
+  const rgb = Robot.getColorArray(color, brightness)
+
+  for (let i = 0; i < 4; i++) {
+    setArrayValues(rgb[i], i*20)
+  }
+
+  console.log(color)
+  console.log(brightness)
+  console.log(rgb)
+  console.log(fullArray)
+  this.setAllData.update(0, fullArray);
+}
+Robot.getColorArray = function(color, brightness) {
+  let rgb = [false, false, false]
+  switch (color) {
+    case "white":
+      rgb = [true, true, true]
+      break;
+    case "red":
+      rgb = [true, false, false]
+      break;
+    case "yellow":
+      rgb = [true, true, false]
+      break;
+    case "green":
+      rgb = [false, true, false]
+      break;
+    case "cyan":
+      rgb = [false, true, true]
+      break;
+    case "blue":
+      rgb = [false, false, true]
+      break;
+    case "magenta":
+      rgb = [true, false, true]
+      break;
+    case "black":
+      rgb = [false, false, false]
+      break;
+    default:
+      console.error("Unhandled glow board color: " + color);
+  }
+  rgb.unshift(brightness == "dim") //first value will be brightness
+
+  return rgb
+}
+
+Robot.prototype.setGBPoint = function(xPos, yPos, color, brightness) {
+  console.log("setGPPoint " + xPos + ", " + yPos + ", " + color + ", " + brightness)
+  const rgb = Robot.getColorArray(color, brightness)
+
+  xPos -= 1
+  yPos -= 1
+  const bitIndex = xPos + (yPos)*12
+  let byte = 1 << (7 - (bitIndex % 8))
+  let index = Math.floor(bitIndex/8)
+
+  let fullArray = this.setAllData.values.slice(); //TODO: don't pull data this way - there may be pending changes
+  for (let i = 0; i < 4; i++) {
+    let offset = 2 + i*20
+    if (rgb[i]) {
+      fullArray[index + offset] = fullArray[index + offset] | byte
+    } else {
+      fullArray[i + offset] = fullArray[i + offset] & ~byte
+    }
+  }
+
+  this.setAllData.update(0, fullArray);
+}
+
 /**
  * Robot.prototype.setPrint - Print out a string on the led display
  *
@@ -688,6 +862,9 @@ Robot.prototype.receiveSensorData = function(data) {
     //Start polling sensors
     var pollStart = Uint8Array.of(0x62, 0x67);
     if (this.hasV2Microbit) {
+      if (FinchBlox) {
+        fbFrontend.CallbackManager.robot.updateHasV2Microbit(this.device.name, 'true')
+      }
       console.log(this.fancyName + " has a V2 micro:bit")
       //trigger V2 specific notifications
       pollStart = Uint8Array.of(0x62, 0x70);
@@ -704,6 +881,7 @@ Robot.prototype.receiveSensorData = function(data) {
   }
 
   this.currentSensorData = data
+  //console.log(data)
   sendMessage({
     robot: this.devLetter,
     robotType: this.type,

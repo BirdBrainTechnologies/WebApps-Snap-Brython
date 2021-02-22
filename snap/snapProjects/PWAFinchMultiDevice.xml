@@ -1501,67 +1501,6 @@
                         <block var="55"/>
                     </list>
                 </block>
-                <block s="doReport">
-                    <block s="reportURL">
-                        <block s="reportJoinWords">
-                            <list>
-                                <l>http://127.0.0.1:30061/hummingbird/out/symbol/</l>
-                                <block var="devId"/>
-                                <l>/</l>
-                                <block var="11"/>
-                                <l>/</l>
-                                <block var="12"/>
-                                <l>/</l>
-                                <block var="13"/>
-                                <l>/</l>
-                                <block var="14"/>
-                                <l>/</l>
-                                <block var="15"/>
-                                <l>/</l>
-                                <block var="21"/>
-                                <l>/</l>
-                                <block var="22"/>
-                                <l>/</l>
-                                <block var="23"/>
-                                <l>/</l>
-                                <block var="24"/>
-                                <l>/</l>
-                                <block var="25"/>
-                                <l>/</l>
-                                <block var="31"/>
-                                <l>/</l>
-                                <block var="32"/>
-                                <l>/</l>
-                                <block var="33"/>
-                                <l>/</l>
-                                <block var="34"/>
-                                <l>/</l>
-                                <block var="35"/>
-                                <l>/</l>
-                                <block var="41"/>
-                                <l>/</l>
-                                <block var="42"/>
-                                <l>/</l>
-                                <block var="43"/>
-                                <l>/</l>
-                                <block var="44"/>
-                                <l>/</l>
-                                <block var="45"/>
-                                <l>/</l>
-                                <block var="51"/>
-                                <l>/</l>
-                                <block var="52"/>
-                                <l>/</l>
-                                <block var="53"/>
-                                <l>/</l>
-                                <block var="54"/>
-                                <l>/</l>
-                                <block var="55"/>
-                                <l>/</l>
-                            </list>
-                        </block>
-                    </block>
-                </block>
                 <block s="doWait"><l>0.03</l></block>
             </script>
         </block-definition>

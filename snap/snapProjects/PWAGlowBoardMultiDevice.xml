@@ -1,0 +1,654 @@
+<project name="PWAGlowBoardMultiDevice" app="Snap! 5.0, http://snap.berkeley.edu" version="1">
+    <notes></notes>
+    <thumbnail>
+        data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAKAAAAB4CAYAAAB1ovlvAAADXklEQVR4Xu3XvUqjYRSF0TdYiKU2Wilo6w+IFt6Znd6Kt+RF2GprlWEsBqaY8TTbDWGlSXM4h6zvCSGb7Xa7XV4ESgIbAZbknf0SEKAQqgICrPI7LkANVAUEWOV3XIAaqAoIsMrvuAA1UBUQYJXfcQFqoCogwCq/4wLUQFVAgFV+xwWogaqAAKv8jgtQA1UBAVb5HRegBqoCAqzyOy5ADVQFBFjld1yAGqgKCLDK77gANVAVEGCV33EBaqAqIMAqv+MC1EBVQIBVfscFqIGqgACr/I4LUANVAQFW+R0XoAaqAgKs8jsuQA1UBQRY5XdcgBqoCgiwyu+4ADVQFRBgld9xAWqgKiDAKr/jAtRAVUCAVX7HBaiBqoAAq/yOC1ADVQEBVvkdF6AGqgICrPI7LkANVAUEWOV3XIAaqAoIsMrvuAA1UBUQ4D/4X15e1t7e3rq+vl5XV1drs9lUH9SuHhfgP57s29vbenx8XB8fH2t/f3/d39+v8/Pzr/ezs7Nd7eHHP5cA/0P++vq6np6e/pr4/Pxcx8fH6/b29ivIh4eHdXR09OMPblcOCvCbAJ+fn9d2u/0z9TvAk5OTvwI8PDzclR5+/HMI8Juf4Pf393VwcLDu7u7WxcXF10/w6enpjz+oXT0owG/+hNzc3KzLy0t/QkLfAAGGYK2dCQhw5mQqJCDAEKy1MwEBzpxMhQQEGIK1diYgwJmTqZCAAEOw1s4EBDhzMhUSEGAI1tqZgABnTqZCAgIMwVo7ExDgzMlUSECAIVhrZwICnDmZCgkIMARr7UxAgDMnUyEBAYZgrZ0JCHDmZCokIMAQrLUzAQHOnEyFBAQYgrV2JiDAmZOpkIAAQ7DWzgQEOHMyFRIQYAjW2pmAAGdOpkICAgzBWjsTEODMyVRIQIAhWGtnAgKcOZkKCQgwBGvtTECAMydTIQEBhmCtnQkIcOZkKiQgwBCstTMBAc6cTIUEBBiCtXYmIMCZk6mQgABDsNbOBAQ4czIVEhBgCNbamYAAZ06mQgICDMFaOxMQ4MzJVEhAgCFYa2cCApw5mQoJCDAEa+1MQIAzJ1MhAQGGYK2dCQhw5mQqJCDAEKy1MwEBzpxMhQQEGIK1diYgwJmTqZCAAEOw1s4EBDhzMhUSEGAI1tqZwC+DkAu3aOeKRQAAAABJRU5ErkJggg==
+    </thumbnail>
+    <stage name="Stage" width="480" height="360" costume="0" color="255,255,255,1" tempo="60" threadsafe="false"
+           volume="100" pan="0" lines="round" ternary="false" codify="false" inheritance="true" sublistIDs="false"
+           scheduled="false" id="1">
+        <pentrails>
+            data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAeAAAAFoCAYAAACPNyggAAAOhUlEQVR4Xu3VwQkAAAjEMN1/abewn7jAQRC64wgQIECAAIF3gX1fNEiAAAECBAiMAHsCAgQIECAQCAhwgG6SAAECBAgIsB8gQIAAAQKBgAAH6CYJECBAgIAA+wECBAgQIBAICHCAbpIAAQIECAiwHyBAgAABAoGAAAfoJgkQIECAgAD7AQIECBAgEAgIcIBukgABAgQICLAfIECAAAECgYAAB+gmCRAgQICAAPsBAgQIECAQCAhwgG6SAAECBAgIsB8gQIAAAQKBgAAH6CYJECBAgIAA+wECBAgQIBAICHCAbpIAAQIECAiwHyBAgAABAoGAAAfoJgkQIECAgAD7AQIECBAgEAgIcIBukgABAgQICLAfIECAAAECgYAAB+gmCRAgQICAAPsBAgQIECAQCAhwgG6SAAECBAgIsB8gQIAAAQKBgAAH6CYJECBAgIAA+wECBAgQIBAICHCAbpIAAQIECAiwHyBAgAABAoGAAAfoJgkQIECAgAD7AQIECBAgEAgIcIBukgABAgQICLAfIECAAAECgYAAB+gmCRAgQICAAPsBAgQIECAQCAhwgG6SAAECBAgIsB8gQIAAAQKBgAAH6CYJECBAgIAA+wECBAgQIBAICHCAbpIAAQIECAiwHyBAgAABAoGAAAfoJgkQIECAgAD7AQIECBAgEAgIcIBukgABAgQICLAfIECAAAECgYAAB+gmCRAgQICAAPsBAgQIECAQCAhwgG6SAAECBAgIsB8gQIAAAQKBgAAH6CYJECBAgIAA+wECBAgQIBAICHCAbpIAAQIECAiwHyBAgAABAoGAAAfoJgkQIECAgAD7AQIECBAgEAgIcIBukgABAgQICLAfIECAAAECgYAAB+gmCRAgQICAAPsBAgQIECAQCAhwgG6SAAECBAgIsB8gQIAAAQKBgAAH6CYJECBAgIAA+wECBAgQIBAICHCAbpIAAQIECAiwHyBAgAABAoGAAAfoJgkQIECAgAD7AQIECBAgEAgIcIBukgABAgQICLAfIECAAAECgYAAB+gmCRAgQICAAPsBAgQIECAQCAhwgG6SAAECBAgIsB8gQIAAAQKBgAAH6CYJECBAgIAA+wECBAgQIBAICHCAbpIAAQIECAiwHyBAgAABAoGAAAfoJgkQIECAgAD7AQIECBAgEAgIcIBukgABAgQICLAfIECAAAECgYAAB+gmCRAgQICAAPsBAgQIECAQCAhwgG6SAAECBAgIsB8gQIAAAQKBgAAH6CYJECBAgIAA+wECBAgQIBAICHCAbpIAAQIECAiwHyBAgAABAoGAAAfoJgkQIECAgAD7AQIECBAgEAgIcIBukgABAgQICLAfIECAAAECgYAAB+gmCRAgQICAAPsBAgQIECAQCAhwgG6SAAECBAgIsB8gQIAAAQKBgAAH6CYJECBAgIAA+wECBAgQIBAICHCAbpIAAQIECAiwHyBAgAABAoGAAAfoJgkQIECAgAD7AQIECBAgEAgIcIBukgABAgQICLAfIECAAAECgYAAB+gmCRAgQICAAPsBAgQIECAQCAhwgG6SAAECBAgIsB8gQIAAAQKBgAAH6CYJECBAgIAA+wECBAgQIBAICHCAbpIAAQIECAiwHyBAgAABAoGAAAfoJgkQIECAgAD7AQIECBAgEAgIcIBukgABAgQICLAfIECAAAECgYAAB+gmCRAgQICAAPsBAgQIECAQCAhwgG6SAAECBAgIsB8gQIAAAQKBgAAH6CYJECBAgIAA+wECBAgQIBAICHCAbpIAAQIECAiwHyBAgAABAoGAAAfoJgkQIECAgAD7AQIECBAgEAgIcIBukgABAgQICLAfIECAAAECgYAAB+gmCRAgQICAAPsBAgQIECAQCAhwgG6SAAECBAgIsB8gQIAAAQKBgAAH6CYJECBAgIAA+wECBAgQIBAICHCAbpIAAQIECAiwHyBAgAABAoGAAAfoJgkQIECAgAD7AQIECBAgEAgIcIBukgABAgQICLAfIECAAAECgYAAB+gmCRAgQICAAPsBAgQIECAQCAhwgG6SAAECBAgIsB8gQIAAAQKBgAAH6CYJECBAgIAA+wECBAgQIBAICHCAbpIAAQIECAiwHyBAgAABAoGAAAfoJgkQIECAgAD7AQIECBAgEAgIcIBukgABAgQICLAfIECAAAECgYAAB+gmCRAgQICAAPsBAgQIECAQCAhwgG6SAAECBAgIsB8gQIAAAQKBgAAH6CYJECBAgIAA+wECBAgQIBAICHCAbpIAAQIECAiwHyBAgAABAoGAAAfoJgkQIECAgAD7AQIECBAgEAgIcIBukgABAgQICLAfIECAAAECgYAAB+gmCRAgQICAAPsBAgQIECAQCAhwgG6SAAECBAgIsB8gQIAAAQKBgAAH6CYJECBAgIAA+wECBAgQIBAICHCAbpIAAQIECAiwHyBAgAABAoGAAAfoJgkQIECAgAD7AQIECBAgEAgIcIBukgABAgQICLAfIECAAAECgYAAB+gmCRAgQICAAPsBAgQIECAQCAhwgG6SAAECBAgIsB8gQIAAAQKBgAAH6CYJECBAgIAA+wECBAgQIBAICHCAbpIAAQIECAiwHyBAgAABAoGAAAfoJgkQIECAgAD7AQIECBAgEAgIcIBukgABAgQICLAfIECAAAECgYAAB+gmCRAgQICAAPsBAgQIECAQCAhwgG6SAAECBAgIsB8gQIAAAQKBgAAH6CYJECBAgIAA+wECBAgQIBAICHCAbpIAAQIECAiwHyBAgAABAoGAAAfoJgkQIECAgAD7AQIECBAgEAgIcIBukgABAgQICLAfIECAAAECgYAAB+gmCRAgQICAAPsBAgQIECAQCAhwgG6SAAECBAgIsB8gQIAAAQKBgAAH6CYJECBAgIAA+wECBAgQIBAICHCAbpIAAQIECAiwHyBAgAABAoGAAAfoJgkQIECAgAD7AQIECBAgEAgIcIBukgABAgQICLAfIECAAAECgYAAB+gmCRAgQICAAPsBAgQIECAQCAhwgG6SAAECBAgIsB8gQIAAAQKBgAAH6CYJECBAgIAA+wECBAgQIBAICHCAbpIAAQIECAiwHyBAgAABAoGAAAfoJgkQIECAgAD7AQIECBAgEAgIcIBukgABAgQICLAfIECAAAECgYAAB+gmCRAgQICAAPsBAgQIECAQCAhwgG6SAAECBAgIsB8gQIAAAQKBgAAH6CYJECBAgIAA+wECBAgQIBAICHCAbpIAAQIECAiwHyBAgAABAoGAAAfoJgkQIECAgAD7AQIECBAgEAgIcIBukgABAgQICLAfIECAAAECgYAAB+gmCRAgQICAAPsBAgQIECAQCAhwgG6SAAECBAgIsB8gQIAAAQKBgAAH6CYJECBAgIAA+wECBAgQIBAICHCAbpIAAQIECAiwHyBAgAABAoGAAAfoJgkQIECAgAD7AQIECBAgEAgIcIBukgABAgQICLAfIECAAAECgYAAB+gmCRAgQICAAPsBAgQIECAQCAhwgG6SAAECBAgIsB8gQIAAAQKBgAAH6CYJECBAgIAA+wECBAgQIBAICHCAbpIAAQIECAiwHyBAgAABAoGAAAfoJgkQIECAgAD7AQIECBAgEAgIcIBukgABAgQICLAfIECAAAECgYAAB+gmCRAgQICAAPsBAgQIECAQCAhwgG6SAAECBAgIsB8gQIAAAQKBgAAH6CYJECBAgIAA+wECBAgQIBAICHCAbpIAAQIECAiwHyBAgAABAoGAAAfoJgkQIECAgAD7AQIECBAgEAgIcIBukgABAgQICLAfIECAAAECgYAAB+gmCRAgQICAAPsBAgQIECAQCAhwgG6SAAECBAgIsB8gQIAAAQKBgAAH6CYJECBAgIAA+wECBAgQIBAICHCAbpIAAQIECAiwHyBAgAABAoGAAAfoJgkQIECAgAD7AQIECBAgEAgIcIBukgABAgQICLAfIECAAAECgYAAB+gmCRAgQICAAPsBAgQIECAQCAhwgG6SAAECBAgIsB8gQIAAAQKBgAAH6CYJECBAgIAA+wECBAgQIBAICHCAbpIAAQIECAiwHyBAgAABAoGAAAfoJgkQIECAgAD7AQIECBAgEAgIcIBukgABAgQICLAfIECAAAECgYAAB+gmCRAgQICAAPsBAgQIECAQCAhwgG6SAAECBAgIsB8gQIAAAQKBgAAH6CYJECBAgIAA+wECBAgQIBAICHCAbpIAAQIECAiwHyBAgAABAoGAAAfoJgkQIECAgAD7AQIECBAgEAgIcIBukgABAgQICLAfIECAAAECgYAAB+gmCRAgQICAAPsBAgQIECAQCAhwgG6SAAECBAgIsB8gQIAAAQKBgAAH6CYJECBAgIAA+wECBAgQIBAICHCAbpIAAQIECAiwHyBAgAABAoGAAAfoJgkQIECAgAD7AQIECBAgEAgIcIBukgABAgQICLAfIECAAAECgYAAB+gmCRAgQICAAPsBAgQIECAQCAhwgG6SAAECBAgIsB8gQIAAAQKBgAAH6CYJECBAgIAA+wECBAgQIBAICHCAbpIAAQIECAiwHyBAgAABAoGAAAfoJgkQIECAgAD7AQIECBAgEAgIcIBukgABAgQICLAfIECAAAECgYAAB+gmCRAgQICAAPsBAgQIECAQCAhwgG6SAAECBAgIsB8gQIAAAQKBgAAH6CYJECBAgIAA+wECBAgQIBAICHCAbpIAAQIECAiwHyBAgAABAoGAAAfoJgkQIECAgAD7AQIECBAgEAgIcIBukgABAgQICLAfIECAAAECgYAAB+gmCRAgQICAAPsBAgQIECAQCAhwgG6SAAECBAgIsB8gQIAAAQKBgAAH6CYJECBAgIAA+wECBAgQIBAICHCAbpIAAQIECAiwHyBAgAABAoGAAAfoJgkQIECAgAD7AQIECBAgEAgIcIBukgABAgQIHLFxAWmhEwHPAAAAAElFTkSuQmCC
+        </pentrails>
+        <costumes>
+            <list struct="atomic" id="2"></list>
+        </costumes>
+        <sounds>
+            <list struct="atomic" id="3"></list>
+        </sounds>
+        <variables></variables>
+        <blocks></blocks>
+        <scripts>
+            <script x="29" y="22">
+                <block s="receiveInteraction">
+                    <l>
+                        <option>stopped</option>
+                    </l>
+                </block>
+                <custom-block s="stop all %txt">
+                    <l>A</l>
+                </custom-block>
+            </script>
+            <script x="188" y="24">
+                <block s="receiveInteraction">
+                    <l>
+                        <option>stopped</option>
+                    </l>
+                </block>
+                <custom-block s="stop all %txt">
+                    <l>B</l>
+                </custom-block>
+            </script>
+            <script x="347" y="19">
+                <block s="receiveInteraction">
+                    <l>
+                        <option>stopped</option>
+                    </l>
+                </block>
+                <custom-block s="stop all %txt">
+                    <l>C</l>
+                </custom-block>
+            </script>
+            <script x="152" y="13">
+              <block s="receiveGo"></block>
+              <custom-block s="BirdBrain Setup"></custom-block>
+            </script>
+        </scripts>
+        <sprites>
+            <sprite name="Sprite" idx="1" x="0" y="0" heading="90" scale="1" volume="100" pan="0" rotation="1"
+                    draggable="true" costume="0" color="80,80,80,1" pen="tip" id="20">
+                <costumes>
+                    <list struct="atomic" id="21"></list>
+                </costumes>
+                <sounds>
+                    <list struct="atomic" id="22"></list>
+                </sounds>
+                <blocks></blocks>
+                <variables></variables>
+                <scripts></scripts>
+            </sprite>
+        </sprites>
+    </stage>
+    <hidden>receiveCondition</hidden>
+    <headers></headers>
+    <code></code>
+    <blocks>
+      <block-definition s="BirdBrain Setup" type="command">
+        <header></header>
+        <code></code>
+        <translations></translations>
+        <script>
+          <block s="doRun">
+              <block s="reportJSFunction">
+                <list></list>
+                  <l>
+                    function setupBirdbrain() {
+                      window.birdbrain = {};
+                      window.birdbrain.sensorData = {};
+                      window.birdbrain.sensorData.A = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
+                      window.birdbrain.sensorData.B = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
+                      window.birdbrain.sensorData.C = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
+                      window.birdbrain.microbitIsV2 = {};
+                      window.birdbrain.microbitIsV2.A = false;
+                      window.birdbrain.microbitIsV2.B = false;
+                      window.birdbrain.microbitIsV2.C = false;
+                      window.birdbrain.robotType = {
+                        FINCH: 1,
+                        HUMMINGBIRDBIT: 2,
+                        MICROBIT: 3,
+                        GLOWBOARD: 4,
+                        //connected robots default to type MICROBIT
+                        A: 3,
+                        B: 3,
+                        C: 3
+                      };
+
+                      //console.log("setting up message channel")
+                      window.birdbrain.messageChannel = new MessageChannel();
+                      window.birdbrain.messageChannel.port1.onmessage = function (e) {
+                          //console.log("Got a message: ");
+                          //console.log(e.data);
+                          if (e.data.sensorData != null && e.data.robot != null) {
+                            let robot = e.data.robot;
+                            window.birdbrain.sensorData[robot] = e.data.sensorData;
+                            window.birdbrain.robotType[robot] = e.data.robotType;
+                            window.birdbrain.microbitIsV2[robot] = e.data.hasV2Microbit;
+                          }
+                      }
+                      window.parent.postMessage("hello from snap", "*", [window.birdbrain.messageChannel.port2]);
+
+                      window.birdbrain.sendCommand = function(command) {
+                        window.parent.postMessage(command, "*");
+                      }
+
+                    }
+
+                    let currentVersion = -1
+                    if (window.birdbrain === undefined ||
+                      window.birdbrain.version === undefined ||
+                      window.birdbrain.version &gt; currentVersion) {
+
+                      setupBirdbrain()
+                      window.birdbrain.version = currentVersion
+                    } else {
+                      //console.log("BirdBrain already set up");
+                    }
+                  </l>
+              </block>
+            </block>
+          </script>
+        </block-definition>
+
+        <block-definition s="GlowBoard %&apos;devId&apos; Button %&apos;button&apos;" type="predicate"
+                          category="sensing">
+            <header></header>
+            <code></code>
+            <translations>ko:GlowBoard _ 버튼 _&#xD;de:GlowBoard _ Knopf _&#xD;pt:GlowBoard _ Tecla _&#xD;fr:GlowBoard _ Bouton _&#xD;nl:GlowBoard _ Knop _&#xD;zh_CN:GlowBoard _ 按钮 _&#xD;zh_TW:GlowBoard _ 按鈕 _&#xD;ar:GlowBoard _ زر _&#xD;dk:GlowBoard _ Knap _&#xD;he:GlowBoard _ לחצן _&#xD;es:GlowBoard _ Pulsador _&#xD;ca:GlowBoard _ Botó _&#xD;fi:GlowBoard _ Painike _&#xD;sv:GlowBoard _ Knapp _&#xD;</translations>
+            <inputs>
+                <input type="%txt" readonly="true">A<options>A&#xD;B&#xD;C</options></input>
+                <input type="%txt" readonly="true">left<options>left&#xD;right</options></input>
+            </inputs>
+            <script>
+                <custom-block s="BirdBrain Setup"></custom-block>
+                <block s="doReport">
+                  <block s="evaluate">
+                    <block s="reportJSFunction">
+                        <list>
+                            <l>devId</l>
+                            <l>button</l>
+                        </list>
+                        <l>
+                          if (window.birdbrain.getButton === undefined) {
+                            window.birdbrain.getButton = function (button, robot) {
+                              const type = window.birdbrain.robotType[robot];
+                              var buttonState = window.birdbrain.sensorData[robot][5] & 0xF0; //Button Byte position = 7, clear LS Bits as it is for shake and calibrate
+
+                              switch (button) {
+                                case 'right':
+                                  return (buttonState == 0x00 || buttonState == 0x20)
+                                case 'left':
+                                  return (buttonState == 0x00 || buttonState == 0x10)
+                                default:
+                                  console.log("unknown button " + button);
+                                  return false;
+                              }
+                            }
+                          }
+
+                          return window.birdbrain.getButton(button, devId);
+                        </l>
+                    </block>
+                    <list>
+                        <block var="devId"/>
+                        <block var="button"/>
+                    </list>
+                  </block>
+                </block>
+            </script>
+        </block-definition>
+        <block-definition s="GlowBoard %&apos;devId&apos; set point X %&apos;xPos&apos; Y %&apos;yPos&apos; to %&apos;color&apos; %&apos;brightness&apos;"
+                          type="command" category="looks">
+            <header></header>
+            <code></code>
+            <translations></translations>
+            <inputs>
+                <input type="%txt" readonly="true">A<options>A&#xD;B&#xD;C</options></input>
+                <input type="%n">1</input>
+                <input type="%n">1</input>
+                <input type="%txt" readonly="true">white<options>white&#xD;red&#xD;yellow&#xD;green&#xD;cyan&#xD;blue&#xD;magenta&#xD;black</options></input>
+                <input type="%txt" readonly="true">bright<options>bright&#xD;dim</options></input>
+            </inputs>
+            <script>
+                <custom-block s="BirdBrain Setup"></custom-block>
+                <block s="doRun">
+                  <block s="reportJSFunction">
+                      <list>
+                          <l>devId</l>
+                          <l>xPos</l>
+                          <l>yPos</l>
+                          <l>color</l>
+                          <l>brightness</l>
+                      </list>
+                      <l>
+                        var thisCommand = {
+                          robot: devId,
+                          cmd: "setPoint",
+                          xPos: Math.round(Math.max(Math.min(xPos, 12), 1)),
+                          yPos: Math.round(Math.max(Math.min(yPos, 12), 1)),
+                          color: color,
+                          brightness: brightness
+                        }
+
+                        window.birdbrain.sendCommand(thisCommand);
+                      </l>
+                  </block>
+                  <list>
+                      <block var="devId"/>
+                      <block var="xPos"/>
+                      <block var="yPos"/>
+                      <block var="color"/>
+                      <block var="brightness"/>
+                  </list>
+                </block>
+                <block s="doWait"><l>0.03</l></block>
+            </script>
+        </block-definition>
+        <block-definition s="GlowBoard %&apos;devId&apos; %&apos;sensor&apos; Dial" type="reporter" category="sensing">
+            <header></header>
+            <code></code>
+            <translations></translations>
+            <inputs>
+                <input type="%txt" readonly="true">A<options>A&#xD;B&#xD;C</options></input>
+                <input type="%txt" readonly="true">Left<options>Left&#xD;Right</options></input>
+            </inputs>
+            <script>
+                <custom-block s="BirdBrain Setup"></custom-block>
+                <block s="doReport">
+                  <block s="evaluate">
+                    <block s="reportJSFunction">
+                        <list>
+                            <l>devId</l>
+                            <l>sensor</l>
+                        </list>
+                        <l>
+                          if (window.birdbrain.getDial === undefined) {
+                            window.birdbrain.getDial = function (sensor, robot) {
+                              let index = 1
+                              if (sensor == "Right") { index = 3 }
+                              const msb = window.birdbrain.sensorData[robot][index];
+                              const lsb = window.birdbrain.sensorData[robot][index + 1];
+                              const value = msb &lt;&lt; 8 | lsb;
+                              return value;
+                            }
+                          }
+
+                          return window.birdbrain.getDial(sensor, devId);
+                        </l>
+                    </block>
+                    <list>
+                        <block var="devId"/>
+                        <block var="sensor"/>
+                    </list>
+                  </block>
+                </block>
+            </script>
+        </block-definition>
+        <block-definition
+                s="GlowBoard %&apos;devId&apos; set %&apos;color&apos; %&apos;brightness&apos; $nl %&apos;0101&apos; %&apos;0102&apos; %&apos;0103&apos; %&apos;0104&apos; %&apos;0105&apos; %&apos;0106&apos; %&apos;0107&apos; %&apos;0108&apos; %&apos;0109&apos; %&apos;0110&apos; %&apos;0111&apos; %&apos;0112&apos; $nl %&apos;0201&apos; %&apos;0202&apos; %&apos;0203&apos; %&apos;0204&apos; %&apos;0205&apos; %&apos;0206&apos; %&apos;0207&apos; %&apos;0208&apos; %&apos;0209&apos; %&apos;0210&apos; %&apos;0211&apos; %&apos;0212&apos; $nl %&apos;0301&apos; %&apos;0302&apos; %&apos;0303&apos; %&apos;0304&apos; %&apos;0305&apos; %&apos;0306&apos; %&apos;0307&apos; %&apos;0308&apos; %&apos;0309&apos; %&apos;0310&apos; %&apos;0311&apos; %&apos;0312&apos; $nl %&apos;0401&apos; %&apos;0402&apos; %&apos;0403&apos; %&apos;0404&apos; %&apos;0405&apos; %&apos;0406&apos; %&apos;0407&apos; %&apos;0408&apos; %&apos;0409&apos; %&apos;0410&apos; %&apos;0411&apos; %&apos;0412&apos; $nl %&apos;0501&apos; %&apos;0502&apos; %&apos;0503&apos; %&apos;0504&apos; %&apos;0505&apos; %&apos;0506&apos; %&apos;0507&apos; %&apos;0508&apos; %&apos;0509&apos; %&apos;0510&apos; %&apos;0511&apos; %&apos;0512&apos; $nl %&apos;0601&apos; %&apos;0602&apos; %&apos;0603&apos; %&apos;0604&apos; %&apos;0605&apos; %&apos;0606&apos; %&apos;0607&apos; %&apos;0608&apos; %&apos;0609&apos; %&apos;0610&apos; %&apos;0611&apos; %&apos;0612&apos; $nl %&apos;0701&apos; %&apos;0702&apos; %&apos;0703&apos; %&apos;0704&apos; %&apos;0705&apos; %&apos;0706&apos; %&apos;0707&apos; %&apos;0708&apos; %&apos;0709&apos; %&apos;0710&apos; %&apos;0711&apos; %&apos;0712&apos; $nl %&apos;0801&apos; %&apos;0802&apos; %&apos;0803&apos; %&apos;0804&apos; %&apos;0805&apos; %&apos;0806&apos; %&apos;0807&apos; %&apos;0808&apos; %&apos;0809&apos; %&apos;0810&apos; %&apos;0811&apos; %&apos;0812&apos; $nl %&apos;0901&apos; %&apos;0902&apos; %&apos;0903&apos; %&apos;0904&apos; %&apos;0905&apos; %&apos;0906&apos; %&apos;0907&apos; %&apos;0908&apos; %&apos;0909&apos; %&apos;0910&apos; %&apos;0911&apos; %&apos;0912&apos; $nl %&apos;1001&apos; %&apos;1002&apos; %&apos;1003&apos; %&apos;1004&apos; %&apos;1005&apos; %&apos;1006&apos; %&apos;1007&apos; %&apos;1008&apos; %&apos;1009&apos; %&apos;1010&apos; %&apos;1011&apos; %&apos;1012&apos; $nl %&apos;1101&apos; %&apos;1102&apos; %&apos;1103&apos; %&apos;1104&apos; %&apos;1105&apos; %&apos;1106&apos; %&apos;1107&apos; %&apos;1108&apos; %&apos;1109&apos; %&apos;1110&apos; %&apos;1111&apos; %&apos;1112&apos; $nl %&apos;1201&apos; %&apos;1202&apos; %&apos;1203&apos; %&apos;1204&apos; %&apos;1205&apos; %&apos;1206&apos; %&apos;1207&apos; %&apos;1208&apos; %&apos;1209&apos; %&apos;1210&apos; %&apos;1211&apos; %&apos;1212&apos;"
+                type="command" category="looks">
+            <header></header>
+            <code></code>
+            <translations></translations>
+            <inputs>
+                <input type="%txt" readonly="true">A<options>A&#xD;B&#xD;C</options></input>
+                <input type="%txt" readonly="true">white<options>white&#xD;red&#xD;yellow&#xD;green&#xD;cyan&#xD;blue&#xD;magenta&#xD;black</options></input>
+                <input type="%txt" readonly="true">bright<options>bright&#xD;dim</options></input>
+                <input type="%b">false</input>
+                <input type="%b">false</input>
+                <input type="%b">false</input>
+                <input type="%b">false</input>
+                <input type="%b">false</input>
+                <input type="%b">false</input>
+                <input type="%b">false</input>
+                <input type="%b">false</input>
+                <input type="%b">false</input>
+                <input type="%b">false</input>
+                <input type="%b">false</input>
+                <input type="%b">false</input>
+                <input type="%b">false</input>
+                <input type="%b">false</input>
+                <input type="%b">false</input>
+                <input type="%b">false</input>
+                <input type="%b">false</input>
+                <input type="%b">false</input>
+                <input type="%b">false</input>
+                <input type="%b">false</input>
+                <input type="%b">false</input>
+                <input type="%b">false</input>
+                <input type="%b">false</input>
+                <input type="%b">false</input>
+                <input type="%b">false</input>
+                <input type="%b">false</input>
+                <input type="%b">false</input>
+                <input type="%b">false</input>
+                <input type="%b">false</input>
+                <input type="%b">false</input>
+                <input type="%b">false</input>
+                <input type="%b">false</input>
+                <input type="%b">false</input>
+                <input type="%b">false</input>
+                <input type="%b">false</input>
+                <input type="%b">false</input>
+                <input type="%b">false</input>
+                <input type="%b">false</input>
+                <input type="%b">false</input>
+                <input type="%b">false</input>
+                <input type="%b">false</input>
+                <input type="%b">false</input>
+                <input type="%b">false</input>
+                <input type="%b">false</input>
+                <input type="%b">false</input>
+                <input type="%b">false</input>
+                <input type="%b">false</input>
+                <input type="%b">false</input>
+                <input type="%b">false</input>
+                <input type="%b">false</input>
+                <input type="%b">false</input>
+                <input type="%b">false</input>
+                <input type="%b">false</input>
+                <input type="%b">false</input>
+                <input type="%b">false</input>
+                <input type="%b">false</input>
+                <input type="%b">false</input>
+                <input type="%b">false</input>
+                <input type="%b">false</input>
+                <input type="%b">false</input>
+                <input type="%b">false</input>
+                <input type="%b">false</input>
+                <input type="%b">false</input>
+                <input type="%b">false</input>
+                <input type="%b">false</input>
+                <input type="%b">false</input>
+                <input type="%b">false</input>
+                <input type="%b">false</input>
+                <input type="%b">false</input>
+                <input type="%b">false</input>
+                <input type="%b">false</input>
+                <input type="%b">false</input>
+                <input type="%b">false</input>
+                <input type="%b">false</input>
+                <input type="%b">false</input>
+                <input type="%b">false</input>
+                <input type="%b">false</input>
+                <input type="%b">false</input>
+                <input type="%b">false</input>
+                <input type="%b">false</input>
+                <input type="%b">false</input>
+                <input type="%b">false</input>
+                <input type="%b">false</input>
+                <input type="%b">false</input>
+                <input type="%b">false</input>
+                <input type="%b">false</input>
+                <input type="%b">false</input>
+                <input type="%b">false</input>
+                <input type="%b">false</input>
+                <input type="%b">false</input>
+                <input type="%b">false</input>
+                <input type="%b">false</input>
+                <input type="%b">false</input>
+                <input type="%b">false</input>
+                <input type="%b">false</input>
+                <input type="%b">false</input>
+                <input type="%b">false</input>
+                <input type="%b">false</input>
+                <input type="%b">false</input>
+                <input type="%b">false</input>
+                <input type="%b">false</input>
+                <input type="%b">false</input>
+                <input type="%b">false</input>
+                <input type="%b">false</input>
+                <input type="%b">false</input>
+                <input type="%b">false</input>
+                <input type="%b">false</input>
+                <input type="%b">false</input>
+                <input type="%b">false</input>
+                <input type="%b">false</input>
+                <input type="%b">false</input>
+                <input type="%b">false</input>
+                <input type="%b">false</input>
+                <input type="%b">false</input>
+                <input type="%b">false</input>
+                <input type="%b">false</input>
+                <input type="%b">false</input>
+                <input type="%b">false</input>
+                <input type="%b">false</input>
+                <input type="%b">false</input>
+                <input type="%b">false</input>
+                <input type="%b">false</input>
+                <input type="%b">false</input>
+                <input type="%b">false</input>
+                <input type="%b">false</input>
+                <input type="%b">false</input>
+                <input type="%b">false</input>
+                <input type="%b">false</input>
+                <input type="%b">false</input>
+                <input type="%b">false</input>
+                <input type="%b">false</input>
+                <input type="%b">false</input>
+                <input type="%b">false</input>
+                <input type="%b">false</input>
+                <input type="%b">false</input>
+                <input type="%b">false</input>
+                <input type="%b">false</input>
+                <input type="%b">false</input>
+                <input type="%b">false</input>
+                <input type="%b">false</input>
+                <input type="%b">false</input>
+                <input type="%b">false</input>
+                <input type="%b">false</input>
+                <input type="%b">false</input>
+            </inputs>
+            <script>
+                <custom-block s="BirdBrain Setup"></custom-block>
+                <block s="doRun">
+                    <block s="reportJSFunction">
+                        <list>
+                            <l>devId, color, brightness, r1c1, r1c2, r1c3, r1c4, r1c5, r1c6, r1c7, r1c8, r1c9, r1c10, r1c11, r1c12,
+                              r2c1, r2c2, r2c3, r2c4, r2c5, r2c6, r2c7, r2c8, r2c9, r2c10, r2c11, r2c12,
+                              r3c1, r3c2, r3c3, r3c4, r3c5, r3c6, r3c7, r3c8, r3c9, r3c10, r3c11, r3c12,
+                              r4c1, r4c2, r4c3, r4c4, r4c5, r4c6, r4c7, r4c8, r4c9, r4c10, r4c11, r4c12,
+                              r5c1, r5c2, r5c3, r5c4, r5c5, r5c6, r5c7, r5c8, r5c9, r5c10, r5c11, r5c12,
+                              r6c1, r6c2, r6c3, r6c4, r6c5, r6c6, r6c7, r6c8, r6c9, r6c10, r6c11, r6c12,
+                              r7c1, r7c2, r7c3, r7c4, r7c5, r7c6, r7c7, r7c8, r7c9, r7c10, r7c11, r7c12,
+                              r8c1, r8c2, r8c3, r8c4, r8c5, r8c6, r8c7, r8c8, r8c9, r8c10, r8c11, r8c12,
+                              r9c1, r9c2, r9c3, r9c4, r9c5, r9c6, r9c7, r9c8, r9c9, r9c10, r9c11, r9c12,
+                              r10c1, r10c2, r10c3, r10c4, r10c5, r10c6, r10c7, r10c8, r10c9, r10c10, r10c11, r10c12,
+                              r11c1, r11c2, r11c3, r11c4, r11c5, r11c6, r11c7, r11c8, r11c9, r11c10, r11c11, r11c12,
+                              r12c1, r12c2, r12c3, r12c4, r12c5, r12c6, r12c7, r12c8, r12c9, r12c10, r12c11, r12c12
+                            </l>
+                        </list>
+                        <l>
+                            // Create url representation from inputs
+                            var symbolString = r1c1 + "\/"+ r1c2 + "\/"+ r1c3 + "\/"+ r1c4 + "\/"+ r1c5 + "\/" + r1c6 + "\/" + r1c7 + "\/" + r1c8 + "\/" + r1c9 + "\/" + r1c10 + "\/" + r1c11 + "\/" + r1c12 + "\/" +
+                             r2c1 + "\/"+ r2c2 + "\/"+ r2c3 + "\/"+ r2c4 + "\/"+ r2c5 + "\/" + r2c6 + "\/" + r2c7 + "\/" + r2c8 + "\/" + r2c9 + "\/" + r2c10 + "\/" + r2c11 + "\/" + r2c12 + "\/" +
+                             r3c1 + "\/"+ r3c2 + "\/"+ r3c3 + "\/"+ r3c4 + "\/"+ r3c5 + "\/" + r3c6 + "\/" + r3c7 + "\/" + r3c8 + "\/" + r3c9 + "\/" + r3c10 + "\/" + r3c11 + "\/" + r3c12 + "\/" +
+                             r4c1 + "\/"+ r4c2 + "\/"+ r4c3 + "\/"+ r4c4 + "\/"+ r4c5 + "\/" + r4c6 + "\/" + r4c7 + "\/" + r4c8 + "\/" + r4c9 + "\/" + r4c10 + "\/" + r4c11 + "\/" + r4c12 + "\/" +
+                             r5c1 + "\/"+ r5c2 + "\/"+ r5c3 + "\/"+ r5c4 + "\/"+ r5c5 + "\/" + r5c6 + "\/" + r5c7 + "\/" + r5c8 + "\/" + r5c9 + "\/" + r5c10 + "\/" + r5c11 + "\/" + r5c12 + "\/" +
+                             r6c1 + "\/"+ r6c2 + "\/"+ r6c3 + "\/"+ r6c4 + "\/"+ r6c5 + "\/" + r6c6 + "\/" + r6c7 + "\/" + r6c8 + "\/" + r6c9 + "\/" + r6c10 + "\/" + r6c11 + "\/" + r6c12 + "\/" +
+                             r7c1 + "\/"+ r7c2 + "\/"+ r7c3 + "\/"+ r7c4 + "\/"+ r7c5 + "\/" + r7c6 + "\/" + r7c7 + "\/" + r7c8 + "\/" + r7c9 + "\/" + r7c10 + "\/" + r7c11 + "\/" + r7c12 + "\/" +
+                             r8c1 + "\/"+ r8c2 + "\/"+ r8c3 + "\/"+ r8c4 + "\/"+ r8c5 + "\/" + r8c6 + "\/" + r8c7 + "\/" + r8c8 + "\/" + r8c9 + "\/" + r8c10 + "\/" + r8c11 + "\/" + r8c12 + "\/" +
+                             r9c1 + "\/"+ r9c2 + "\/"+ r9c3 + "\/"+ r9c4 + "\/"+ r9c5 + "\/" + r9c6 + "\/" + r9c7 + "\/" + r9c8 + "\/" + r9c9 + "\/" + r9c10 + "\/" + r9c11 + "\/" + r9c12 + "\/" +
+                             r10c1 + "\/"+ r5c2 + "\/"+ r10c3 + "\/"+ r10c4 + "\/"+ r10c5 + "\/" + r10c6 + "\/" + r10c7 + "\/" + r10c8 + "\/" + r10c9 + "\/" + r10c10 + "\/" + r10c11 + "\/" + r10c12 + "\/" +
+                             r11c1 + "\/"+ r5c2 + "\/"+ r11c3 + "\/"+ r11c4 + "\/"+ r11c5 + "\/" + r11c6 + "\/" + r11c7 + "\/" + r11c8 + "\/" + r11c9 + "\/" + r11c10 + "\/" + r11c11 + "\/" + r11c12 + "\/" +
+                             r12c1 + "\/"+ r5c2 + "\/"+ r12c3 + "\/"+ r12c4 + "\/"+ r12c5 + "\/" + r12c6 + "\/" + r12c7 + "\/" + r12c8 + "\/" + r12c9 + "\/" + r12c10 + "\/" + r12c11 + "\/" + r12c12 ;
+
+                             var thisCommand = {
+                               robot: devId,
+                               cmd: "glowboard",
+                               color: color,
+                               brightness: brightness,
+                               symbolString: symbolString
+                             }
+
+                            window.birdbrain.sendCommand(thisCommand);
+                        </l>
+                    </block>
+                    <list>
+                        <block var="devId"/>
+                        <block var="color"/>
+                        <block var="brightness"/>
+                        <block var="0101"/>
+                        <block var="0102"/>
+                        <block var="0103"/>
+                        <block var="0104"/>
+                        <block var="0105"/>
+                        <block var="0106"/>
+                        <block var="0107"/>
+                        <block var="0108"/>
+                        <block var="0109"/>
+                        <block var="0110"/>
+                        <block var="0111"/>
+                        <block var="0112"/>
+                        <block var="0201"/>
+                        <block var="0202"/>
+                        <block var="0203"/>
+                        <block var="0204"/>
+                        <block var="0205"/>
+                        <block var="0206"/>
+                        <block var="0207"/>
+                        <block var="0208"/>
+                        <block var="0209"/>
+                        <block var="0210"/>
+                        <block var="0211"/>
+                        <block var="0212"/>
+                        <block var="0301"/>
+                        <block var="0302"/>
+                        <block var="0303"/>
+                        <block var="0304"/>
+                        <block var="0305"/>
+                        <block var="0306"/>
+                        <block var="0307"/>
+                        <block var="0308"/>
+                        <block var="0309"/>
+                        <block var="0310"/>
+                        <block var="0311"/>
+                        <block var="0312"/>
+                        <block var="0401"/>
+                        <block var="0402"/>
+                        <block var="0403"/>
+                        <block var="0404"/>
+                        <block var="0405"/>
+                        <block var="0406"/>
+                        <block var="0407"/>
+                        <block var="0408"/>
+                        <block var="0409"/>
+                        <block var="0410"/>
+                        <block var="0411"/>
+                        <block var="0412"/>
+                        <block var="0501"/>
+                        <block var="0502"/>
+                        <block var="0503"/>
+                        <block var="0504"/>
+                        <block var="0505"/>
+                        <block var="0506"/>
+                        <block var="0507"/>
+                        <block var="0508"/>
+                        <block var="0509"/>
+                        <block var="0510"/>
+                        <block var="0511"/>
+                        <block var="0512"/>
+                        <block var="0601"/>
+                        <block var="0602"/>
+                        <block var="0603"/>
+                        <block var="0604"/>
+                        <block var="0605"/>
+                        <block var="0606"/>
+                        <block var="0607"/>
+                        <block var="0608"/>
+                        <block var="0609"/>
+                        <block var="0610"/>
+                        <block var="0611"/>
+                        <block var="0612"/>
+                        <block var="0701"/>
+                        <block var="0702"/>
+                        <block var="0703"/>
+                        <block var="0704"/>
+                        <block var="0705"/>
+                        <block var="0706"/>
+                        <block var="0707"/>
+                        <block var="0708"/>
+                        <block var="0709"/>
+                        <block var="0710"/>
+                        <block var="0711"/>
+                        <block var="0712"/>
+                        <block var="0801"/>
+                        <block var="0802"/>
+                        <block var="0803"/>
+                        <block var="0804"/>
+                        <block var="0805"/>
+                        <block var="0806"/>
+                        <block var="0807"/>
+                        <block var="0808"/>
+                        <block var="0809"/>
+                        <block var="0810"/>
+                        <block var="0811"/>
+                        <block var="0812"/>
+                        <block var="0901"/>
+                        <block var="0902"/>
+                        <block var="0903"/>
+                        <block var="0904"/>
+                        <block var="0905"/>
+                        <block var="0906"/>
+                        <block var="0907"/>
+                        <block var="0908"/>
+                        <block var="0909"/>
+                        <block var="0910"/>
+                        <block var="0911"/>
+                        <block var="0912"/>
+                        <block var="1001"/>
+                        <block var="1002"/>
+                        <block var="1003"/>
+                        <block var="1004"/>
+                        <block var="1005"/>
+                        <block var="1006"/>
+                        <block var="1007"/>
+                        <block var="1008"/>
+                        <block var="1009"/>
+                        <block var="1010"/>
+                        <block var="1011"/>
+                        <block var="1012"/>
+                        <block var="1101"/>
+                        <block var="1102"/>
+                        <block var="1103"/>
+                        <block var="1104"/>
+                        <block var="1105"/>
+                        <block var="1106"/>
+                        <block var="1107"/>
+                        <block var="1108"/>
+                        <block var="1109"/>
+                        <block var="1110"/>
+                        <block var="1111"/>
+                        <block var="1112"/>
+                        <block var="1201"/>
+                        <block var="1202"/>
+                        <block var="1203"/>
+                        <block var="1204"/>
+                        <block var="1205"/>
+                        <block var="1206"/>
+                        <block var="1207"/>
+                        <block var="1208"/>
+                        <block var="1209"/>
+                        <block var="1210"/>
+                        <block var="1211"/>
+                        <block var="1212"/>
+                    </list>
+                </block>
+                <block s="doWait"><l>0.03</l></block>
+            </script>
+        </block-definition>
+        <block-definition s="stop all %&apos;devId&apos;" type="command" category="control">
+            <header></header>
+            <code></code>
+            <translations>ko:모두 멈추기 _&#xD;de:stoppe alles _&#xD;pt:pare todos _&#xD;fr:stop tout _&#xD;nl:stop alle _&#xD;zh_CN:停止 全部 _&#xD;zh_TW:停止 全部 _&#xD;ar:توقف الكل _&#xD;dk:stop alle _&#xD;he:להפסיק הכל _&#xD;es:detener todo _&#xD;ca:atura tot _&#xD;fi:pysäytä kaikki _&#xD;sv:stop allt _&#xD;</translations>
+            <inputs>
+                <input type="%txt" readonly="true">A<options>A&#xD;B&#xD;C</options></input>
+            </inputs>
+            <script>
+                <custom-block s="BirdBrain Setup"></custom-block>
+                <block s="doRun">
+                  <block s="reportJSFunction">
+                      <list></list>
+                      <l>
+                        var thisCommand = {
+                          robot: 'A',
+                          cmd: "stopAll"
+                        }
+                        window.birdbrain.sendCommand(thisCommand)
+                      </l>
+                  </block>
+                  <list></list>
+                </block>
+            </script>
+        </block-definition>
+    </blocks>
+    <variables></variables>
+</project>
