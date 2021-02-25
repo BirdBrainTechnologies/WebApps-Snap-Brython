@@ -420,7 +420,7 @@ function handleFinchBloxRobotOutput(path) {
  * @return {string}       sensor value
  */
 function getFinchBloxRobotInput(path, robot) {
-  //const robot = getRobotByLetter("A");
+
   let params = path[1].split("?")[1].split("&")
   let sensor = params[2].split("=")[1]
   let response = ""
@@ -463,6 +463,11 @@ function getFinchBloxRobotInput(path, robot) {
       break;
     case "isMoving":
       response = (robot.currentSensorData[4] > 127) ? "1" : "0"
+      break;
+    case "V2sound":
+      //because of the when clap block, this request may come while the robot is still setting up
+      let sound = robot.currentSensorData[0]
+      response = sound ? sound.toString() : "0"
       break;
     default:
       console.error("Unknown sensor requested: " + sensor)

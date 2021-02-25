@@ -862,14 +862,17 @@ Robot.prototype.receiveSensorData = function(data) {
     //Start polling sensors
     var pollStart = Uint8Array.of(0x62, 0x67);
     if (this.hasV2Microbit) {
+      console.log(this.fancyName + " has a V2 micro:bit")
       if (FinchBlox) {
         fbFrontend.CallbackManager.robot.updateHasV2Microbit(this.device.name, 'true')
       }
-      console.log(this.fancyName + " has a V2 micro:bit")
       //trigger V2 specific notifications
       pollStart = Uint8Array.of(0x62, 0x70);
     } else {
       console.log(this.fancyName + " does not have a V2 micro:bit")
+      if (FinchBlox) {
+        fbFrontend.CallbackManager.robot.updateHasV2Microbit(this.device.name, 'false')
+      }
     }
     var pollStop = Uint8Array.of(0x62, 0x73);
     this.write(pollStart);
@@ -898,7 +901,7 @@ Robot.prototype.receiveSensorData = function(data) {
   if (batteryIndex != null) { //null for micro:bit which does not have battery monitoring
     var newLevel = Robot.batteryLevel.UNKNOWN
     if (this.hasV2Microbit && this.isA(Robot.ofType.FINCH)) {
-      newLevel = data[batteryIndex] & 0x2
+      newLevel = data[batteryIndex] & 0x3
       //Battery level 3 represents a complete charge and is not currently handled.
       if (newLevel == 3) { newLevel = Robot.batteryLevel.HIGH }
     } else {
