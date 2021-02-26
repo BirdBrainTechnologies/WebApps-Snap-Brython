@@ -15,10 +15,11 @@ window.birdbrain.robotType = {
   FINCH: 1,
   HUMMINGBIRDBIT: 2,
   MICROBIT: 3,
-  //connected robots default to type MICROBIT
-  A: 3,
-  B: 3,
-  C: 3
+  UNKNOWN: 4,
+  //connected robots default unknown type
+  A: 4,
+  B: 4,
+  C: 4
 };
 
 //console.log("setting up message channel")

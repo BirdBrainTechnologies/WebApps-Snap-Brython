@@ -26,6 +26,7 @@ function Robot(device) {
   this.batteryLevel = Robot.batteryLevel.UNKNOWN
   this.RX = null; //receiving
   this.TX = null; //sending
+  this.writeMethod = null; //Once TX is set we can determine whether we can use writeValueWithoutResponse
   this.displayElement = null;
   this.type = Robot.getTypeFromName(device.name);
   this.writeInProgress = false;
@@ -183,6 +184,15 @@ Robot.initialSetAllFor = function(type) {
 }
 
 Robot.prototype.initialize = function() {
+
+  if ("writeValueWithoutResponse" in this.TX) { //Available in Chrome 85+
+    this.writeMethod = this.TX.writeValueWithoutResponse
+    console.log("Using writeValueWithoutResponse")
+  } else {
+    this.writeMethod = this.TX.writeValue
+    console.log("Using writeValue")
+  }
+
   //Robot state arrays
   this.initializeDataArrays();
   this.isConnected = true;
@@ -330,14 +340,9 @@ Robot.prototype.write = function(data) {
     }
   }
 
-  let writeMethod = this.TX.writeValue
-  if ("writeValueWithoutResponse" in this.TX) { //Available in Chrome 85+
-    writeMethod = this.TX.writeValueWithoutResponse
-  }
-
-  writeMethod.call(this.TX, data).then(_ => {
-      //console.log('Wrote to ' + this.fancyName + ":");
-      //console.log(data);
+  this.writeMethod.call(this.TX, data).then(_ => {
+      console.log('Wrote to ' + this.fancyName + ":");
+      console.log(data);
       this.writeInProgress = false;
     }).catch(error => {
       console.error("Error writing to " + this.fancyName + ": " + error);

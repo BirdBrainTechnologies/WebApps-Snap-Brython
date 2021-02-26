@@ -51,55 +51,67 @@
 
 <script type="text/python3" id="tests_editor">
 from browser import document as doc, window
-from browser import html
+from browser import html, timer, console as browser_console
 # import header
 
-import editor
+def setup_editor():
+    import editor
 
-# qs_lang,language = header.show()
-qs_lang = 'en'
-language = 'en'
+    # qs_lang,language = header.show()
+    qs_lang = 'en'
+    language = 'en'
 
-# other translations
+    # other translations
 
-trans = {
-    'report_bugs':{'en':'Please report bugs in the ',
-                   'es':'Poner los bugs en el ',
-                   'fr':"Signalez les bugs dans l'"},
-    'test_page':{'en':'Tests page','es':'P&aacute;gina de pruebas','fr':'Page de tests'},
-#    'run':{'en':'run','es':'ejecutar','fr':'Exécuter'},
-    'clear':{'en':'clear','es':'borrar','fr':'Effacer'}
-}
+    trans = {
+        'report_bugs':{'en':'Please report bugs in the ',
+                       'es':'Poner los bugs en el ',
+                       'fr':"Signalez les bugs dans l'"},
+        'test_page':{'en':'Tests page','es':'P&aacute;gina de pruebas','fr':'Page de tests'},
+    #    'run':{'en':'run','es':'ejecutar','fr':'Exécuter'},
+        'clear':{'en':'clear','es':'borrar','fr':'Effacer'}
+    }
 
-for key in trans:
-    if key in doc:
-        doc[key].html = trans[key].get(language,trans[key]['en'])
+    for key in trans:
+        if key in doc:
+            doc[key].html = trans[key].get(language,trans[key]['en'])
 
-def set_debug(ev):
-    if ev.target.checked:
-        __BRYTHON__.debug = 1
+    def set_debug(ev):
+        if ev.target.checked:
+            __BRYTHON__.debug = 1
+        else:
+            __BRYTHON__.debug = 0
+
+    __BRYTHON__.debug = int(doc['set_debug'].checked)
+
+    # bindings
+    doc['set_debug'].bind('change',set_debug)
+
+    # next functions are defined in editor.py
+    #doc['show_js'].bind('click',editor.show_js)
+    #doc['share_code'].bind('click',editor.share_code)
+    # Create a lambda around editor.run() so that the event object is not passed to it
+    doc['run'].bind('click',lambda *args: editor.run())
+    #doc['show_console'].bind('click',editor.show_console)
+
+    # file handling
+    doc['loadedScript'].bind('click',editor.load_script)
+    doc['downloadFile'].bind('click',editor.save_script)
+    doc['fileName'].bind('input',editor.update_script_name)
+
+    # emergency stop of current execution
+    doc['stop'].bind('click', editor.reload_editor)
+
+def setup_when_ready():
+    if (window.birdbrain.robotType.A != window.birdbrain.robotType.UNKNOWN):
+        browser_console.log("Brython loading...")
+        setup_editor()
     else:
-        __BRYTHON__.debug = 0
+        browser_console.log("Brython will load in a moment...")
+        timer.set_timeout(setup_when_ready, 50)
 
-__BRYTHON__.debug = int(doc['set_debug'].checked)
-
-# bindings
-doc['set_debug'].bind('change',set_debug)
-
-# next functions are defined in editor.py
-#doc['show_js'].bind('click',editor.show_js)
-#doc['share_code'].bind('click',editor.share_code)
-# Create a lambda around editor.run() so that the event object is not passed to it
-doc['run'].bind('click',lambda *args: editor.run())
-#doc['show_console'].bind('click',editor.show_console)
-
-# file handling
-doc['loadedScript'].bind('click',editor.load_script)
-doc['downloadFile'].bind('click',editor.save_script)
-doc['fileName'].bind('input',editor.update_script_name)
-
-# emergency stop of current execution
-doc['stop'].bind('click', editor.reload_editor)
+# Wait to add the editor until robot notifications have started.
+setup_when_ready()
 
 </script>
 

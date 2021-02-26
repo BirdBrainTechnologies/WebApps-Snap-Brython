@@ -542,6 +542,9 @@ class Hummingbird(Microbit):
         """Read the value of the sound sensor attached to a certain port."""
 
         if port == "microbit" or port == "micro:bit" or port == "Microbit":
+            if not window.birdbrain.microbitIsV2[self.device_s_no]:
+                print("Error: getSound(\"micro:bit\") only available for V2 micro:bit.")
+                sys.exit()
             return await Microbit.getSound(self)
 
         response = await self.getSensor(port)
@@ -845,7 +848,8 @@ class Finch(Microbit):
             #first bit is for position control
             value = (0x7F & value)
 
-        return (100 - value)
+        returnVal = 100 - ((value - 6) * 100/121)
+        return round(max(0, min(returnVal, 100)))
 
 
     async def getEncoder(self, direction):
