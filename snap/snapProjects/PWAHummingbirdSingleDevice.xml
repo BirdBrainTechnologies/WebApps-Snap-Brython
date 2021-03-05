@@ -202,7 +202,7 @@
                           return Math.round(magVal);
                       }
                     }
-                    
+
                     window.birdbrain.getFinchDistance = function (robot) {
                       if (window.birdbrain.microbitIsV2[robot]) {
                         return window.birdbrain.sensorData[robot][1];
@@ -431,7 +431,7 @@
       <code></code>
       <translations>ko:micro:bit 버튼 _&#xD;de:micro:bit Knopf _&#xD;pt:micro:bit Tecla _&#xD;fr:micro:bit Bouton _&#xD;nl:micro:bit Knop _&#xD;zh_CN:micro:bit 按钮 _&#xD;zh_TW:micro:bit 按鈕 _&#xD;ar:micro:bit زر _&#xD;dk:micro:bit Knap _&#xD;he:micro:bit לחצן _&#xD;es:micro:bit Pulsador _&#xD;ca:micro:bit Botó _&#xD;fi:micro:bit Painike _&#xD;sv:micro:bit Knapp _&#xD;</translations>
       <inputs>
-        <input type="%txt" readonly="true">A<options>A&#xD;B&#xD;Logo</options></input>
+        <input type="%txt" readonly="true">A<options>A&#xD;B&#xD;Logo (V2)</options></input>
       </inputs>
       <script>
         <custom-block s="BirdBrain Setup"></custom-block>
@@ -453,11 +453,11 @@
                           return (buttonState == 0x00 || buttonState == 0x20)
                         case 'B':
                           return (buttonState == 0x00 || buttonState == 0x10)
-                        case 'Logo':
+                        case 'Logo (V2)':
                           if(window.birdbrain.microbitIsV2[robot]) {
                             return (((window.birdbrain.sensorData[robot][index] &gt;&gt; 1) & 0x1) == 0x0)
                           } else {
-                            return "V2 micro:bit required";
+                            return "micro:bit V2 required";
                           }
                         default:
                           console.log("unknown button " + button);
@@ -526,7 +526,7 @@
         <code></code>
         <translations></translations>
         <inputs>
-            <input type="%txt" readonly="true">Sound<options>Sound&#xD;Temperature</options></input>
+            <input type="%txt" readonly="true">Sound<options>Sound&#xD;Temperature (°C)</options></input>
         </inputs>
         <script>
             <custom-block s="BirdBrain Setup"></custom-block>
@@ -548,7 +548,7 @@
                                 } else {
                                   return window.birdbrain.sensorData[robot][14];
                                 }
-                              case "Temperature":
+                              case "Temperature (°C)":
                                 if (type == window.birdbrain.robotType.FINCH) {
                                   return (window.birdbrain.sensorData[robot][6] &gt;&gt; 2);
                                 } else {
@@ -556,7 +556,7 @@
                                 }
                             }
                           } else {
-                            return "V2 micro:bit required"
+                            return "micro:bit V2 required"
                           }
                         }
                       }

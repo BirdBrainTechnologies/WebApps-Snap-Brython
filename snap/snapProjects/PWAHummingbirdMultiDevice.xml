@@ -665,7 +665,7 @@
       <translations>ko:micro:bit _ 버튼 _&#xD;de:micro:bit _ Knopf _&#xD;pt:micro:bit _ Tecla _&#xD;fr:micro:bit _ Bouton _&#xD;nl:micro:bit _ Knop _&#xD;zh_CN:micro:bit _ 按钮 _&#xD;zh_TW:micro:bit _ 按鈕 _&#xD;ar:micro:bit _ زر _&#xD;dk:micro:bit _ Knap _&#xD;he:micro:bit _ לחצן _&#xD;es:micro:bit _ Pulsador _&#xD;ca:micro:bit _ Botó _&#xD;fi:micro:bit _ Painike _&#xD;sv:micro:bit _ Knapp _&#xD;</translations>
       <inputs>
         <input type="%txt" readonly="true">A<options>A&#xD;B&#xD;C</options></input>
-        <input type="%txt" readonly="true">A<options>A&#xD;B&#xD;Logo</options></input>
+        <input type="%txt" readonly="true">A<options>A&#xD;B&#xD;Logo (V2)</options></input>
       </inputs>
       <script>
         <custom-block s="BirdBrain Setup"></custom-block>
@@ -688,11 +688,11 @@
                           return (buttonState == 0x00 || buttonState == 0x20)
                         case 'B':
                           return (buttonState == 0x00 || buttonState == 0x10)
-                        case 'Logo':
+                        case 'Logo (V2)':
                           if(window.birdbrain.microbitIsV2[robot]) {
                             return (((window.birdbrain.sensorData[robot][index] &gt;&gt; 1) & 0x1) == 0x0)
                           } else {
-                            return "V2 micro:bit required";
+                            return "micro:bit V2 required";
                           }
                         default:
                           console.log("unknown button " + button);
@@ -852,7 +852,7 @@
         <translations></translations>
         <inputs>
             <input type="%txt" readonly="true">A<options>A&#xD;B&#xD;C</options></input>
-            <input type="%txt" readonly="true">Sound<options>Sound&#xD;Temperature</options></input>
+            <input type="%txt" readonly="true">Sound<options>Sound&#xD;Temperature (°C)</options></input>
         </inputs>
         <script>
             <custom-block s="BirdBrain Setup"></custom-block>
@@ -875,7 +875,7 @@
                                 } else {
                                   return window.birdbrain.sensorData[robot][14];
                                 }
-                              case "Temperature":
+                              case "Temperature (°C)":
                                 if (type == window.birdbrain.robotType.FINCH) {
                                   return (window.birdbrain.sensorData[robot][6] &gt;&gt; 2);
                                 } else {
@@ -883,7 +883,7 @@
                                 }
                             }
                           } else {
-                            return "V2 micro:bit required"
+                            return "micro:bit V2 required"
                           }
                         }
                       }
