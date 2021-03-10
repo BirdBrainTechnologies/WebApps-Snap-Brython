@@ -65,7 +65,10 @@ const FILES_TO_CACHE_1 = [
   //videos
   'vid/Finch_Calibration.mp4',
   'vid/HummBit_Calibration.mp4',
-  'vid/MicroBit_Calibration.mp4'
+  'vid/MicroBit_Calibration.mp4',
+  'vid/Finch_V2_Calibration.mp4',
+  'vid/HummBit_V2_Calibration.mp4',
+  'vid/MicroBit_V2_Calibration.mp4'
 ]
 
 const SNAP_FILES_TO_CACHE_1 = [

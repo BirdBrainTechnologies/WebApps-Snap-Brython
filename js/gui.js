@@ -183,7 +183,7 @@ function displayConnectedDevice(robot) {
     el.find('.button-calibrate').click(function() {
       //console.log("button-calibrate");
       robot.startCalibration();
-      showCalibrationModal(robot.type);
+      showCalibrationModal(robot.type, robot.hasV2Microbit);
     });
   } else {
     el = $(
@@ -456,8 +456,9 @@ function showErrorModal(title, content, shouldAddCloseBtn) {
  * or by clicking outside the modal.
  *
  * @param  {Robot.ofType} robotType The type of robot undergoing calibration.
+ * @param  {boolean} hasV2 True if the robot has a V2 micro:bit 
  */
-function showCalibrationModal(robotType) {
+function showCalibrationModal(robotType, hasV2) {
   let section = createModal();
   let icon = section.getElementsByTagName('i')[0];
   let span = section.getElementsByTagName('span')[0];
@@ -467,13 +468,13 @@ function showCalibrationModal(robotType) {
   let videoName = null;
   switch (robotType) {
     case Robot.ofType.FINCH:
-      videoName = "Finch_Calibration";
+      videoName = hasV2 ? "Finch_V2_Calibration" : "Finch_Calibration";
       break;
     case Robot.ofType.HUMMINGBIRDBIT:
-      videoName = "HummBit_Calibration";
+      videoName = hasV2 ? "HummBit_V2_Calibration" : "HummBit_Calibration";
       break;
     case Robot.ofType.MICROBIT:
-      videoName = "MicroBit_Calibration";
+      videoName = hasV2 ? "MicroBit_V2_Calibration" : "MicroBit_Calibration";
       break;
   }
 
