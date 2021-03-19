@@ -9,6 +9,7 @@
 
 //If the finchblox frontend hasn't been loaded, then this isn't finchblox.
 if (FinchBlox === undefined) { var FinchBlox = false }
+if (useHID === undefined) { var useHID = false }
 //console.log("FinchBlox == " + FinchBlox)
 
 const header = document.getElementById('main-header');
@@ -25,7 +26,12 @@ setInterval(updateInternetStatus, 5000);
 //This is the spinner that you see instead of the connected robots list.
 $('#startupState').css("display", "none");
 //Set the find robots button to bring up the chrome device chooser.
-$('#find-button').on('click', function(e) { findAndConnect(); });
+if (useHID) {
+  $('#find-button').on('click', function(e) { findHID(); });
+} else {
+  $('#find-button').on('click', function(e) { findAndConnect(); });
+}
+
 //$('#startProgramming').on('click', function(e) { loadSnap(); })
 $('#btn-expand-section').on('click', function(e) { collapseIDE(); })
 $('#btn-collapse-section').on('click', function(e) { expandIDE(); })
@@ -47,7 +53,7 @@ function onLoad() {
         showErrorModal(title, message, false);
       }
 
-      if (navigator.userAgent.includes("Windows")) {
+      /*if (navigator.userAgent.includes("Windows")) {
         let count = 1
         if (localStorage.visitCount) {
           count = parseInt(localStorage.visitCount) + 1
@@ -60,7 +66,7 @@ function onLoad() {
           showErrorModal(title, message, true)
         }
         console.log("Windows detected. This browser has visited " + localStorage.visitCount + " times.")
-      }
+      }*/
     }).catch(error => {
       console.error("Unable to determine whether bluetooth is available. Error: " + error.message)
     });
@@ -234,7 +240,17 @@ function loadIDE() {
   updateInternetStatus();
 
   let projectName = "";
-  if (allRobotsAreGlowBoards()) {
+  if (useHID) {
+    if (hidRobot == null) {
+      console.error("Opening snap with no robot connected?")
+    } else if (hidRobot.isFinch) {
+
+    } else if (hidRobot.isHbDuo) {
+      projectName = "PWAhummingbird"
+    } else {
+      console.error("Unknown HID robot type")
+    }
+  } else if (allRobotsAreGlowBoards()) {
     projectName = "PWAGlowBoardMultiDevice";
   } else if (getConnectedRobotCount() == 1) {
     let r = getFirstConnectedRobot()
@@ -262,11 +278,15 @@ function loadIDE() {
     }
     iframe = document.createElement("iframe");
     iframe.frameBorder = "0";
-    let displayed = getDisplayedRobotCount()
-    if (displayed == 2) {
-      iframe.setAttribute("style", "width: 100%; height: 80vh;")
-    } else if (displayed >= 3) {
-      iframe.setAttribute("style", "width: 100%; height: 72vh;")
+    if (useHID) {
+      iframe.setAttribute("style", "width: 100%; height: 95vh;")
+    } else {
+      let displayed = getDisplayedRobotCount()
+      if (displayed == 2) {
+        iframe.setAttribute("style", "width: 100%; height: 80vh;")
+      } else if (displayed >= 3) {
+        iframe.setAttribute("style", "width: 100%; height: 72vh;")
+      }
     }
     let div = document.getElementById('snap-div');
     div.appendChild(iframe);
@@ -331,7 +351,9 @@ function expandIDE() {
   connected.remove();
 
   ideExpanded = true;
-  updateConnectedDevices();
+  if (!useHID) {
+    updateConnectedDevices();
+  }
   $('#connected-expanded').css("visibility", "visible");
   $('#btn-expand-section').show();
 }
@@ -456,7 +478,7 @@ function showErrorModal(title, content, shouldAddCloseBtn) {
  * or by clicking outside the modal.
  *
  * @param  {Robot.ofType} robotType The type of robot undergoing calibration.
- * @param  {boolean} hasV2 True if the robot has a V2 micro:bit 
+ * @param  {boolean} hasV2 True if the robot has a V2 micro:bit
  */
 function showCalibrationModal(robotType, hasV2) {
   let section = createModal();

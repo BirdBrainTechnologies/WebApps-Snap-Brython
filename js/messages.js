@@ -18,14 +18,43 @@ function onMessage(e) {
     messagePort = e.ports[0]
     // Use the transfered port to post a message back to the main frame
     messagePort.postMessage('Port received');
+  } else if (useHID) {
+    //This is a legacy robot command
+    parseLegacyMessage(e.data)
   } else {
-    //This message is a robot command
+    //This message is a micro:bit robot command
     parseMessage(e.data);
   }
 }
 
+function parseLegacyMessage(request) {
+  if (hidRobot === undefined || hidRobot == null) { return }
+
+  switch(request.message) {
+    case "SPEAK":
+      var msg = new SpeechSynthesisUtterance(request.val);
+      window.speechSynthesis.speak(msg);
+
+      break;
+    default:
+      var bytes = new Uint8Array(8); //array of bytes to send to Hummingbird
+      var counter = 0;
+      for (var prop in request) { //read through request, adding each property to byte array
+          if (request.hasOwnProperty(prop)) {
+              bytes[counter] = request[prop];
+              counter++;
+          }
+      }
+      for (var i = counter; i < bytes.length; ++i) {
+          bytes[i] = 0;
+      }
+      hidRobot.sendBytes(bytes)
+  }
+}
+
+
 /**
- * parseMessage - Function for parsing robot commands
+ * parseMessage - Function for parsing commands for micro:bit based robots.
  *
  * @param  {Object} message Object containing command information
  */
