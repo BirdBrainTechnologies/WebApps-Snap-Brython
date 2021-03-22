@@ -18,6 +18,10 @@ function onMessage(e) {
     messagePort = e.ports[0]
     // Use the transfered port to post a message back to the main frame
     messagePort.postMessage('Port received');
+  } else if (e.data.message == "SPEAK") {
+    console.log("tts " + e.data.val)
+    textToSpeech(e.data.val)
+
   } else if (useHID) {
     //This is a legacy robot command
     parseLegacyMessage(e.data)
@@ -30,26 +34,18 @@ function onMessage(e) {
 function parseLegacyMessage(request) {
   if (hidRobot === undefined || hidRobot == null) { return }
 
-  switch(request.message) {
-    case "SPEAK":
-      var msg = new SpeechSynthesisUtterance(request.val);
-      window.speechSynthesis.speak(msg);
-
-      break;
-    default:
-      var bytes = new Uint8Array(8); //array of bytes to send to Hummingbird
-      var counter = 0;
-      for (var prop in request) { //read through request, adding each property to byte array
-          if (request.hasOwnProperty(prop)) {
-              bytes[counter] = request[prop];
-              counter++;
-          }
+  var bytes = new Uint8Array(8); //array of bytes to send to Hummingbird
+  var counter = 0;
+  for (var prop in request) { //read through request, adding each property to byte array
+      if (request.hasOwnProperty(prop)) {
+          bytes[counter] = request[prop];
+          counter++;
       }
-      for (var i = counter; i < bytes.length; ++i) {
-          bytes[i] = 0;
-      }
-      hidRobot.sendBytes(bytes)
   }
+  for (var i = counter; i < bytes.length; ++i) {
+      bytes[i] = 0;
+  }
+  hidRobot.sendBytes(bytes)
 }
 
 
@@ -166,4 +162,9 @@ function sendMessage(message) {
   //console.log("Sending: ");
   //console.log(message);
   messagePort.postMessage(message);
+}
+
+function textToSpeech(text) {
+  var msg = new SpeechSynthesisUtterance(text);
+  window.speechSynthesis.speak(msg);
 }

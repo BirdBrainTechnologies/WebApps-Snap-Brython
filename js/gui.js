@@ -244,11 +244,9 @@ function loadIDE() {
     if (hidRobot == null) {
       console.error("Opening snap with no robot connected?")
     } else if (hidRobot.isFinch) {
-
-    } else if (hidRobot.isHbDuo) {
-      projectName = "PWAhummingbird"
+      projectName = "blarg"
     } else {
-      console.error("Unknown HID robot type")
+      projectName = "PWAhummingbird"
     }
   } else if (allRobotsAreGlowBoards()) {
     projectName = "PWAGlowBoardMultiDevice";
@@ -279,7 +277,7 @@ function loadIDE() {
     iframe = document.createElement("iframe");
     iframe.frameBorder = "0";
     if (useHID) {
-      iframe.setAttribute("style", "width: 100%; height: 95vh;")
+      iframe.setAttribute("style", "width: 100%; height: 97vh;")
     } else {
       let displayed = getDisplayedRobotCount()
       if (displayed == 2) {
@@ -311,7 +309,7 @@ function loadIDE() {
       iframe.src = "snap/snap.html#open:snapProjects/" + projectName + ".xml&editMode&lang=" + language;
     }
 
-    //console.log("opening iframe with src=" + iframe.src);
+    console.log("opening iframe with src=" + iframe.src);
     iframe.addEventListener('load', iframeOnLoadHandler, false)
   }
 
@@ -338,7 +336,9 @@ function collapseIDE() {
   document.body.insertBefore(connected, document.body.childNodes[0]);
   document.body.insertBefore(finder, document.body.childNodes[0]);
   document.body.insertBefore(header, document.body.childNodes[0]);
-  updateConnectedDevices();
+  if (!useHID) {
+    updateConnectedDevices();
+  }
   $('#btn-collapse-section').css("visibility", "visible");
 }
 

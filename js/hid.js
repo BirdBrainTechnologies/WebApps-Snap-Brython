@@ -9,25 +9,7 @@ function findHID() {
     return
   }
 
-  navigator.hid.requestDevice({ filters: [{ vendorId: 0x2354 }] }).then(devices => {
-    console.log("requestDevice: ")
-    console.log(devices)
-
-
-    if (devices.length > 0) {
-      initializeHIDdevice(devices[0])
-    } else {
-      console.log("No device requested")
-    }
-
-    /*devices.forEach((device, i) => {
-
-    });*/
-
-  }).catch(error => {
-    console.error("Error requesting HID device: " + error.message)
-  })
-
+  hidAutoConnect(hidUserConnect)
 }
 
 
@@ -36,15 +18,45 @@ navigator.hid.addEventListener("connect", event => {
 });
 navigator.hid.addEventListener("disconnect", event => {
   console.log("Device disconnected: " + event.device.productName);
+  hidRobot.onDisconnected()
+  hidRobot = null
+  let cf = " " + thisLocaleTable["Connection_Failure"];
+  let msg = event.device.productName + cf;
+  showErrorModal(cf, msg, true)
+  collapseIDE()
 });
-navigator.hid.getDevices().then(devices => {
-  console.log("Already paired devices:")
-  console.log(devices)
-  console.log("connecting to " + devices[0])
-  if (devices.length > 0) {
-    initializeHIDdevice(devices[0])
-  }
-})
+function hidAutoConnect(callback) {
+  navigator.hid.getDevices().then(devices => {
+    console.log("Already paired devices:")
+    console.log(devices)
+    if (devices.length > 0) {
+      console.log("connecting to " + devices[0])
+      initializeHIDdevice(devices[0])
+    } else if (callback != null) {
+      callback()
+    }
+  }).catch(error => {
+    console.error("Error getting devices: " + error.message)
+  })
+}
+//Call this during startup to see if a connection can be made right away
+hidAutoConnect()
+
+function hidUserConnect() {
+  // To search all available devices use filters [{ acceptAllDevices: true }]
+  navigator.hid.requestDevice({ filters: [{ vendorId: 0x2354 }] }).then(devices => {
+    console.log("requestDevice: ")
+    console.log(devices)
+
+    if (devices.length > 0) {
+      initializeHIDdevice(devices[0])
+    } else {
+      console.log("No device requested")
+    }
+  }).catch(error => {
+    console.error("Error requesting HID device: " + error.message)
+  })
+}
 
 function initializeHIDdevice(device) {
   device.open().then(() => {

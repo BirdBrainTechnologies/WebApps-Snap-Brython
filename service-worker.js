@@ -75,6 +75,13 @@ const SNAP_FILES_TO_CACHE_1 = [
   'useSnap.html',
   'manifest-snap.json',
   'img/logo-snap.svg',
+  //Legacy snap (HID)
+  'LegacySnap.html',
+  'manifest-legacysnap.json',
+  'js/hid.js',
+  'js/hidRobot.js',
+  'img/finch128.png',
+  'img/hummingbird128.png',
   //snap
   'snap/',
   'snap/API.md',
@@ -1920,6 +1927,7 @@ const FINCHBLOX_FILES_TO_CACHE = [
   'img/fb_icon_256x256.png',
   'img/fb_icon_512x512.png'
 ];
+
 
 function addEventListeners(usingSnap, usingFinchBlox) {
   //The install event is called once per service worker.
