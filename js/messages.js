@@ -31,7 +31,14 @@ function onMessage(e) {
   }
 }
 
+/**
+ * parseLegacyMessage - Parse commands for the original finch and hummingbird
+ * and send to connected robot.
+ *
+ * @param  {Object} request command object
+ */
 function parseLegacyMessage(request) {
+  console.log(request)
   if (hidRobot === undefined || hidRobot == null) { return }
 
   var bytes = new Uint8Array(8); //array of bytes to send to Hummingbird
@@ -45,9 +52,9 @@ function parseLegacyMessage(request) {
   for (var i = counter; i < bytes.length; ++i) {
       bytes[i] = 0;
   }
+  console.log("Sending " + bytes)
   hidRobot.sendBytes(bytes)
 }
-
 
 /**
  * parseMessage - Function for parsing commands for micro:bit based robots.

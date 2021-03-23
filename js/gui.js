@@ -132,8 +132,7 @@ function updateConnectedDevices() {
 /**
  * displayConnectedDevice - Sets up the display for a single connected robot.
  *
- * @param  {type} robot description
- * @return {type}       description
+ * @param  {Robot} robot The Robot object for the device to display
  */
 function displayConnectedDevice(robot) {
   var deviceImage = "img/img-hummingbird-bit.svg"
@@ -229,22 +228,30 @@ function displayConnectedDevice(robot) {
  * loadIde - Load snap or brython in an iframe with the appropriate starter project.
  * Compresses the rest of the UI so that snap can have as much space as
  * possible.
+ *
+ * @param  {string} filename Optional filename to open. Only used with legacy finch.
  */
-function loadIDE() {
+function loadIDE(filename) {
   if (FinchBlox) {
-    //console.log("Not loading IDE - FinchBlox.")
     return;
   }
   //const useSnap = ($('#snap-slider').prop('checked'))
 
   updateInternetStatus();
 
-  let projectName = "";
+  //let projectName = "";
+  let projectName
   if (useHID) {
     if (hidRobot == null) {
       console.error("Opening snap with no robot connected?")
     } else if (hidRobot.isFinch) {
-      projectName = "blarg"
+      //The project name will be selected in by the modal
+      if (filename) {
+        projectName = filename
+      } else {
+        showLegacyFinchModal()
+        return
+      }
     } else {
       projectName = "PWAhummingbird"
     }
@@ -303,13 +310,20 @@ function loadIDE() {
     if (!useSnap) {
       iframe.src = "brython/editor.html"; //"brython/console.html";  //"http://brython.info/console.html"
     } else if (internetIsConnected) {
-      iframe.src = "https://snap.berkeley.edu/snap/snap.html#present:Username=birdbraintech&ProjectName=" + projectName + "&editMode&lang=" + language;
+      if (projectName) {
+        iframe.src = "https://snap.berkeley.edu/snap/snap.html#present:Username=birdbraintech&ProjectName=" + projectName + "&editMode&lang=" + language;
+      } else {
+        iframe.src = "https://snap.berkeley.edu/snap/snap.html"
+      }
     } else {
-      //iframe.src = "snap/snap.html";
-      iframe.src = "snap/snap.html#open:snapProjects/" + projectName + ".xml&editMode&lang=" + language;
+      if (projectName) {
+        iframe.src = "snap/snap.html#open:snapProjects/" + projectName + ".xml&editMode&lang=" + language;
+      } else {
+        iframe.src = "snap/snap.html"
+      }
     }
 
-    console.log("opening iframe with src=" + iframe.src);
+    //console.log("opening iframe with src=" + iframe.src);
     iframe.addEventListener('load', iframeOnLoadHandler, false)
   }
 
@@ -449,7 +463,8 @@ function createModal() {
  * closed.
  *
  * @param  {string} title   Title to display in the modal header
- * @param  {string} content Text to display in the body of the modal.
+ * @param  {string} content Text to display in the body of the modal
+ * @param  {boolean} shouldAddCloseBtn True if the user should be able to close this modal
  */
 function showErrorModal(title, content, shouldAddCloseBtn) {
   let section = createModal();
@@ -470,6 +485,60 @@ function showErrorModal(title, content, shouldAddCloseBtn) {
 
   section.setAttribute("style", "display: block;");
   document.body.appendChild(section);
+}
+
+/**
+ * showLegacyFinchModal - Show a modal asking the user to choose which starter
+ * file they want to load in snap! (used with original finch). This modal will
+ * only close when the user selects a file.
+ */
+function showLegacyFinchModal() {
+  let section = createModal();
+  section.setAttribute("id", "legacyModal")
+  let icon = section.getElementsByTagName('i')[0];
+  icon.setAttribute("class", "fas fa-question-circle");
+  let span = section.getElementsByTagName('span')[0];
+  span.textContent = " " + thisLocaleTable["Choose_Snap_Level"];
+  let div = section.getElementsByTagName('div')[1];
+  div.setAttribute("style", "position: relative; opacity: 1; background-color: rgba(255,255,255, 0.75); text-align: center; padding: 2em 2em 2em 2em;")
+
+  let btnContainer = document.createElement('div')
+  btnContainer.setAttribute("class", "container")
+  div.appendChild(btnContainer)
+
+  const buttonText = ["Simple Blocks", "Blocks with Parameters", "Parameters and Time", "Regular Snap!"]
+  const levelFilenames = ["PWAfinch-level1", "PWAfinch-level2", "PWAfinch-level3", "PWAfinch"]
+  for (var i = 0; i < 4; i++) {
+
+    const btnDiv = document.createElement('div')
+    btnDiv.setAttribute("class", "row")
+    btnDiv.setAttribute("style", "margin-bottom:20px;")
+
+    const button = document.createElement('a')
+    button.setAttribute("href", "#")
+    button.setAttribute("class", "btn btn-lg btn-orange")
+    button.setAttribute("onclick", "closeLegacyFinchModal('" + levelFilenames[i] + "')")
+    button.innerHTML = "Level " + (i+1) + ": " + buttonText[i]
+
+    btnDiv.appendChild(button)
+    btnContainer.appendChild(btnDiv)
+  }
+
+  section.setAttribute("style", "display: block;");
+  document.body.appendChild(section);
+}
+
+/**
+ * closeLegacyFinchModal - Close the modal and load snap! with the chosen file.
+ *
+ * @param  {string} fileSelected name of file selected by the user (no extension)
+ */
+function closeLegacyFinchModal(fileSelected) {
+  loadIDE(fileSelected)
+  let modal = document.getElementById("legacyModal");
+  if (modal != null) {
+    modal.parentNode.removeChild(modal)
+  }
 }
 
 /**

@@ -1,6 +1,8 @@
-
-
-
+/**
+ * HidRobot - Class to handle communication with robot connected over hid.
+ *
+ * @param  {HIDDevice} device The device to communicate with
+ */
 function HidRobot(device) {
   this.device = device
   this.isFinch = (device.productId == 0x1111) //0x2222 for HB?
@@ -9,29 +11,42 @@ function HidRobot(device) {
 
   device.addEventListener("inputreport", this.handleInputReport.bind(this));
   this.pollSensors()
-  console.log("hey")
 }
-
+/**
+ * HidRobot.requestFinchSensorData - Sensor polling function for finch
+ */
 HidRobot.requestFinchSensorData = function() {
   this.sendBytes(HidRobot.makeFinchRequest("T"),
     [HidRobot.makeFinchRequest("L"), HidRobot.makeFinchRequest("I"),
       HidRobot.makeFinchRequest("A")])
 }
+/**
+ * HidRobot.makeFinchRequest - Construct a sensor polling request for finch.
+ *
+ * @param  {string} c Single character request code
+ */
 HidRobot.makeFinchRequest = function(c) {
     var bytes = new Uint8Array([0,0,0,0,0,0,0,0]);
-    //temperature
     bytes[0] = c.charCodeAt();
     bytes[7] = c.charCodeAt();
     return bytes;
 }
-HidRobot.requestDuoSensorData = function () {
+/**
+ * HidRobot.requestDuoSensorData - Sensor polling function for hummingbird
+ */
+HidRobot.requestDuoSensorData = function() {
   var bytes = new Uint8Array([0,0,0,0,0,0,0,0]);
   //all sensors
   bytes[0] = "G".charCodeAt(0);
   bytes[1] = "3".charCodeAt(0);
   this.sendBytes(bytes)
 }
-
+/**
+ * HidRobot.prototype.sendBytes - Sends a command to the robot.
+ *
+ * @param  {Uint8Array} bytes  8 byte command to send
+ * @param  {type} messageQueue queue of 8 byte commands to follow the current command
+ */
 HidRobot.prototype.sendBytes = function(bytes, messageQueue) {
   this.device.sendReport(0, bytes).then(() => {
     //console.log("Sent bytes " + bytes);
@@ -42,30 +57,37 @@ HidRobot.prototype.sendBytes = function(bytes, messageQueue) {
       }.bind(this), 10)//TODO: is this enough time? Do we need to wait at all?
     }
   }).catch(error => {
-    console.error("ERROR sending report: " + error.message)
+    console.error("ERROR sending [" + bytes + "]: " + error.message)
   });
 }
-
+/**
+ * HidRobot.prototype.pollSensors - Start sensor polling.
+ */
 HidRobot.prototype.pollSensors = function() {
   let requestSensorData
   let frequency
   if (this.isFinch) {
-    console.log("Starting Finch sensor polling")
+    //console.log("Starting Finch sensor polling")
     requestSensorData = HidRobot.requestFinchSensorData
     frequency = 200
   } else {
-    console.log("Starting Hummingbird Duo sensor polling")
+    //console.log("Starting Hummingbird Duo sensor polling")
     requestSensorData = HidRobot.requestDuoSensorData
     frequency = 50
   }
 
   this.pollingTimer = setInterval(requestSensorData.bind(this), frequency)
 }
-
+/**
+ * HidRobot.prototype.handleInputReport - Receive sensor data. Store it and
+ * send it to the iframe.
+ *
+ * @param  {HIDInputReportEvent} e sensor data event
+ */
 HidRobot.prototype.handleInputReport = function(e) {
   //console.log(e.device.productName + ": got input report " + e.reportId);
   //console.log(new Uint8Array(e.data.buffer));
-  //console.log(this)
+
   if (this.isFinch) {
     this.sortFinchMessages(e.data.buffer)
   } else {
@@ -112,7 +134,10 @@ HidRobot.prototype.sortFinchMessages = function(data) {
         this.currentSensorData[4] = newdata[2]
     }
 }
-
+/**
+ * HidRobot.prototype.onDisconnected - Called when the robot disconnects. Stops
+ * the sensor polling.
+ */
 HidRobot.prototype.onDisconnected = function() {
   clearInterval(this.pollingTimer)
 }
