@@ -209,6 +209,25 @@ class Microbit:
         });
 
 
+    async def playNote(self, note, beats):
+        """Make the buzzer play a note for certain number of beats. Note is the midi
+        note number and should be specified as an integer from 32 to 135. Beats can be
+        any number from 0 to 16."""
+
+        #Check that both parameters are within the required bounds
+        note = self._clampParametersToBounds(note, 32, 135)
+        beats = self._clampParametersToBounds(beats, 0, 16)
+
+        beats = int(beats * (60000/TEMPO))
+
+        await self._sendCommand({
+            'robot': self.device_s_no,
+            'cmd': "playNote",
+            'note': note,
+            'duration': beats
+        })
+
+
     ############################ INPUTS MICROBIT ###############################
 
 
@@ -497,23 +516,6 @@ class Hummingbird(Microbit):
         });
 
 
-    async def playNote(self, note, beats):
-        """Make the buzzer play a note for certain number of beats."""
-
-        ### Check that both parameters are within the required bounds
-        note = self._clampParametersToBounds(note,32,135)
-        beats = self._clampParametersToBounds(beats,0,16)
-
-        beats = int(beats * (60000/TEMPO))
-
-        await self._sendCommand({
-            'robot': self.device_s_no,
-            'cmd': "playNote",
-            'note': note,
-            'duration': beats
-        })
-
-
     ########################### HUMMINGBIRD BIT INPUT ##########################
 
 
@@ -674,25 +676,6 @@ class Finch(Microbit):
                 port = port + 1
 
         await self.__setTriLED(port, redIntensity, greenIntensity, blueIntensity)
-
-
-    async def playNote(self, note, beats):
-        """Make the buzzer play a note for certain number of beats. Note is the midi
-        note number and should be specified as an integer from 32 to 135. Beats can be
-        any number from 0 to 16."""
-
-        #Check that both parameters are within the required bounds
-        note = self._clampParametersToBounds(note, 32, 135)
-        beats = self._clampParametersToBounds(beats, 0, 16)
-
-        beats = int(beats * (60000/TEMPO))
-
-        await self._sendCommand({
-            'robot': self.device_s_no,
-            'cmd': "playNote",
-            'note': note,
-            'duration': beats
-        })
 
 
     async def __moveFinchAndWait(self, command):
