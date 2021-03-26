@@ -7,14 +7,6 @@ var hidRobot = null
  * the connect popup.
  */
 function findHID() {
-
-  if (!("hid" in navigator)) {
-    let title = " " + thisLocaleTable["Incompatible_Browser"] + " "
-    let message = thisLocaleTable["Use_Chrome89"]
-    showErrorModal(title, message, false);
-    return
-  }
-
   hidAutoConnect(hidUserConnect)
 }
 
