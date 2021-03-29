@@ -11,10 +11,17 @@ function findHID() {
 }
 
 /**
- * Handle connect and disconnect events. The connect event never seems to fire?
+ * Handle connect and disconnect events.
  */
 navigator.hid.addEventListener("connect", event => {
   console.log("Device connected: " + event.device.productName);
+  //Only ever called on Chromebooks?
+  //This is called on a chromebook when a device that has been unplugged
+  // is plugged back in.
+  if (hidRobot == null) {
+    hidAutoConnect()
+    closeErrorModal()
+  }
 });
 navigator.hid.addEventListener("disconnect", event => {
   console.log("Device disconnected: " + event.device.productName);
