@@ -578,8 +578,11 @@
                 var realport = port - 1;
 
                 var sensorvalue = window.bbtLegacy.sensorData[realport]
-
-                return sensorvalue;
+                if (sensorvalue > 14) {
+                  return (sensorvalue - 15) * 3/2
+                } else {
+                  return 0
+                }
               </l>
             </block>
             <list><block var="port"/></list>
