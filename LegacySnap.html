@@ -7,7 +7,7 @@
 		<meta name="apple-mobile-web-app-capable" content="yes">
 		<meta name="apple-mobile-web-app-status-bar-style" content="black">
 		<meta name="apple-mobile-web-app-title" content="BirdBrain PWA">
-		<link rel="apple-touch-icon" href="img/icon_152x152.png">
+		<link rel="apple-touch-icon" href="img/icon_legacy_152x152.png">
 
 		<!-- PWA manifest -->
 		<link rel="manifest" href="manifest-legacysnap.json">
@@ -24,16 +24,17 @@
 		<link href="css/fonts.css" rel="stylesheet" type="text/css">
 		<link href="css/custom.css" rel="stylesheet" type="text/css">
 	<!--	<link href="css/chromebook.css" rel="stylesheet" type="text/css"> -->
-		<link rel="icon"  type="image/png" href="img/icon_32x32.png">
+		<link rel="icon"  type="image/png" href="img/icon_legacy_32x32.png">
 
 	</head>
 	<body>
 		<header id="main-header">
 			<div class="row">
 				<div id=programmingLang>
-					<!--<img id="snap-logo" class="logo-snap" src="img/logo-snap.svg" alt="snap!" />-->
-					<img id="finch-logo" class="logo-snap" src="img/finch128.png" alt="finch" />
-					<img id="hummingbird-logo" class="logo-snap" src="img/hummingbird128.png" alt="hummingbird" />
+					<img id="finch-logo" class="logo-legacy" src="img/newfinch.png" alt="finch" />
+					<img id="hummingbird-logo" class="logo-legacy" src="img/newhummingbird.png" alt="hummingbird" />
+					<img id="finch-logo" class="logo-legacy" src="img/finch128.png" alt="finch" />
+					<img id="hummingbird-logo" class="logo-legacy" src="img/hummingbird128.png" alt="hummingbird" />
 				</div>
 				<div class="col-xs-12">
 					<img id="birdbrain-logo" src="img/birdbrain-technologies-logo.svg" alt="BirdBrain Technologies LLC" />
@@ -133,8 +134,9 @@
 	    // Register service worker.
 	    if ('serviceWorker' in navigator) {
 	      window.addEventListener('load', () => {
-	        navigator.serviceWorker.register('service-worker-legacysnap.js')
-	          .then((reg) => {
+	        navigator.serviceWorker.register('service-worker-legacysnap.js', {
+    				updateViaCache: 'none'
+  				}).then((reg) => {
 	            console.log('Service worker registered.', reg);
 	          }).catch(error => {
 				      console.error("Error registering service worker: " + error.message);

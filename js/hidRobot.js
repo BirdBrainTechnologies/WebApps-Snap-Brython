@@ -9,6 +9,11 @@ function HidRobot(device) {
   this.currentSensorData = [0,0,0,0,0,0,0,0]
   this.pollingTimer = null
 
+  //finch only
+  this.finchRightSpeed = 0
+  this.finchLeftSpeed = 0
+  this.maxSpeedChange = 30
+
   device.addEventListener("inputreport", this.handleInputReport.bind(this));
   this.pollSensors()
 }
@@ -48,6 +53,34 @@ HidRobot.requestDuoSensorData = function() {
  * @param  {type} messageQueue queue of 8 byte commands to follow the current command
  */
 HidRobot.prototype.sendBytes = function(bytes, messageQueue) {
+  //Motor command that are too dramatic a change cause disconnections on macOS.
+  if (this.isFinch && bytes[0] == 77) {
+    console.log("Finch motor command " + bytes);
+    let newLeftSpeed = bytes[1] ? -bytes[2] : bytes[2]
+    let newRightSpeed = bytes[3] ? -bytes[4] : bytes[4]
+    let deltaLeft = Math.abs(this.finchLeftSpeed - newLeftSpeed)
+    let deltaRight = Math.abs(this.finchRightSpeed - newRightSpeed)
+    if (Math.max(deltaLeft, deltaRight) > this.maxSpeedChange) {
+      if (messageQueue == null) { messageQueue = [] }
+      messageQueue.unshift(bytes.slice())
+      if (deltaLeft > this.maxSpeedChange) {
+        let fl = this.finchLeftSpeed
+        let setLeft = (fl < newLeftSpeed) ? fl + this.maxSpeedChange : fl - this.maxSpeedChange
+        bytes[1] = setLeft < 0 ? 1 : 0
+        bytes[2] = Math.abs(setLeft)
+        this.finchLeftSpeed = setLeft
+      }
+      if (deltaRight > this.maxSpeedChange) {
+        let fr = this.finchRightSpeed
+        let setRight = (fr < newRightSpeed) ? fr + this.maxSpeedChange : fr - this.maxSpeedChange
+        bytes[3] = setRight < 0 ? 1 : 0
+        bytes[4] = Math.abs(setRight)
+        this.finchRightSpeed = setRight
+      }
+    }
+    console.log("Actually sending " + bytes);
+  }
+
   this.device.sendReport(0, bytes).then(() => {
     //console.log("Sent bytes " + bytes);
     if (messageQueue && messageQueue.length > 0) {

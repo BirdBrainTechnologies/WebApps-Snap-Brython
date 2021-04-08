@@ -53,10 +53,7 @@
         <blocks></blocks>
         <variables></variables>
         <scripts>
-          <comment x="10" y="10" w="339" collapsed="false">Welcome to Snap! We have pre-loaded the Hummingbird blocks for you. Blocks that move servos, motors, and vibration motors are located in the Motion category. Blocks that control LEDs are in the Looks
-            category. Blocks that read sensor data are in the Sensing category. All Hummingbird blocks are located at the end of the list of blocks in a given category, and they all start with “HB”. &#xD;&#xD;The rest of the blocks are regular Snap! blocks. You
-            can right click on most regular Snap! blocks and select help… to find out how they work. Visit https://www.birdbraintechnologies.com/hummingbirdduo/snap/lessons/ to find out how the Hummingbird blocks work.&#xD;&#xD;You can try any block just by
-            clicking on it. Try it! Hook up an LED to Hummingbird LED port 1 and see if you can get it to turn on!&#xD;&#xD;We love to blink LEDs at BirdBrain Tech! Once you&apos;ve plugged an LED into port 1, try running this program----------&gt;&#xD;&#xD;</comment>
+          <comment x="10" y="10" w="339" collapsed="false">Welcome to Snap! We have pre-loaded the Hummingbird blocks for you. Blocks that move servos, motors, and vibration motors are located in the Motion category. Blocks that control LEDs are in the Looks category. Blocks that read sensor data are in the Sensing category. All Hummingbird blocks are located at the end of the list of blocks in a given category, and they all start with “HB”. &#xD;&#xD;The rest of the blocks are regular Snap! blocks. You can right click on most regular Snap! blocks and select help… to find out how they work. Visit https://www.birdbraintechnologies.com/hummingbirdduo/snap/lessons/ to find out how the Hummingbird blocks work.&#xD;&#xD;You can try any block just by clicking on it. Try it! Hook up an LED to Hummingbird LED port 1 and see if you can get it to turn on!&#xD;&#xD;We love to blink LEDs at BirdBrain Tech! Once you&apos;ve plugged an LED into port 1, try running this program----------&gt;&#xD;&#xD;</comment>
           <script x="370" y="212.00000000000026">
             <block s="receiveKey">
               <l>

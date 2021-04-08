@@ -71,10 +71,7 @@
               <l>C</l>
             </custom-block>
           </script>
-          <comment x="203" y="19" w="275" collapsed="false">The four movement blocks move the Finch forward, backward, left, and right for a half second. The number next to the block is the speed with which the Finch will move (from 0 to 10).&#xD;&#xD;The LED
-            block sets the color of the LED. The red, green, and blue intensities are set individually from 0 to 10. Each color element adds to the final, mixed color. There is a half second delay built into this block.&#xD;&#xD;The buzzer (lightning) block will
-            play a musical note (A to G), or you can give it a number and it will play that frequency (in Hertz). There is a half second delay built into this block.&#xD;&#xD;Chain blocks off of the &quot;when space key pressed&quot; block and press space to
-            test your program!</comment>
+          <comment x="203" y="19" w="275" collapsed="false">The four movement blocks move the Finch forward, backward, left, and right for a half second. The number next to the block is the speed with which the Finch will move (from 0 to 10).&#xD;&#xD;The LED block sets the color of the LED. The red, green, and blue intensities are set individually from 0 to 10. Each color element adds to the final, mixed color. There is a half second delay built into this block.&#xD;&#xD;The buzzer (lightning) block will play a musical note (A to G), or you can give it a number and it will play that frequency (in Hertz). There is a half second delay built into this block.&#xD;&#xD;Chain blocks off of the &quot;when space key pressed&quot; block and press space to test your program!</comment>
         </scripts>
       </sprite><watcher scope="Stage" s="getLastAnswer" style="normal" x="0.0390625" y="0.449218789062499" color="4,148,220" hidden="true"/><watcher scope="Sprite" s="getScale" style="normal" x="0.0390625" y="0.5312500468750017" color="143,86,227" hidden="true"/></sprites>
   </stage>

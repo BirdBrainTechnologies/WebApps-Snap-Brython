@@ -53,8 +53,7 @@
         <blocks></blocks>
         <variables></variables>
         <scripts>
-          <comment x="236" y="24" w="333" collapsed="false">Simply pull the blocks onto the chain that hangs off &quot;when space key pressed&quot; to create a program. Hit space to test your program. Each direction block runs for one second. The LED blocks
-            run for half a second and the color stays as long as another LED block doesn&apos;t alter it.</comment>
+          <comment x="236" y="24" w="333" collapsed="false">Simply pull the blocks onto the chain that hangs off &quot;when space key pressed&quot; to create a program. Hit space to test your program. Each direction block runs for one second. The LED blocks run for half a second and the color stays as long as another LED block doesn&apos;t alter it.</comment>
           <script x="28" y="20">
             <block s="receiveKey">
               <l>
