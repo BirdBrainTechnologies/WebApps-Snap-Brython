@@ -288,7 +288,14 @@ function loadIDE(filename) {
     iframe = document.createElement("iframe");
     iframe.frameBorder = "0";
     if (useHID) {
-      iframe.setAttribute("style", "width: 100%; height: 97vh;")
+      if(hidRobot != null && hidRobot.isFinch) {
+        //iframe.setAttribute("style", "width: 100%; height: 80vh;")
+        $('#btn-change-level').on('click', function(e) { showLegacyFinchModal() })
+        $('#btn-change-level').show()
+      } else {
+        $('#btn-change-level').hide()
+        iframe.setAttribute("style", "width: 100%; height: 97vh;")
+      }
     } else {
       let displayed = getDisplayedRobotCount()
       if (displayed == 2) {
@@ -497,39 +504,43 @@ function showErrorModal(title, content, shouldAddCloseBtn) {
  * only close when the user selects a file.
  */
 function showLegacyFinchModal() {
-  let section = createModal();
-  section.setAttribute("id", "legacyModal")
-  let icon = section.getElementsByTagName('i')[0];
-  icon.setAttribute("class", "fas fa-question-circle");
-  let span = section.getElementsByTagName('span')[0];
-  span.textContent = " " + thisLocaleTable["Choose_Snap_Level"];
-  let div = section.getElementsByTagName('div')[1];
-  div.setAttribute("style", "position: relative; opacity: 1; background-color: rgba(255,255,255, 0.75); text-align: center; padding: 2em 2em 2em 2em;")
+  let section = document.getElementById("legacyModal");
+  if (section == null) {
+    section = createModal();
+    section.setAttribute("id", "legacyModal")
+    let icon = section.getElementsByTagName('i')[0];
+    icon.setAttribute("class", "fas fa-question-circle");
+    let span = section.getElementsByTagName('span')[0];
+    span.textContent = " " + thisLocaleTable["Choose_Snap_Level"];
+    let div = section.getElementsByTagName('div')[1];
+    div.setAttribute("style", "position: relative; opacity: 1; background-color: rgba(255,255,255, 0.75); text-align: center; padding: 2em 2em 2em 2em;")
 
-  let btnContainer = document.createElement('div')
-  btnContainer.setAttribute("class", "container")
-  div.appendChild(btnContainer)
+    let btnContainer = document.createElement('div')
+    btnContainer.setAttribute("class", "container")
+    div.appendChild(btnContainer)
 
-  const buttonText = ["Simple Blocks", "Blocks with Parameters", "Parameters and Time", "Regular Snap!"]
-  const levelFilenames = ["PWAfinch-level1", "PWAfinch-level2", "PWAfinch-level3", "PWAfinch"]
-  for (var i = 0; i < 4; i++) {
+    const buttonText = ["Simple Blocks", "Blocks with Parameters", "Parameters and Time", "Regular Snap!"]
+    const levelFilenames = ["PWAfinch-level1", "PWAfinch-level2", "PWAfinch-level3", "PWAfinch"]
+    for (var i = 0; i < 4; i++) {
 
-    const btnDiv = document.createElement('div')
-    btnDiv.setAttribute("class", "row")
-    btnDiv.setAttribute("style", "margin-bottom:20px;")
+      const btnDiv = document.createElement('div')
+      btnDiv.setAttribute("class", "row")
+      btnDiv.setAttribute("style", "margin-bottom:20px;")
 
-    const button = document.createElement('a')
-    button.setAttribute("href", "#")
-    button.setAttribute("class", "btn btn-lg btn-orange")
-    button.setAttribute("onclick", "closeLegacyFinchModal('" + levelFilenames[i] + "')")
-    button.innerHTML = "Level " + (i+1) + ": " + buttonText[i]
+      const button = document.createElement('a')
+      button.setAttribute("href", "#")
+      button.setAttribute("class", "btn btn-lg btn-orange")
+      button.setAttribute("onclick", "closeLegacyFinchModal('" + levelFilenames[i] + "')")
+      button.innerHTML = "Level " + (i+1) + ": " + buttonText[i]
 
-    btnDiv.appendChild(button)
-    btnContainer.appendChild(btnDiv)
+      btnDiv.appendChild(button)
+      btnContainer.appendChild(btnDiv)
+    }
   }
 
   section.setAttribute("style", "display: block;");
   document.body.appendChild(section);
+  section.focus()
 }
 
 /**
