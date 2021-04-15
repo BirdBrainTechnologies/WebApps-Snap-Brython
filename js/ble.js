@@ -69,7 +69,7 @@ function findAndConnect() {
       //Note: If a robot changes name from one scan to the next, this
       // device.name property still remains the same. The app must be reloaded
       // to see the new name.
-      //console.log("User selected " + device.name)
+      console.log("Connecting to " + device.name)
 
       //once the user has selected a device, check that it is a supported device.
       const type = Robot.getTypeFromName(device.name);

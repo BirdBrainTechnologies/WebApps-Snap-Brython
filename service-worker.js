@@ -4,7 +4,7 @@
 'use strict';
 
 // Update cache names any time any of the cached files change.
-const CACHE_NAME = 'static-cache-v8';
+const CACHE_NAME = 'static-cache-v9';
 
 // CODELAB: Add list of files to cache here.
 const FILES_TO_CACHE_1 = [
@@ -42,12 +42,6 @@ const FILES_TO_CACHE_1 = [
   //image files
   'img/birdbrain-technologies-logo.svg',
   'img/hummingbird-only-logo.svg',
-  'img/icon_32x32.png',
-  'img/icon_128x128.png',
-  'img/icon_152x152.png',
-  'img/icon_192x192.png',
-  'img/icon_256x256.png',
-  'img/icon_512x512.png',
   'img/img-bit.svg',
   'img/img-finch.svg',
   'img/img-hummingbird-bit.svg',
@@ -75,13 +69,24 @@ const SNAP_FILES_TO_CACHE_1 = [
   'useSnap.html',
   'manifest-snap.json',
   'img/logo-snap.svg',
+  'img/icon_snap_32x32.png',
+  'img/icon_snap_128x128.png',
+  'img/icon_snap_152x152.png',
+  'img/icon_snap_192x192.png',
+  'img/icon_snap_256x256.png',
+  'img/icon_snap_512x512.png',
   //Legacy snap (HID)
   'LegacySnap.html',
   'manifest-legacysnap.json',
   'js/hid.js',
   'js/hidRobot.js',
-  'img/finch128.png',
-  'img/hummingbird128.png',
+  'img/hummingbirdDuo.png',
+  'img/originalFinch.png',
+  'img/icon_legacy_32x32.png',
+  'img/icon_legacy_128x128.png',
+  'img/icon_legacy_152x152.png',
+  'img/icon_legacy_192x192.png',
+  'img/icon_legacy_256x256.png',
   //snap
   'snap/',
   'snap/API.md',
@@ -1480,6 +1485,12 @@ const BRYTHON_FILES_TO_CACHE_1 = [
   'useBrython.html',
   'manifest-brython.json',
   'img/logo-brython.svg',
+  'img/icon_brython_32x32.png',
+  'img/icon_brython_128x128.png',
+  'img/icon_brython_152x152.png',
+  'img/icon_brython_192x192.png',
+  'img/icon_brython_256x256.png',
+  'img/icon_brython_512x512.png',
   'fonts/Montserrat-Light.otf',
   //brython
   'brython/BirdBrain.py',
@@ -1998,7 +2009,7 @@ function addEventListeners(usingSnap, usingFinchBlox) {
         console.error(error.message);
       })
     );
-    self.clients.claim();
+    self.clients.claim(); //only matters on the first load - so the page that registered the service worker then gets controlled by it.
   });
 
   self.addEventListener('fetch', (evt) => {

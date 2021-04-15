@@ -6,8 +6,8 @@
 		<!-- iOS meta tags and icons -->
 		<meta name="apple-mobile-web-app-capable" content="yes">
 		<meta name="apple-mobile-web-app-status-bar-style" content="black">
-		<meta name="apple-mobile-web-app-title" content="BirdBrain PWA">
-		<link rel="apple-touch-icon" href="img/icon_152x152.png">
+		<meta name="apple-mobile-web-app-title" content="BirdBrain Snap!">
+		<link rel="apple-touch-icon" href="img/icon_snap_152x152.png">
 
 		<!-- PWA manifest -->
 		<link rel="manifest" href="manifest-snap.json">
@@ -24,7 +24,7 @@
 		<link href="css/fonts.css" rel="stylesheet" type="text/css">
 		<link href="css/custom.css" rel="stylesheet" type="text/css">
 	<!--	<link href="css/chromebook.css" rel="stylesheet" type="text/css"> -->
-		<link rel="icon"  type="image/png" href="img/icon_32x32.png">
+		<link rel="icon"  type="image/png" href="img/icon_snap_32x32.png">
 
 	</head>
 	<body>
@@ -132,8 +132,9 @@
 	    // Register service worker.
 	    if ('serviceWorker' in navigator) {
 	      window.addEventListener('load', () => {
-	        navigator.serviceWorker.register('service-worker-snap.js')
-	          .then((reg) => {
+	        navigator.serviceWorker.register('service-worker-snap.js', {
+    				updateViaCache: 'none'
+  				}).then((reg) => {
 	            console.log('Service worker registered.', reg);
 	          }).catch(error => {
 				      console.error("Error registering service worker: " + error.message);

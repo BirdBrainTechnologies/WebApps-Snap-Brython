@@ -190,7 +190,7 @@ function displayConnectedDevice(robot) {
     );
 
     el.find('.button-calibrate').click(function() {
-      //console.log("button-calibrate");
+      console.log(robot.fancyName + " calibrate button pressed");
       robot.startCalibration();
       showCalibrationModal(robot.type, robot.hasV2Microbit);
     });
@@ -214,7 +214,7 @@ function displayConnectedDevice(robot) {
   }
 
   el.find('.button-disconnect').click(function() {
-    //console.log("button-disconnect");
+    console.log(robot.fancyName + " disconnect button pressed");
     robot.userDisconnect();
   });
 
@@ -334,7 +334,7 @@ function loadIDE(filename) {
       }
     }
 
-    //console.log("opening iframe with src=" + iframe.src);
+    console.log("Loading " + iframe.src);
     iframe.addEventListener('load', iframeOnLoadHandler, false)
   }
 
@@ -531,7 +531,7 @@ function showLegacyFinchModal() {
       button.setAttribute("href", "#")
       button.setAttribute("class", "btn btn-lg btn-orange")
       button.setAttribute("onclick", "closeLegacyFinchModal('" + levelFilenames[i] + "')")
-      button.innerHTML = "Level " + (i+1) + ": " + buttonText[i]
+      button.innerHTML = "<h4>Level " + (i+1) + ": " + buttonText[i] + "</h4>"
 
       btnDiv.appendChild(button)
       btnContainer.appendChild(btnDiv)
