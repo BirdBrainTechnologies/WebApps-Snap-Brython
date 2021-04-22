@@ -571,7 +571,7 @@
         </block>
       </script>
     </block-definition>
-    <block-definition s="Finch Temperature Celcius" type="reporter" category="sensing">
+    <block-definition s="Finch Temperature Celsius" type="reporter" category="sensing">
       <header></header>
       <code></code>
       <translations></translations>
@@ -604,7 +604,7 @@
           <block s="reportSum">
             <block s="reportProduct">
               <l>1.8</l>
-              <custom-block s="Finch Temperature Celcius"></custom-block>
+              <custom-block s="Finch Temperature Celsius"></custom-block>
             </block>
             <l>32</l>
           </block>
