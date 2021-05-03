@@ -297,8 +297,11 @@ function parseFinchBloxRequest(request) {
           break;
         case "delete":
           filename = query[1].split("&")[0].split("=").pop();
+          let deletingCurrentFile = (filename == localStorage.currentFbFile)
           FB_Files.deleteFile(filename)
-          fbFrontend.CallbackManager.data.close()
+          if (deletingCurrentFile) {
+            fbFrontend.CallbackManager.data.close()
+          }
           break;
         default:
           console.error("got data request for " + path[1]);
