@@ -291,19 +291,25 @@ window.birdbrain.finchIsMoving = function(finch) {
  */
 window.birdbrain.wrapPython = function(src) {
 
+  //Remove all the strings and hold on to them for later
+  let longStringText = "LONGSTRINGREPLACEMENT"
+  let lsr = new RegExp("[\"'][\"'][\"'].*?[\"'][\"'][\"']", "gs")
+  let longStrings = src.match(lsr) || []
+  let stringsRemoved = src.replace(lsr, longStringText)
+  let normalStringText = "NORMALSTRINGREPLACEMENT"
+  let nsr = new RegExp("[\"'].*?[\"']", "g")
+  let strings = stringsRemoved.match(nsr) || []
+  stringsRemoved = stringsRemoved.replace(/["'].*?["']/g, normalStringText)
+
   //Get a list of functions defined so that they can be turned into async functions
-  let functionsDefined = src.match(/def [a-zA-Z_][a-zA-Z_0-9]*/g) || []
+  let functionsDefined = stringsRemoved.match(/def [a-zA-Z_][a-zA-Z_0-9]*/g) || []
 
   //Remove comments: We don't need them and they occasionally cause problems with the other changes below
-  let replaced = src.replace(/#.*/g, "")
+  let replaced = stringsRemoved.replace(/#.*/g, "")
   //Replace birdbrain function calls with async versions
   replaced = replaced.replace(/([a-zA-Z_][a-zA-Z_0-9]*)\.(setMove|setTurn|setMotors|playNote|setTail|setBeak|setDisplay|print|setPoint|stopAll|setLED|setTriLED|setPositionServo|setRotationServo|stop|resetEncoders|getAcceleration|getCompass|getMagnetometer|getButton|isShaking|getOrientation|getLight|getSound|getDistance|getDial|getVoltage|getLine|getEncoder|getTemperature)/g, "await $1.$2")
   //Replace sleep with async sleep
   replaced = replaced.replace(/(time\.)?sleep/g, "await aio.sleep")
-  //Add sleep to while loops so that they will not hang
-  //replaced = replaced.replace(/(while[^:]*:)[ \t]*\n*([ \t]*)/g, "$1\n$2await aio.sleep(0.01)\n$2")
-  //Add sleep to for loops so that they will not hang
-  //replaced = replaced.replace(/(for[^:]*:)[ \t]*\n*([ \t]*)/g, "$1\n$2await aio.sleep(0.01)\n$2")
   //Replace user function definitions with async definitions
   replaced = replaced.replace(/def /g, "async def ")
   //Replace user defined function calls with async versions
@@ -319,6 +325,16 @@ window.birdbrain.wrapPython = function(src) {
   let wrapped = replaced.replace(/\n/g, "\n\t")
   //Wrap the whole script in an async function and call the function at the end
   wrapped = "from browser import aio\n\nasync def main():\n\t" + wrapped + "\n\naio.run(main())"
+
+  //Put back the strings
+  var longStTextRe = new RegExp(longStringText);
+  longStrings.forEach((str, i) => {
+    wrapped = wrapped.replace(longStTextRe, str)
+  });
+  var stringTextRe = new RegExp(normalStringText);
+  strings.forEach((str, i) => {
+    wrapped = wrapped.replace(stringTextRe, str)
+  });
 
   console.log("WRAPPED SCRIPT:")
   console.log(wrapped)
