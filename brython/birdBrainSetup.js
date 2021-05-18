@@ -293,13 +293,13 @@ window.birdbrain.wrapPython = function(src) {
 
   //Remove all the strings and hold on to them for later
   let longStringText = "LONGSTRINGREPLACEMENT"
-  let lsr = new RegExp("[\"'][\"'][\"'].*?[\"'][\"'][\"']", "gs")
+  let lsr = new RegExp("([\"'])\\1\\1.*?\\1\\1\\1", "gs")
   let longStrings = src.match(lsr) || []
-  let stringsRemoved = src.replace(lsr, longStringText)
+  let stringsRemoved = src.replace(lsr, "$1$1$1"+longStringText+"$1$1$1")
   let normalStringText = "NORMALSTRINGREPLACEMENT"
-  let nsr = new RegExp("[\"'].*?[\"']", "g")
+  let nsr = new RegExp("([\"']).+?\\1", "g")
   let strings = stringsRemoved.match(nsr) || []
-  stringsRemoved = stringsRemoved.replace(/["'].*?["']/g, normalStringText)
+  stringsRemoved = stringsRemoved.replace(nsr, "$1"+normalStringText+"$1")
 
   //Get a list of functions defined so that they can be turned into async functions
   let functionsDefined = stringsRemoved.match(/def [a-zA-Z_][a-zA-Z_0-9]*/g) || []
@@ -327,13 +327,15 @@ window.birdbrain.wrapPython = function(src) {
   wrapped = "from browser import aio\n\nasync def main():\n\t" + wrapped + "\n\naio.run(main())"
 
   //Put back the strings
-  var longStTextRe = new RegExp(longStringText);
-  longStrings.forEach((str, i) => {
-    wrapped = wrapped.replace(longStTextRe, str)
-  });
   var stringTextRe = new RegExp(normalStringText);
   strings.forEach((str, i) => {
+    str = str.replace(/^["']/, "").replace(/["']$/, "")
     wrapped = wrapped.replace(stringTextRe, str)
+  });
+  var longStTextRe = new RegExp(longStringText);
+  longStrings.forEach((str, i) => {
+    str = str.replace(/^["']["']["']/, "").replace(/["']["']["']$/, "")
+    wrapped = wrapped.replace(longStTextRe, str)
   });
 
   console.log("WRAPPED SCRIPT:")
