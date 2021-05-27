@@ -12,7 +12,7 @@ function HidRobot(device) {
   //finch only
   this.finchRightSpeed = 0
   this.finchLeftSpeed = 0
-  this.maxSpeedChange = 20//30
+  this.maxSpeedChange = 10//20//30
 
   device.addEventListener("inputreport", this.handleInputReport.bind(this));
   this.pollSensors()
@@ -55,7 +55,7 @@ HidRobot.requestDuoSensorData = function() {
 HidRobot.prototype.sendBytes = function(bytes, messageQueue) {
   //Motor command that are too dramatic a change cause disconnections on macOS.
   if (this.isFinch && bytes[0] == 77) {
-    //console.log("Finch motor command " + bytes);
+    //console.log("Finch motor command " + bytes + " currentL=" + this.finchLeftSpeed + " currentR=" + this.finchRightSpeed);
     let newLeftSpeed = bytes[1] ? -bytes[2] : bytes[2]
     let newRightSpeed = bytes[3] ? -bytes[4] : bytes[4]
     let deltaLeft = Math.abs(this.finchLeftSpeed - newLeftSpeed)
@@ -77,6 +77,9 @@ HidRobot.prototype.sendBytes = function(bytes, messageQueue) {
         bytes[4] = Math.abs(setRight)
         this.finchRightSpeed = setRight
       }
+    } else {
+      this.finchLeftSpeed = newLeftSpeed
+      this.finchRightSpeed = newRightSpeed
     }
     console.log("Finch motor ramp actually sending " + bytes);
   }
