@@ -320,12 +320,12 @@ function loadIDE(filename) {
 
     if (!useSnap) {
       iframe.src = "brython/editor.html"; //"brython/console.html";  //"http://brython.info/console.html"
-    } else if (internetIsConnected) {
+    /*} else if (internetIsConnected) {
       if (projectName) {
         iframe.src = "https://snap.berkeley.edu/snap/snap.html#present:Username=birdbraintech&ProjectName=" + projectName + "&editMode&lang=" + language;
       } else {
         iframe.src = "https://snap.berkeley.edu/snap/snap.html"
-      }
+      }*/
     } else {
       if (projectName) {
         iframe.src = "snap/snap.html#open:snapProjects/" + projectName + ".xml&editMode&lang=" + language;

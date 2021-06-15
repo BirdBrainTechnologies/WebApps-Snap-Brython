@@ -212,7 +212,7 @@ class Microbit:
     async def playNote(self, note, beats):
         """Make the buzzer play a note for certain number of beats. Note is the midi
         note number and should be specified as an integer from 32 to 135. Beats can be
-        any number from 0 to 16."""
+        any number from 0 to 16. One beat corresponds to one second."""
 
         #Check that both parameters are within the required bounds
         note = self._clampParametersToBounds(note, 32, 135)
