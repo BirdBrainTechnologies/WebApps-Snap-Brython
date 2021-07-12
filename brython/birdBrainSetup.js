@@ -384,3 +384,103 @@ window.birdbrain.savePythonProject = function(fileName, contents) {
   a.click();
   window.URL.revokeObjectURL(url);
 }
+
+//*** Machine Learning ***
+window.birdbrain.ml = {}
+window.birdbrain.ml.librariesLoaded = false;
+window.birdbrain.ml.librariesLoading = false;
+window.birdbrain.ml.loadLibrary = function(url, onloadFn) {
+  console.log("loading " + url);
+  let script = document.createElement("script");
+  script.type = "text/javascript";
+  script.onload = onloadFn;
+  script.src = url;
+  document.head.appendChild(script);
+}
+window.birdbrain.ml.loadLibraries = function() {
+  if (window.birdbrain.ml.librariesLoading || window.birdbrain.ml.librariesLoaded) { return; }
+  window.birdbrain.ml.librariesLoading = true;
+
+  console.log("loading tf")
+  const tfUrl = "https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@1.3.1/dist/tf.min.js"
+  window.birdbrain.ml.loadLibrary(tfUrl, function () {
+    console.log("loading video lib")
+    const vidUrl = "https://cdn.jsdelivr.net/npm/@teachablemachine/image@0.8/dist/teachablemachine-image.min.js"
+    window.birdbrain.ml.loadLibrary(vidUrl, function () {
+      window.birdbrain.ml.librariesLoaded = true;
+      window.birdbrain.ml.librariesLoading = false;
+      console.log("libraries loaded")
+    })
+    //TODO: add audio library?
+    //const audioUrl = "https://cdn.jsdelivr.net/npm/@tensorflow-models/speech-commands@0.4.0/dist/speech-commands.min.js"
+  })
+
+}
+window.birdbrain.ml.loadVideoModel = function(URL) {
+  console.log("loading video model...")
+  window.birdbrain.ml.videoModelLoaded = false;
+  window.birdbrain.ml.webcamRunning = false;
+  //Krissie's model: https://teachablemachine.withgoogle.com/models/b2KShpN19/
+
+  const modelURL = URL + "model.json"; // model topology
+  const metadataURL = URL + "metadata.json"; // model metadata
+
+  const recognizer = tmImage.load(modelURL, metadataURL).then((loaded_model) => {
+    window.imageModel = loaded_model;
+    window.birdbrain.ml.videoModelLoaded = true;
+    console.log("video model loaded")
+  })
+
+  // Setup a webcam
+  const flip = true; // whether to flip the webcam
+  window.birdbrain.ml.webcam = new tmImage.Webcam(200, 200, flip); // width, height, flip
+  window.birdbrain.ml.webcam.setup().then(() => {
+    console.log("webcam setup complete")
+    window.birdbrain.ml.webcam.play().then(() => {
+      console.log("webcam is running")
+      window.birdbrain.ml.webcamRunning = true;
+    })
+  })
+
+  //TODO: append elements to the DOM somewhere to see what the webcam is seeing?
+  //document.body.appendChild(window.birdbrain.ml.webcam.canvas);
+
+  console.log("video model loaded")
+}
+window.birdbrain.ml.startVideoPredictions = function() {
+  console.log("starting predictions...")
+  window.birdbrain.ml.predictionsRunning = false;
+
+  async function loop() {
+      window.birdbrain.ml.webcam.update(); // update the webcam frame
+      await predict();
+      window.requestAnimationFrame(loop);
+  }
+
+  // run the webcam image through the image model
+  async function predict() {
+    let class_names = window.imageModel.getClassLabels();
+    // predict can take in an image, video or canvas html element
+    const prediction = await window.imageModel.predict(window.birdbrain.ml.webcam.canvas);
+    let names_and_scores = prediction.map((score, index) => [class_names[index], score.probability]);
+    var predictionList = []
+
+    for (var i = 0; i < names_and_scores.length; i++) {
+      if (names_and_scores[i].length > 1) {
+         predictionList.push([class_names[i],names_and_scores[i][1]])
+         //console.log([class_names[i], predictionList[i]])
+      }
+    }
+
+    window.prediction = predictionList
+    window.birdbrain.ml.predictionsRunning = true;
+  }
+
+  if (window.birdbrain.ml.webcam == null || window.imageModel == null) {
+    console.error("Webcam and video model must be set up before beginning video predictions")
+    return;
+  }
+
+  window.requestAnimationFrame(loop);
+  console.log("predictions running")
+}

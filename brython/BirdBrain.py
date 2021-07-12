@@ -947,3 +947,38 @@ class Finch(Microbit):
         return window.birdbrain.sensorData[self.device_s_no][6] >> 2
 
     ######## END class Finch ########
+
+class MachineLearningModel:
+    """Machine Learning"""
+
+    def __init__(self, url):
+        self.url = url
+        self.modelLoaded = False
+        window.birdbrain.ml.loadLibraries()
+
+
+    async def startPredictions(self):
+        if not self.modelLoaded:
+            while not window.birdbrain.ml.librariesLoaded:
+                print("waiting on libraries...")
+                await aio.sleep(0.1)
+                #TODO: probably shouldn't wait forever...
+
+            window.birdbrain.ml.loadVideoModel(self.url)
+            while not window.birdbrain.ml.videoModelLoaded or not window.birdbrain.ml.webcamRunning:
+                print("waiting on video model...")
+                await aio.sleep(0.1)
+                #TODO: probably shouldn't wait forever...
+
+            self.modelLoaded = True
+
+        window.birdbrain.ml.startVideoPredictions()
+        while not window.birdbrain.ml.predictionsRunning:
+            print("waiting for first prediction...")
+            await aio.sleep(0.1)
+
+
+    def printCurrentPrediction(self):
+        print("prediction: ")
+        print(window.prediction)
+        print("")
