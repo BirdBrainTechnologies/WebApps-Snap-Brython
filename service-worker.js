@@ -4,7 +4,7 @@
 'use strict';
 
 // Update cache names any time any of the cached files change.
-const CACHE_NAME = 'static-cache-v14';
+const CACHE_NAME = 'static-cache-v15';
 
 // CODELAB: Add list of files to cache here.
 const FILES_TO_CACHE_1 = [
@@ -40,7 +40,7 @@ const FILES_TO_CACHE_1 = [
   'fonts/raleway-semibold.woff',
   'fonts/raleway-semibold.woff2',
   //image files
-  'img/birdbrain-technologies-logo.svg',
+  'img/birdbrain-logo-h.png',
   'img/hummingbird-only-logo.svg',
   'img/img-bit.svg',
   'img/img-finch.svg',
