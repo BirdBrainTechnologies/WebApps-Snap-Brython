@@ -304,8 +304,13 @@ window.birdbrain.wrapPython = function(src) {
   //Get a list of functions defined so that they can be turned into async functions
   let functionsDefined = stringsRemoved.match(/def [a-zA-Z_][a-zA-Z_0-9]*/g) || []
 
-  //Remove comments: We don't need them and they occasionally cause problems with the other changes below
-  let replaced = stringsRemoved.replace(/#.*/g, "")
+  //Remove comments: They occasionally cause problems with the other changes below
+  let commentText = "THISISACOMMENT"
+  let cr = new RegExp("#.*", "g")
+  let comments = stringsRemoved.match(cr) || []
+  let replaced = stringsRemoved.replace(cr, commentText)
+  //let replaced = stringsRemoved.replace(/#.*/g, "")
+
   //Replace birdbrain function calls with async versions
   replaced = replaced.replace(/([a-zA-Z_][a-zA-Z_0-9]*)\.(setMove|setTurn|setMotors|playNote|setTail|setBeak|setDisplay|print|setPoint|stopAll|setLED|setTriLED|setPositionServo|setRotationServo|stop|resetEncoders|getAcceleration|getCompass|getMagnetometer|getButton|isShaking|getOrientation|getLight|getSound|getDistance|getDial|getVoltage|getLine|getEncoder|getTemperature)/g, "await $1.$2")
   //Replace sleep with async sleep
@@ -325,6 +330,12 @@ window.birdbrain.wrapPython = function(src) {
   let wrapped = replaced.replace(/\n/g, "\n\t")
   //Wrap the whole script in an async function and call the function at the end
   wrapped = "from browser import aio\n\nasync def main():\n\t" + wrapped + "\n\naio.run(main())"
+
+  //Put back the comments
+  var cTextRe = new RegExp(commentText)
+  comments.forEach((comment, i) => {
+    wrapped = wrapped.replace(cTextRe, comment)
+  });
 
   //Put back the strings
   var stringTextRe = new RegExp(normalStringText);

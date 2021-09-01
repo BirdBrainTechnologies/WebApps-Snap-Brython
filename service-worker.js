@@ -4,7 +4,7 @@
 'use strict';
 
 // Update cache names any time any of the cached files change.
-const CACHE_NAME = 'static-cache-v15';
+const CACHE_NAME = 'static-cache-v16';
 
 // CODELAB: Add list of files to cache here.
 const FILES_TO_CACHE_1 = [
@@ -1946,6 +1946,12 @@ const FINCHBLOX_FILES_TO_CACHE = [
 ];
 
 
+function bypassBrowserCache(urls) {
+  return urls.map((url) => new Request(url, {
+    cache: 'no-store', //there are other options here, but since we're building a cache it seems reasonable to not store files in the browser cache as well...
+  }))
+}
+
 function addEventListeners(usingSnap, usingFinchBlox) {
   //The install event is called once per service worker.
   //Changes to the service worker script count as a new service worker
@@ -1954,28 +1960,30 @@ function addEventListeners(usingSnap, usingFinchBlox) {
     //Precache static resources
     evt.waitUntil(
       caches.open(CACHE_NAME).then((cache) => {
-        console.log('[ServiceWorker] Pre-caching...');
+        console.log('[ServiceWorker] Pre-caching to '+CACHE_NAME+'...');
         //return cache.addAll(FILES_TO_CACHE_1);
-        return cache.addAll(FILES_TO_CACHE_1).then(() => {
+        console.log('[ServiceWorker] Adding ' + FILES_TO_CACHE_1.length + ' basic files.');
+        return cache.addAll(bypassBrowserCache(FILES_TO_CACHE_1)).then(() => {
           if (usingSnap) {
-            console.log("[ServiceWorker] About to cache snap files")
-            return cache.addAll(SNAP_FILES_TO_CACHE_1).then(() =>
-                    cache.addAll(SNAP_FILES_TO_CACHE_2)).then(() =>
-                    cache.addAll(SNAP_FILES_TO_CACHE_3)).then(() =>
-                    cache.addAll(SNAP_FILES_TO_CACHE_4)).catch(error => {
+            const fileCount = SNAP_FILES_TO_CACHE_1.length + SNAP_FILES_TO_CACHE_2.length + SNAP_FILES_TO_CACHE_3.length + SNAP_FILES_TO_CACHE_4.length
+            console.log("[ServiceWorker] About to cache " + fileCount + " snap files")
+            return cache.addAll(bypassBrowserCache(SNAP_FILES_TO_CACHE_1)).then(() =>
+                    cache.addAll(bypassBrowserCache(SNAP_FILES_TO_CACHE_2))).then(() =>
+                    cache.addAll(bypassBrowserCache(SNAP_FILES_TO_CACHE_3))).then(() =>
+                    cache.addAll(bypassBrowserCache(SNAP_FILES_TO_CACHE_4))).catch(error => {
                       console.error("Error caching snap files: " + error.message);
                       throw error;
                     })
           } else if (usingFinchBlox) {
-            console.log("[ServiceWorker] About to cache FinchBlox files")
-            return cache.addAll(FINCHBLOX_FILES_TO_CACHE).catch(error => {
+            console.log("[ServiceWorker] About to cache " + FINCHBLOX_FILES_TO_CACHE.length + " FinchBlox files")
+            return cache.addAll(bypassBrowserCache(FINCHBLOX_FILES_TO_CACHE)).catch(error => {
                       console.error("Error caching FinchBlox files: " + error.message);
                       throw error;
                     })
           } else {
-            console.log("[ServiceWorker] About to cache brython files")
-            return cache.addAll(BRYTHON_FILES_TO_CACHE_1).then(() =>
-                    cache.addAll(BRYTHON_FILES_TO_CACHE_2)).catch(error => {
+            console.log("[ServiceWorker] About to cache " + (BRYTHON_FILES_TO_CACHE_1.length+BRYTHON_FILES_TO_CACHE_2.length) + " brython files")
+            return cache.addAll(bypassBrowserCache(BRYTHON_FILES_TO_CACHE_1)).then(() =>
+                    cache.addAll(bypassBrowserCache(BRYTHON_FILES_TO_CACHE_2))).catch(error => {
                       console.error("Error caching brython files: " + error.message);
                       throw error;
                     })
