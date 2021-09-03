@@ -192,30 +192,6 @@
                 </block>
                 <block s="doIf">
                     <block s="reportGreaterThan">
-                        <block var="note"/>
-                        <l>135</l>
-                    </block>
-                    <script>
-                        <block s="doSetVar">
-                            <l>note</l>
-                            <l>135</l>
-                        </block>
-                    </script>
-                </block>
-                <block s="doIf">
-                    <block s="reportGreaterThan">
-                        <l>32</l>
-                        <block var="note"/>
-                    </block>
-                    <script>
-                        <block s="doSetVar">
-                            <l>note</l>
-                            <l>32</l>
-                        </block>
-                    </script>
-                </block>
-                <block s="doIf">
-                    <block s="reportGreaterThan">
                         <block var="beats"/>
                         <l>16</l>
                     </block>
@@ -252,12 +228,6 @@
                             = Duration in ms = BPMS * number of beats
                         </comment>
                     </block>
-                </block>
-                <block s="doSetVar">
-                  <l>note</l>
-                  <block s="reportRound">
-                    <block var="note"/>
-                  </block>
                 </block>
                 <block s="doApplyExtension">
                   <l>bbt_playnote(robot, note, duration)</l>
@@ -460,54 +430,6 @@
                     <l>http://localhost:8000/snap/snapProjects/bbtSnapExtension.js</l>
                   </list>
                 </block>
-                <block s="doIf">
-                    <block s="reportLessThan">
-                        <block var="distance"/>
-                        <l>-10000</l>
-                    </block>
-                    <script>
-                        <block s="doSetVar">
-                            <l>distance</l>
-                            <l>-10000</l>
-                        </block>
-                    </script>
-                </block>
-                <block s="doIf">
-                    <block s="reportGreaterThan">
-                        <block var="distance"/>
-                        <l>10000</l>
-                    </block>
-                    <script>
-                        <block s="doSetVar">
-                            <l>distance</l>
-                            <l>10000</l>
-                        </block>
-                    </script>
-                </block>
-                <block s="doIf">
-                    <block s="reportLessThan">
-                        <block var="speed"/>
-                        <l>0</l>
-                    </block>
-                    <script>
-                        <block s="doSetVar">
-                            <l>speed</l>
-                            <l>0</l>
-                        </block>
-                    </script>
-                </block>
-                <block s="doIf">
-                    <block s="reportGreaterThan">
-                        <block var="speed"/>
-                        <l>100</l>
-                    </block>
-                    <script>
-                        <block s="doSetVar">
-                            <l>speed</l>
-                            <l>100</l>
-                        </block>
-                    </script>
-                </block>
                 <block s="doDeclareVariables">
                     <list><l>wasMoving</l><l>isMoving</l><l>commandSendTime</l></list>
                 </block>
@@ -590,54 +512,6 @@
                     <l>http://localhost:8000/snap/snapProjects/bbtSnapExtension.js</l>
                   </list>
                 </block>
-                <block s="doIf">
-                    <block s="reportLessThan">
-                        <block var="angle"/>
-                        <l>-360000</l>
-                    </block>
-                    <script>
-                        <block s="doSetVar">
-                            <l>angle</l>
-                            <l>-360000</l>
-                        </block>
-                    </script>
-                </block>
-                <block s="doIf">
-                    <block s="reportGreaterThan">
-                        <block var="angle"/>
-                        <l>360000</l>
-                    </block>
-                    <script>
-                        <block s="doSetVar">
-                            <l>angle</l>
-                            <l>360000</l>
-                        </block>
-                    </script>
-                </block>
-                <block s="doIf">
-                    <block s="reportLessThan">
-                        <block var="speed"/>
-                        <l>0</l>
-                    </block>
-                    <script>
-                        <block s="doSetVar">
-                            <l>speed</l>
-                            <l>0</l>
-                        </block>
-                    </script>
-                </block>
-                <block s="doIf">
-                    <block s="reportGreaterThan">
-                        <block var="speed"/>
-                        <l>100</l>
-                    </block>
-                    <script>
-                        <block s="doSetVar">
-                            <l>speed</l>
-                            <l>100</l>
-                        </block>
-                    </script>
-                </block>
                 <block s="doDeclareVariables">
                     <list><l>wasMoving</l><l>isMoving</l><l>commandSendTime</l></list>
                 </block>
@@ -717,54 +591,6 @@
                   <list>
                     <l>http://localhost:8000/snap/snapProjects/bbtSnapExtension.js</l>
                   </list>
-                </block>
-                <block s="doIf">
-                    <block s="reportLessThan">
-                        <block var="left"/>
-                        <l>-100</l>
-                    </block>
-                    <script>
-                        <block s="doSetVar">
-                            <l>left</l>
-                            <l>-100</l>
-                        </block>
-                    </script>
-                </block>
-                <block s="doIf">
-                    <block s="reportGreaterThan">
-                        <block var="left"/>
-                        <l>100</l>
-                    </block>
-                    <script>
-                        <block s="doSetVar">
-                            <l>left</l>
-                            <l>100</l>
-                        </block>
-                    </script>
-                </block>
-                <block s="doIf">
-                    <block s="reportLessThan">
-                        <block var="right"/>
-                        <l>-100</l>
-                    </block>
-                    <script>
-                        <block s="doSetVar">
-                            <l>right</l>
-                            <l>-100</l>
-                        </block>
-                    </script>
-                </block>
-                <block s="doIf">
-                    <block s="reportGreaterThan">
-                        <block var="right"/>
-                        <l>100</l>
-                    </block>
-                    <script>
-                        <block s="doSetVar">
-                            <l>right</l>
-                            <l>100</l>
-                        </block>
-                    </script>
                 </block>
                 <block s="doApplyExtension">
                   <l>bbt_finchwheels(robot, left, right)</l>

@@ -172,6 +172,9 @@ SnapExtensions.primitives.set(
 SnapExtensions.primitives.set(
   'bbt_finchmove(robot, direction, distance, speed)',
   function (robot, direction, distance, speed) {
+    distance = Math.max(-10000, Math.min(10000, distance));
+    speed = Math.max(0, Math.min(100, speed));
+
     var thisCommand = {
       robot: robot,
       cmd: "move",
@@ -197,6 +200,9 @@ SnapExtensions.primitives.set(
 SnapExtensions.primitives.set(
   'bbt_finchturn(robot, direction, angle, speed)',
   function (robot, direction, angle, speed) {
+    angle = Math.max(-360000, Math.min(360000, angle));
+    speed = Math.max(0, Math.min(100, speed));
+
     var thisCommand = {
       robot: robot,
       cmd: "turn",
@@ -211,6 +217,9 @@ SnapExtensions.primitives.set(
 SnapExtensions.primitives.set(
   'bbt_finchwheels(robot, left, right)',
   function (robot, left, right) {
+    left = Math.max(-100, Math.min(100, left));
+    right = Math.max(-100, Math.min(100, right));
+
     var thisCommand = {
       robot: robot,
       cmd: "wheels",
@@ -286,6 +295,9 @@ SnapExtensions.primitives.set(
 SnapExtensions.primitives.set(
   'bbt_playnote(robot, note, duration)',
   function (robot, note, duration) {
+    note = Math.round(Math.max(32, Math.min(135, note)));
+    console.log("playing note " + note);
+
     var thisCommand = {
       robot: robot,
       cmd: "playNote",
