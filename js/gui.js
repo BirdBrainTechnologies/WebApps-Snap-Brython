@@ -6,6 +6,12 @@
 /**
  * Global variables/constants and initial setup.
  */
+
+//If the finchblox frontend hasn't been loaded, then this isn't finchblox.
+if (FinchBlox === undefined) { var FinchBlox = false }
+if (useHID === undefined) { var useHID = false }
+//console.log("FinchBlox == " + FinchBlox)
+
 const header = document.getElementById('main-header');
 const finder = document.getElementById('finder');
 const connected = document.getElementById('connected');
@@ -20,7 +26,12 @@ setInterval(updateInternetStatus, 5000);
 //This is the spinner that you see instead of the connected robots list.
 $('#startupState').css("display", "none");
 //Set the find robots button to bring up the chrome device chooser.
-$('#find-button').on('click', function(e) { findAndConnect(); });
+if (useHID) {
+  $('#find-button').on('click', function(e) { findHID(); });
+} else {
+  $('#find-button').on('click', function(e) { findAndConnect(); });
+}
+
 //$('#startProgramming').on('click', function(e) { loadSnap(); })
 $('#btn-expand-section').on('click', function(e) { collapseIDE(); })
 $('#btn-collapse-section').on('click', function(e) { expandIDE(); })
@@ -30,14 +41,11 @@ $('#btn-collapse-section').on('click', function(e) { expandIDE(); })
  * Called right after the service worker registration is started.
  */
 function onLoad() {
-  let user = navigator.userAgent;
-  let usingChrome = false;
-  console.log(user);
-  if (user.includes("Chrome")) {
-    console.log("Found chrome")
-    usingChrome = true;
-  }
-  if (!usingChrome) {
+  if (useHID && !("hid" in navigator)) {
+    let title = " " + thisLocaleTable["Incompatible_Browser"] + " "
+    let message = thisLocaleTable["Use_Chrome89"]
+    showErrorModal(title, message, false);
+  } else if (!("bluetooth" in navigator)) {
     let title = " " + thisLocaleTable["Incompatible_Browser"] + " "
     let message = thisLocaleTable["Use_Chrome"]
     showErrorModal(title, message, false);
@@ -48,6 +56,23 @@ function onLoad() {
         let message = thisLocaleTable["Ble_Required"]
         showErrorModal(title, message, false);
       }
+
+      /*if (navigator.userAgent.includes("Windows")) {
+        let count = 1
+        if (localStorage.visitCount) {
+          count = parseInt(localStorage.visitCount) + 1
+        }
+        localStorage.visitCount = count.toString()
+        //if (count == 2 || !isAvailable) {
+        if (count < 3) {
+          let title = " Beta Software "
+          let message = "This is beta software. We would love to hear about your experience! (<a href=\"https://www.birdbraintechnologies.com/contact/\">Contact Us</a>)"
+          showErrorModal(title, message, true)
+        }
+        console.log("Windows detected. This browser has visited " + localStorage.visitCount + " times.")
+      }*/
+    }).catch(error => {
+      console.error("Unable to determine whether bluetooth is available. Error: " + error.message)
     });
   }
 }
@@ -57,11 +82,33 @@ function onLoad() {
  * user.
  */
 function updateConnectedDevices() {
+  if (FinchBlox) {
+    //console.log("Updating FinchBlox connected devices. robots.length = " + robots.length + " finchbloxrobot = " + (finchBloxRobot ? finchBloxRobot.fancyName : null))
+
+    if (fbFrontend.RowDialog.currentDialog && fbFrontend.RowDialog.currentDialog.constructor == fbFrontend.DiscoverDialog) {
+      if (!finchBloxSetFrontendDevice()) {
+        if (finchBloxRobot == null) {
+          fbFrontend.RowDialog.currentDialog.closeDialog()
+        } else {
+          finchBloxNotifyDiscovered(finchBloxRobot.device)
+          finchBloxSetFrontendDevice()
+        }
+      }
+    }
+
+    if (finchBloxRobot != null) {
+      //console.log("Updating connected for " + finchBloxRobot.fancyName + " to " + finchBloxRobot.isConnected)
+      fbFrontend.CallbackManager.robot.updateStatus(finchBloxRobot.device.name, finchBloxRobot.isConnected)
+    }
+
+    return;
+  }
+
   $('#robots-connected').empty();
   $('#robots-connected-snap').empty();
 
   //hide the find robots button if we are already connected to the max.
-  if (robots.length == MAX_CONNECTIONS) {
+  if (getNextDevLetter() == null) {
     $('#find-button').hide();
   } else {
     $('#find-button').show();
@@ -79,7 +126,9 @@ function updateConnectedDevices() {
     }*/
 
     robots.forEach(robot => {
-      displayConnectedDevice(robot);
+      if(!robot.userDisconnected) {
+        displayConnectedDevice(robot);
+      }
     })
   }
 }
@@ -87,8 +136,7 @@ function updateConnectedDevices() {
 /**
  * displayConnectedDevice - Sets up the display for a single connected robot.
  *
- * @param  {type} robot description
- * @return {type}       description
+ * @param  {Robot} robot The Robot object for the device to display
  */
 function displayConnectedDevice(robot) {
   var deviceImage = "img/img-hummingbird-bit.svg"
@@ -96,7 +144,7 @@ function displayConnectedDevice(robot) {
   var deviceLetter = robot.devLetter;
   var batteryDisplay = "style=\"display:inline-block\"";
   var el = null;
-  console.log("displayConnectedDevice " + deviceFancyName + " " + robot.isConnected)
+  //console.log("displayConnectedDevice " + deviceFancyName + " " + robot.isConnected)
   if (robot.isConnected) {
 
     switch (robot.type) {
@@ -106,6 +154,10 @@ function displayConnectedDevice(robot) {
         break;
       case Robot.ofType.FINCH:
         deviceImage = "img/img-finch.svg";
+        break;
+      case Robot.ofType.GLOWBOARD:
+        deviceImage = "img/img-glowboard.svg";
+        break;
     }
 
     el = $(
@@ -138,16 +190,17 @@ function displayConnectedDevice(robot) {
     );
 
     el.find('.button-calibrate').click(function() {
-      console.log("button-calibrate");
+      console.log(robot.fancyName + " calibrate button pressed");
       robot.startCalibration();
-      showCalibrationModal(robot.type);
+      showCalibrationModal(robot.type, robot.hasV2Microbit);
     });
   } else {
     el = $(
 
       "             <div class=\"row robot-item\">" +
-      "               <div class=\"col-xs-10 name\">" + thisLocaleTable["Connection_Failure"] + ": " + deviceFancyName + "</div>" +
-      "               <div class=\"col-xs-2 buttons\">" +
+      "               <div class=\"col-xs-2 img\"></div>" +
+      "               <div class=\"col-xs-6 name\">" + thisLocaleTable["Connection_Failure"] + ": " + deviceFancyName + "</div>" +
+      "               <div class=\"col-xs-4 buttons\">" +
       //Disconnect Button
       "                 <a class=\"button\" href=\"#\"><span class=\"button-disconnect fa-stack fa-2x\">" +
       "                   <i class=\"fas fa-circle fa-stack-2x\"></i>" +
@@ -161,8 +214,8 @@ function displayConnectedDevice(robot) {
   }
 
   el.find('.button-disconnect').click(function() {
-    console.log("button-disconnect");
-    robot.disconnect();
+    console.log(robot.fancyName + " disconnect button pressed");
+    robot.userDisconnect();
   });
 
   robot.displayElement = el; //TODO: need this?
@@ -179,15 +232,38 @@ function displayConnectedDevice(robot) {
  * loadIde - Load snap or brython in an iframe with the appropriate starter project.
  * Compresses the rest of the UI so that snap can have as much space as
  * possible.
+ *
+ * @param  {string} filename Optional filename to open. Only used with legacy finch.
  */
-function loadIDE() {
+function loadIDE(filename) {
+  if (FinchBlox) {
+    return;
+  }
   //const useSnap = ($('#snap-slider').prop('checked'))
 
   updateInternetStatus();
 
-  let projectName = "";
-  if (robots.length == 1) {
-    if (robots[0].type == Robot.ofType.FINCH) {
+  //let projectName = "";
+  let projectName
+  if (useHID) {
+    if (hidRobot == null) {
+      console.error("Opening snap with no robot connected?")
+    } else if (hidRobot.isFinch) {
+      //The project name will be selected in by the modal
+      if (filename) {
+        projectName = filename
+      } else {
+        showLegacyFinchModal()
+        return
+      }
+    } else {
+      projectName = "PWAhummingbird"
+    }
+  } else if (allRobotsAreGlowBoards()) {
+    projectName = "PWAGlowBoardMultiDevice";
+  } else if (getConnectedRobotCount() == 1) {
+    let r = getFirstConnectedRobot()
+    if (r.isA(Robot.ofType.FINCH)) {
       projectName = "PWAFinchSingleDevice";
     } else {
       projectName = "PWAHummingbirdSingleDevice";
@@ -211,10 +287,22 @@ function loadIDE() {
     }
     iframe = document.createElement("iframe");
     iframe.frameBorder = "0";
-    if (robots.length == 2) {
-      iframe.setAttribute("style", "width: 100%; height: 80vh;")
-    } else if (robots.length == 3) {
-      iframe.setAttribute("style", "width: 100%; height: 72vh;")
+    if (useHID) {
+      if(hidRobot != null && hidRobot.isFinch) {
+        //iframe.setAttribute("style", "width: 100%; height: 80vh;")
+        $('#btn-change-level').on('click', function(e) { showLegacyFinchModal() })
+        $('#btn-change-level').show()
+      } else {
+        $('#btn-change-level').hide()
+        iframe.setAttribute("style", "width: 100%; height: 97vh;")
+      }
+    } else {
+      let displayed = getDisplayedRobotCount()
+      if (displayed == 2) {
+        iframe.setAttribute("style", "width: 100%; height: 80vh;")
+      } else if (displayed >= 3) {
+        iframe.setAttribute("style", "width: 100%; height: 72vh;")
+      }
     }
     let div = document.getElementById('snap-div');
     div.appendChild(iframe);
@@ -232,14 +320,21 @@ function loadIDE() {
 
     if (!useSnap) {
       iframe.src = "brython/editor.html"; //"brython/console.html";  //"http://brython.info/console.html"
-    } else if (internetIsConnected) {
-      iframe.src = "https://snap.berkeley.edu/snap/snap.html#present:Username=birdbraintech&ProjectName=" + projectName + "&editMode&lang=" + language;
+    /*} else if (internetIsConnected) {
+      if (projectName) {
+        iframe.src = "https://snap.berkeley.edu/snap/snap.html#present:Username=birdbraintech&ProjectName=" + projectName + "&editMode&lang=" + language;
+      } else {
+        iframe.src = "https://snap.berkeley.edu/snap/snap.html"
+      }*/
     } else {
-      //iframe.src = "snap/snap.html";
-      iframe.src = "snap/snap.html#open:snapProjects/" + projectName + ".xml&editMode&lang=" + language;
+      if (projectName) {
+        iframe.src = "snap/snap.html#open:snapProjects/" + projectName + ".xml&editMode&lang=" + language;
+      } else {
+        iframe.src = "snap/snap.html"
+      }
     }
 
-    console.log("opening iframe with src=" + iframe.src);
+    console.log("Loading " + iframe.src);
     iframe.addEventListener('load', iframeOnLoadHandler, false)
   }
 
@@ -251,7 +346,7 @@ function loadIDE() {
  * iframeOnLoadHandler - Hide the spinner once the iframe has loaded.
  */
 function iframeOnLoadHandler() {
-  console.log("iframe has loaded")
+  //console.log("iframe has loaded")
   $('#ideLoading').css("display", "none");
 }
 
@@ -266,7 +361,9 @@ function collapseIDE() {
   document.body.insertBefore(connected, document.body.childNodes[0]);
   document.body.insertBefore(finder, document.body.childNodes[0]);
   document.body.insertBefore(header, document.body.childNodes[0]);
-  updateConnectedDevices();
+  if (!useHID) {
+    updateConnectedDevices();
+  }
   $('#btn-collapse-section').css("visibility", "visible");
 }
 
@@ -279,7 +376,9 @@ function expandIDE() {
   connected.remove();
 
   ideExpanded = true;
-  updateConnectedDevices();
+  if (!useHID) {
+    updateConnectedDevices();
+  }
   $('#connected-expanded').css("visibility", "visible");
   $('#btn-expand-section').show();
 }
@@ -299,17 +398,20 @@ function updateBatteryStatus() {
 
   robots.forEach(function (robot) {
     if (robot.isConnected) {
-      console.log("Updating battery status for " + robot.devLetter + " of type " + robot.type + " to " + robot.batteryLevel)
+      //console.log("Updating battery status for " + robot.devLetter + " of type " + robot.type + " to " + robot.batteryLevel)
       battSelector = '.button-battery-' + robot.devLetter + ' i';
 
       switch (robot.batteryLevel) {
         case Robot.batteryLevel.HIGH:
+          if (FinchBlox) { fbFrontend.CallbackManager.robot.updateBatteryStatus(robot.device.name, "2") }
           $(battSelector).addClass("fa-battery-full");
           break;
         case Robot.batteryLevel.MEDIUM:
+          if (FinchBlox) { fbFrontend.CallbackManager.robot.updateBatteryStatus(robot.device.name, "1") }
           $(battSelector).addClass("fa-battery-half");
           break;
         case Robot.batteryLevel.LOW:
+          if (FinchBlox) { fbFrontend.CallbackManager.robot.updateBatteryStatus(robot.device.name, "0") }
           $(battSelector).addClass("fa-battery-quarter");
           break;
         default: //UNKNOWN
@@ -372,7 +474,8 @@ function createModal() {
  * closed.
  *
  * @param  {string} title   Title to display in the modal header
- * @param  {string} content Text to display in the body of the modal.
+ * @param  {string} content Text to display in the body of the modal
+ * @param  {boolean} shouldAddCloseBtn True if the user should be able to close this modal
  */
 function showErrorModal(title, content, shouldAddCloseBtn) {
   let section = createModal();
@@ -381,7 +484,8 @@ function showErrorModal(title, content, shouldAddCloseBtn) {
   let span = section.getElementsByTagName('span')[0];
   span.textContent = title;
   let div = section.getElementsByTagName('div')[1];
-  div.textContent = content;
+  //div.textContent = content;
+  div.innerHTML = content;
   div.setAttribute("style", "position: relative; opacity: 1; background-color: rgba(255,255,255, 0.75); text-align: center; padding: 2em 2em 2em 2em;")
 
   if (shouldAddCloseBtn) {
@@ -395,13 +499,72 @@ function showErrorModal(title, content, shouldAddCloseBtn) {
 }
 
 /**
+ * showLegacyFinchModal - Show a modal asking the user to choose which starter
+ * file they want to load in snap! (used with original finch). This modal will
+ * only close when the user selects a file.
+ */
+function showLegacyFinchModal() {
+  let section = document.getElementById("legacyModal");
+  if (section == null) {
+    section = createModal();
+    section.setAttribute("id", "legacyModal")
+    let icon = section.getElementsByTagName('i')[0];
+    icon.setAttribute("class", "fas fa-question-circle");
+    let span = section.getElementsByTagName('span')[0];
+    span.textContent = " " + thisLocaleTable["Choose_Snap_Level"];
+    let div = section.getElementsByTagName('div')[1];
+    div.setAttribute("style", "position: relative; opacity: 1; background-color: rgba(255,255,255, 0.75); text-align: center; padding: 2em 2em 2em 2em;")
+
+    let btnContainer = document.createElement('div')
+    btnContainer.setAttribute("class", "container")
+    div.appendChild(btnContainer)
+
+    const buttonText = ["Simple Blocks", "Blocks with Parameters", "Parameters and Time", "Regular Snap!"]
+    const levelFilenames = ["PWAfinch-level1", "PWAfinch-level2", "PWAfinch-level3", "PWAfinch"]
+    for (var i = 0; i < 4; i++) {
+
+      const btnDiv = document.createElement('div')
+      btnDiv.setAttribute("class", "row")
+      btnDiv.setAttribute("style", "margin-bottom:20px;")
+
+      const button = document.createElement('a')
+      button.setAttribute("href", "#")
+      button.setAttribute("class", "btn btn-lg btn-orange")
+      button.setAttribute("onclick", "closeLegacyFinchModal('" + levelFilenames[i] + "')")
+      button.innerHTML = "<h4>Level " + (i+1) + ": " + buttonText[i] + "</h4>"
+
+      btnDiv.appendChild(button)
+      btnContainer.appendChild(btnDiv)
+    }
+  }
+
+  section.setAttribute("style", "display: block;");
+  document.body.appendChild(section);
+  section.focus()
+}
+
+/**
+ * closeLegacyFinchModal - Close the modal and load snap! with the chosen file.
+ *
+ * @param  {string} fileSelected name of file selected by the user (no extension)
+ */
+function closeLegacyFinchModal(fileSelected) {
+  loadIDE(fileSelected)
+  let modal = document.getElementById("legacyModal");
+  if (modal != null) {
+    modal.parentNode.removeChild(modal)
+  }
+}
+
+/**
  * showCalibrationModal - Show a modal displaying the calibration video for the
  * given robot type. This modal can be closed by clicking on the x in the header
  * or by clicking outside the modal.
  *
  * @param  {Robot.ofType} robotType The type of robot undergoing calibration.
+ * @param  {boolean} hasV2 True if the robot has a V2 micro:bit
  */
-function showCalibrationModal(robotType) {
+function showCalibrationModal(robotType, hasV2) {
   let section = createModal();
   let icon = section.getElementsByTagName('i')[0];
   let span = section.getElementsByTagName('span')[0];
@@ -411,13 +574,13 @@ function showCalibrationModal(robotType) {
   let videoName = null;
   switch (robotType) {
     case Robot.ofType.FINCH:
-      videoName = "Finch_Calibration";
+      videoName = hasV2 ? "Finch_V2_Calibration" : "Finch_Calibration";
       break;
     case Robot.ofType.HUMMINGBIRDBIT:
-      videoName = "HummBit_Calibration";
+      videoName = hasV2 ? "HummBit_V2_Calibration" : "HummBit_Calibration";
       break;
     case Robot.ofType.MICROBIT:
-      videoName = "MicroBit_Calibration";
+      videoName = hasV2 ? "MicroBit_V2_Calibration" : "MicroBit_Calibration";
       break;
   }
 
@@ -513,7 +676,7 @@ function closeVideoModals() {
   if (videosOpen > 0) {
     for (var i = 0; i < videosOpen; i++) {
       const videoElement = document.getElementsByTagName("video")[i];
-      console.log("removing video " + videoElement.id);
+      //console.log("removing video " + videoElement.id);
       //Fully unload the video.
       //see https://stackoverflow.com/questions/3258587/how-to-properly-unload-destroy-a-video-element
       videoElement.pause();
@@ -534,9 +697,11 @@ function closeVideoModals() {
 
 /**
  * closeErrorModal - Function for closing an error modal. Called by clicking
- * the x on the modal.
+ * the x on the modal, or automatically when no longer needed.
  */
 function closeErrorModal() {
   let modal = document.getElementById("errorModal");
-  modal.parentNode.removeChild(modal)
+  if (modal != null) {
+    modal.parentNode.removeChild(modal)
+  }
 }

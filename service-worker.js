@@ -4,7 +4,7 @@
 'use strict';
 
 // Update cache names any time any of the cached files change.
-const CACHE_NAME = 'static-cache-v6';
+const CACHE_NAME = 'static-cache-v16';
 
 // CODELAB: Add list of files to cache here.
 const FILES_TO_CACHE_1 = [
@@ -40,14 +40,8 @@ const FILES_TO_CACHE_1 = [
   'fonts/raleway-semibold.woff',
   'fonts/raleway-semibold.woff2',
   //image files
-  'img/birdbrain-technologies-logo.svg',
+  'img/birdbrain-logo-h.png',
   'img/hummingbird-only-logo.svg',
-  'img/icon_32x32.png',
-  'img/icon_128x128.png',
-  'img/icon_152x152.png',
-  'img/icon_192x192.png',
-  'img/icon_256x256.png',
-  'img/icon_512x512.png',
   'img/img-bit.svg',
   'img/img-finch.svg',
   'img/img-hummingbird-bit.svg',
@@ -65,13 +59,34 @@ const FILES_TO_CACHE_1 = [
   //videos
   'vid/Finch_Calibration.mp4',
   'vid/HummBit_Calibration.mp4',
-  'vid/MicroBit_Calibration.mp4'
+  'vid/MicroBit_Calibration.mp4',
+  'vid/Finch_V2_Calibration.mp4',
+  'vid/HummBit_V2_Calibration.mp4',
+  'vid/MicroBit_V2_Calibration.mp4'
 ]
 
 const SNAP_FILES_TO_CACHE_1 = [
   'useSnap.html',
   'manifest-snap.json',
   'img/logo-snap.svg',
+  'img/icon_snap_32x32.png',
+  'img/icon_snap_128x128.png',
+  'img/icon_snap_152x152.png',
+  'img/icon_snap_192x192.png',
+  'img/icon_snap_256x256.png',
+  'img/icon_snap_512x512.png',
+  //Legacy snap (HID)
+  'LegacySnap.html',
+  'manifest-legacysnap.json',
+  'js/hid.js',
+  'js/hidRobot.js',
+  'img/hummingbirdDuo.png',
+  'img/originalFinch.png',
+  'img/icon_legacy_32x32.png',
+  'img/icon_legacy_128x128.png',
+  'img/icon_legacy_152x152.png',
+  'img/icon_legacy_192x192.png',
+  'img/icon_legacy_256x256.png',
   //snap
   'snap/',
   'snap/API.md',
@@ -83,25 +98,25 @@ const SNAP_FILES_TO_CACHE_1 = [
   'snap/README.md',
   'snap/index.html',
   'snap/snap.html',
-  'snap/Backgrounds/BACKGROUNDS',
+  'snap/Backgrounds/BACKGROUNDS', //Only the backgrounds listed in this file are actually shown to the user.
   'snap/Backgrounds/atom_playground.jpg',
-  'snap/Backgrounds/baseball-field.png',
+/*  'snap/Backgrounds/baseball-field.png',
   'snap/Backgrounds/basketball-court1-a.png',
   'snap/Backgrounds/basketball-court1-b.png',
   'snap/Backgrounds/beach_malibu.jpg',
-  'snap/Backgrounds/beach_rio.png',
+  'snap/Backgrounds/beach_rio.png',*/
   'snap/Backgrounds/bedroom1.gif',
   'snap/Backgrounds/bedroom2.gif',
-  'snap/Backgrounds/bench_with_view.jpg',
+//  'snap/Backgrounds/bench_with_view.jpg',
   'snap/Backgrounds/berkeley_mural.jpg',
-  'snap/Backgrounds/blue_sky.svg',
+/*  'snap/Backgrounds/blue_sky.svg',
   'snap/Backgrounds/blue_sky2.svg',
   'snap/Backgrounds/blue_sky3.svg',
-  'snap/Backgrounds/boardwalk.jpg',
+  'snap/Backgrounds/boardwalk.jpg',*/
   'snap/Backgrounds/brick-wall-and-stairs.jpg',
   'snap/Backgrounds/brick-wall1.jpg',
   'snap/Backgrounds/brick-wall2.jpg',
-  'snap/Backgrounds/brick_wall1.jpg',
+/*  'snap/Backgrounds/brick_wall1.jpg',
   'snap/Backgrounds/brick_wall2.jpg',
   'snap/Backgrounds/building_at_mit.jpg',
   'snap/Backgrounds/canyon.jpg',
@@ -114,9 +129,9 @@ const SNAP_FILES_TO_CACHE_1 = [
   'snap/Backgrounds/circles.svg',
   'snap/Backgrounds/city_with_water.jpg',
   'snap/Backgrounds/city_with_water2.jpg',
-  'snap/Backgrounds/clothing_store.jpg',
+  'snap/Backgrounds/clothing_store.jpg',*/
   'snap/Backgrounds/desert.gif',
-  'snap/Backgrounds/doily.svg',
+/*  'snap/Backgrounds/doily.svg',
   'snap/Backgrounds/driveway.jpg',
   'snap/Backgrounds/flower_bed.jpg',
   'snap/Backgrounds/flowers.gif',
@@ -142,13 +157,13 @@ const SNAP_FILES_TO_CACHE_1 = [
   'snap/Backgrounds/metro1.png',
   'snap/Backgrounds/moon.jpg',
   'snap/Backgrounds/neon_tunnel.svg',
-  'snap/Backgrounds/night_city.gif',
+  'snap/Backgrounds/night_city.gif',*/
   'snap/Backgrounds/night_city_with_street.gif',
-  'snap/Backgrounds/parking-ramp.jpg',
-  'snap/Backgrounds/party.svg',
+/*  'snap/Backgrounds/parking-ramp.jpg',
+  'snap/Backgrounds/party.svg',*/
   'snap/Backgrounds/party_room.jpg',
   'snap/Backgrounds/pathway.jpg',
-  'snap/Backgrounds/playing-field.png',
+/*  'snap/Backgrounds/playing-field.png',
   'snap/Backgrounds/pool.jpg',
   'snap/Backgrounds/purple.svg',
   'snap/Backgrounds/rays.svg',
@@ -185,12 +200,12 @@ const SNAP_FILES_TO_CACHE_1 = [
   'snap/Backgrounds/winter-lights.svg',
   'snap/Backgrounds/winter.svg',
   'snap/Backgrounds/woods.gif',
-  'snap/Backgrounds/woods_and_bench.jpg',
+  'snap/Backgrounds/woods_and_bench.jpg',*/
   'snap/Backgrounds/xy-grid.gif',
 ]
 
 const SNAP_FILES_TO_CACHE_2 = [
-  'snap/Costumes/0-pixel.svg',
+/*  'snap/Costumes/0-pixel.svg',
   'snap/Costumes/1-glow.svg',
   'snap/Costumes/1-pixel.svg',
   'snap/Costumes/2-glow.svg',
@@ -226,9 +241,9 @@ const SNAP_FILES_TO_CACHE_2 = [
   'snap/Costumes/AZ_top_R_cross.png',
   'snap/Costumes/AZ_top_R_step.png',
   'snap/Costumes/AZ_top_freeze.png',
-  'snap/Costumes/AZ_top_stand.png',
+  'snap/Costumes/AZ_top_stand.png',*/
   'snap/Costumes/Alonzo3D.png',
-  'snap/Costumes/B-glow.svg',
+/*  'snap/Costumes/B-glow.svg',
   'snap/Costumes/B-pixel.svg',
   'snap/Costumes/B-story-1.svg',
   'snap/Costumes/B-story-2.svg',
@@ -237,9 +252,9 @@ const SNAP_FILES_TO_CACHE_2 = [
   'snap/Costumes/C-pixel.svg',
   'snap/Costumes/C-story-1.svg',
   'snap/Costumes/C-story-2.svg',
-  'snap/Costumes/C-story-3.svg',
-  'snap/Costumes/COSTUMES',
-  'snap/Costumes/COSTUMES-full',
+  'snap/Costumes/C-story-3.svg',*/
+  'snap/Costumes/COSTUMES', //Only the costumes listed in this file are actually shown to the user.
+/*  'snap/Costumes/COSTUMES-full',
   'snap/Costumes/D-glow.svg',
   'snap/Costumes/D-pixel.svg',
   'snap/Costumes/D-story-1.svg',
@@ -358,7 +373,7 @@ const SNAP_FILES_TO_CACHE_2 = [
   'snap/Costumes/Z-story-1.svg',
   'snap/Costumes/Z-story-2.svg',
   'snap/Costumes/Z-story-3.svg',
-  'snap/Costumes/a-block.svg',
+  'snap/Costumes/a-block.svg',*/
   'snap/Costumes/abby-a.svg',
   'snap/Costumes/abby-b.svg',
   'snap/Costumes/abby-c.svg',
@@ -366,7 +381,7 @@ const SNAP_FILES_TO_CACHE_2 = [
   'snap/Costumes/airplane2.png',
   'snap/Costumes/alonzo.png',
   'snap/Costumes/alonzo.svg',
-  'snap/Costumes/amon.gif',
+/*  'snap/Costumes/amon.gif',
   'snap/Costumes/anina_R_cross.png',
   'snap/Costumes/anina_pop_L_arm.png',
   'snap/Costumes/anina_pop_R_arm.png',
@@ -395,7 +410,7 @@ const SNAP_FILES_TO_CACHE_2 = [
   'snap/Costumes/anna09.png',
   'snap/Costumes/anna10.png',
   'snap/Costumes/anna11.png',
-  'snap/Costumes/anna12.png',
+  'snap/Costumes/anna12.png',*/
   'snap/Costumes/apple.svg',
   'snap/Costumes/arrow1-a.svg',
   'snap/Costumes/arrow1-b.svg',
@@ -407,53 +422,53 @@ const SNAP_FILES_TO_CACHE_2 = [
   'snap/Costumes/avery_walking-b.svg',
   'snap/Costumes/avery_walking-c.svg',
   'snap/Costumes/avery_walking-d.svg',
-  'snap/Costumes/b-block.svg',
+//  'snap/Costumes/b-block.svg',
   'snap/Costumes/ball-a.svg',
   'snap/Costumes/ball-b.svg',
   'snap/Costumes/ball-c.svg',
   'snap/Costumes/ball-d.svg',
   'snap/Costumes/ball-e.svg',
   'snap/Costumes/ball-soccer.svg',
-  'snap/Costumes/ballerina-a.svg',
+/*  'snap/Costumes/ballerina-a.svg',
   'snap/Costumes/ballerina-b.svg',
   'snap/Costumes/ballerina-c.svg',
   'snap/Costumes/ballerina-d.svg',
   'snap/Costumes/balloon1-a.svg',
   'snap/Costumes/balloon1-b.svg',
-  'snap/Costumes/balloon1-c.svg',
+  'snap/Costumes/balloon1-c.svg',*/
   'snap/Costumes/bananas.svg',
   'snap/Costumes/baseball.svg',
   'snap/Costumes/basketball.svg',
   'snap/Costumes/bass.svg',
-  'snap/Costumes/bat1-a.png',
+//  'snap/Costumes/bat1-a.png',
   'snap/Costumes/bat1-a_.svg',
-  'snap/Costumes/bat1-b.png',
+//  'snap/Costumes/bat1-b.png',
   'snap/Costumes/bat1-b_.svg',
-  'snap/Costumes/bat2-a.png',
+/*  'snap/Costumes/bat2-a.png',
   'snap/Costumes/bat2-a_.svg',
   'snap/Costumes/bat2-b.png',
-  'snap/Costumes/bat2-b_.svg',
+  'snap/Costumes/bat2-b_.svg',*/
   'snap/Costumes/beachball.svg',
-  'snap/Costumes/bear1-a.svg',
+/*  'snap/Costumes/bear1-a.svg',
   'snap/Costumes/bear1-b.svg',
   'snap/Costumes/bear2-a.svg',
   'snap/Costumes/bear2-b.svg',
   'snap/Costumes/beetle.svg',
   'snap/Costumes/bell1.svg',
   'snap/Costumes/bells-a.svg',
-  'snap/Costumes/bells-b.svg',
+  'snap/Costumes/bells-b.svg',*/
   'snap/Costumes/bowl-a.svg',
-  'snap/Costumes/bowtie-a.svg',
-  'snap/Costumes/bowtie-b.svg',
+/*  'snap/Costumes/bowtie-a.svg',
+  'snap/Costumes/bowtie-b.svg',*/
   'snap/Costumes/boy1-standing.gif',
   'snap/Costumes/boy1-walking.gif',
-  'snap/Costumes/boy2.gif',
+/*  'snap/Costumes/boy2.gif',
   'snap/Costumes/boy3.gif',
   'snap/Costumes/breakdancer1-a.png',
   'snap/Costumes/breakdancer1-b.png',
-  'snap/Costumes/breakdancer1-c.png',
+  'snap/Costumes/breakdancer1-c.png',*/
   'snap/Costumes/building-a.svg',
-  'snap/Costumes/building-b.svg',
+/*  'snap/Costumes/building-b.svg',
   'snap/Costumes/building-c.svg',
   'snap/Costumes/building-d.svg',
   'snap/Costumes/building-e.svg',
@@ -461,22 +476,22 @@ const SNAP_FILES_TO_CACHE_2 = [
   'snap/Costumes/building-g.svg',
   'snap/Costumes/building-h.svg',
   'snap/Costumes/building-i.svg',
-  'snap/Costumes/building-j.svg',
+  'snap/Costumes/building-j.svg',*/
   'snap/Costumes/bus.png',
   'snap/Costumes/butterfly1-a.svg',
   'snap/Costumes/butterfly1-b_.svg',
-  'snap/Costumes/butterfly2_.svg',
+/*  'snap/Costumes/butterfly2_.svg',
   'snap/Costumes/butterfly3_.svg',
-  'snap/Costumes/button1.svg',
+  'snap/Costumes/button1.svg',*/
   'snap/Costumes/button2-a.svg',
   'snap/Costumes/button2-b.svg',
-  'snap/Costumes/button3-a.svg',
-  'snap/Costumes/button3-b.svg',
+/*  'snap/Costumes/button3-a.svg',
+  'snap/Costumes/button3-b.svg',*/
   'snap/Costumes/button4-a.svg',
   'snap/Costumes/button4-b.svg',
   'snap/Costumes/button5-a.svg',
   'snap/Costumes/button5-b.svg',
-  'snap/Costumes/c-block.svg',
+/*  'snap/Costumes/c-block.svg',
   'snap/Costumes/cake-a.svg',
   'snap/Costumes/cake-b.svg',
   'snap/Costumes/calvrett_jumping.png',
@@ -531,11 +546,11 @@ const SNAP_FILES_TO_CACHE_2 = [
   'snap/Costumes/crab-a.svg',
   'snap/Costumes/crab-b.svg',
   'snap/Costumes/creature1-a.svg',
-  'snap/Costumes/creature1-b.svg',
+  'snap/Costumes/creature1-b.svg',*/
 ]
 
 const SNAP_FILES_TO_CACHE_3 = [
-  'snap/Costumes/creature1-c.svg',
+/*  'snap/Costumes/creature1-c.svg',
   'snap/Costumes/cymbal-a.svg',
   'snap/Costumes/cymbal-b.svg',
   'snap/Costumes/d-block.svg',
@@ -543,7 +558,7 @@ const SNAP_FILES_TO_CACHE_3 = [
   'snap/Costumes/dan-b.png',
   'snap/Costumes/dani-a.svg',
   'snap/Costumes/dani-b.svg',
-  'snap/Costumes/dani-c.svg',
+  'snap/Costumes/dani-c.svg',*/
   'snap/Costumes/dee-a.svg',
   'snap/Costumes/dee-b.svg',
   'snap/Costumes/dee-c.svg',
@@ -560,7 +575,7 @@ const SNAP_FILES_TO_CACHE_3 = [
   'snap/Costumes/dinosaur1-e.svg',
   'snap/Costumes/dinosaur1-f.svg',
   'snap/Costumes/dinosaur1-g.svg',
-  'snap/Costumes/dinosaur2-a.svg',
+/*  'snap/Costumes/dinosaur2-a.svg',
   'snap/Costumes/dinosaur2-b.svg',
   'snap/Costumes/dinosaur3.svg',
   'snap/Costumes/diver1.svg',
@@ -647,9 +662,9 @@ const SNAP_FILES_TO_CACHE_3 = [
   'snap/Costumes/glass_water-a.svg',
   'snap/Costumes/glass_water-b.svg',
   'snap/Costumes/glasses.svg',
-  'snap/Costumes/green_flag.svg',
-  //  'snap/Costumes/guitar',
-  'snap/Costumes/guitar.svg',
+  'snap/Costumes/green_flag.svg', */
+  //  'snap/Costumes/guitar', //previously removed...
+/*  'snap/Costumes/guitar.svg',
   'snap/Costumes/guitar_bass.svg',
   'snap/Costumes/guitar_electric.svg',
   'snap/Costumes/h-block.svg',
@@ -858,10 +873,10 @@ const SNAP_FILES_TO_CACHE_3 = [
   'snap/Costumes/tabla-b.svg',
   'snap/Costumes/taco-a.svg',
   'snap/Costumes/taco-b.svg',
-  'snap/Costumes/tennisball.png',
-  //'snap/Costumes/text',   //TODO: need these?
-  //'snap/Costumes/text',
-  'snap/Costumes/text_Halloween.svg',
+  'snap/Costumes/tennisball.png',*/
+  //'snap/Costumes/text',   //TODO: need these? //previously removed...
+  //'snap/Costumes/text',                       //previously removed...
+/*  'snap/Costumes/text_Halloween.svg',
   'snap/Costumes/text_awesome.svg',
   'snap/Costumes/trampoline.png',
   'snap/Costumes/tree-lights-a.svg',
@@ -895,7 +910,7 @@ const SNAP_FILES_TO_CACHE_3 = [
   'snap/Costumes/y-block.svg',
   'snap/Costumes/z-block.svg',
   'snap/Costumes/zara-a.png',
-  'snap/Costumes/zara-b.png',
+  'snap/Costumes/zara-b.png', */
 ]
 
 const SNAP_FILES_TO_CACHE_4 = [
@@ -910,7 +925,7 @@ const SNAP_FILES_TO_CACHE_4 = [
   'snap/Examples/swimmer.xml',
   'snap/Examples/tree.xml',
   'snap/Examples/vee.xml',
-  'snap/Sounds/A_bass.wav',
+/*  'snap/Sounds/A_bass.wav',
   'snap/Sounds/A_elec_bass.wav',
   'snap/Sounds/A_elec_guitar.wav',
   'snap/Sounds/A_elec_piano.wav',
@@ -947,10 +962,10 @@ const SNAP_FILES_TO_CACHE_4 = [
   'snap/Sounds/C_piano.wav',
   'snap/Sounds/C_sax.wav',
   'snap/Sounds/C_trombone.wav',
-  'snap/Sounds/C_trumpet.wav',
+  'snap/Sounds/C_trumpet.wav',*/
   'snap/Sounds/Cat.mp3',
   'snap/Sounds/Chord.wav',
-  'snap/Sounds/D_bass.wav',
+/*  'snap/Sounds/D_bass.wav',
   'snap/Sounds/D_elec_bass.wav',
   'snap/Sounds/D_elec_guitar.wav',
   'snap/Sounds/D_elec_piano.wav',
@@ -958,10 +973,10 @@ const SNAP_FILES_TO_CACHE_4 = [
   'snap/Sounds/D_piano.wav',
   'snap/Sounds/D_sax.wav',
   'snap/Sounds/D_trombone.wav',
-  'snap/Sounds/D_trumpet.wav',
+  'snap/Sounds/D_trumpet.wav',*/
   'snap/Sounds/Dog1.wav',
   'snap/Sounds/Dog2.wav',
-  'snap/Sounds/E_bass.wav',
+/*  'snap/Sounds/E_bass.wav',
   'snap/Sounds/E_elec_bass.wav',
   'snap/Sounds/E_elec_guitar.wav',
   'snap/Sounds/E_elec_piano.wav',
@@ -979,9 +994,9 @@ const SNAP_FILES_TO_CACHE_4 = [
   'snap/Sounds/F_piano.wav',
   'snap/Sounds/F_sax.wav',
   'snap/Sounds/F_trombone.wav',
-  'snap/Sounds/F_trumpet.wav',
+  'snap/Sounds/F_trumpet.wav',*/
   'snap/Sounds/FingerSnap.wav',
-  'snap/Sounds/G_bass.wav',
+/*  'snap/Sounds/G_bass.wav',
   'snap/Sounds/G_elec_bass.wav',
   'snap/Sounds/G_elec_guitar.wav',
   'snap/Sounds/G_elec_piano.wav',
@@ -990,7 +1005,7 @@ const SNAP_FILES_TO_CACHE_4 = [
   'snap/Sounds/G_sax.wav',
   'snap/Sounds/G_trombone.wav',
   'snap/Sounds/G_trumpet.wav',
-  'snap/Sounds/G_ukulele.wav',
+  'snap/Sounds/G_ukulele.wav',*/
   'snap/Sounds/Kitten.wav',
   'snap/Sounds/Laugh-female.wav',
   'snap/Sounds/Laugh-male1.wav',
@@ -998,8 +1013,8 @@ const SNAP_FILES_TO_CACHE_4 = [
   'snap/Sounds/Laugh-male3.mp3',
   'snap/Sounds/Meow.wav',
   'snap/Sounds/Pop.wav',
-  'snap/Sounds/SOUNDS',
-  'snap/Sounds/afro_string.wav',
+  'snap/Sounds/SOUNDS', //Only the sounds in this file are offered to the user
+/*  'snap/Sounds/afro_string.wav',
   'snap/Sounds/alien_creak1.wav',
   'snap/Sounds/alien_creak2.wav',
   'snap/Sounds/bass_beatbox.wav',
@@ -1151,8 +1166,8 @@ const SNAP_FILES_TO_CACHE_4 = [
   'snap/Sounds/xylo3.wav',
   'snap/Sounds/xylo4.wav',
   'snap/Sounds/ya.wav',
-  'snap/Sounds/zoop.wav',
-  'snap/help/SnapManual.pdf',
+  'snap/Sounds/zoop.wav',*/
+//  'snap/help/SnapManual.pdf', //This file is too big as of Snap! 6.0
   'snap/help/addCustomBlock.png',
   'snap/help/addVariable.png',
   'snap/help/bounceOffEdge.png',
@@ -1453,6 +1468,12 @@ const SNAP_FILES_TO_CACHE_4 = [
   'snap/src/xml.js',
   'snap/src/ypr.js',
   //snap projects
+  'snap/snapProjects/PWAfinch-level1.xml',
+  'snap/snapProjects/PWAfinch-level2.xml',
+  'snap/snapProjects/PWAfinch-level3.xml',
+  'snap/snapProjects/PWAfinch.xml',
+  'snap/snapProjects/PWAhummingbird.xml',
+  'snap/snapProjects/PWAGlowBoardMultiDevice.xml',
   'snap/snapProjects/PWAFinchSingleDevice.xml',
   'snap/snapProjects/PWAHummingbirdSingleDevice.xml',
   'snap/snapProjects/PWAFinchMultiDevice.xml',
@@ -1464,6 +1485,12 @@ const BRYTHON_FILES_TO_CACHE_1 = [
   'useBrython.html',
   'manifest-brython.json',
   'img/logo-brython.svg',
+  'img/icon_brython_32x32.png',
+  'img/icon_brython_128x128.png',
+  'img/icon_brython_152x152.png',
+  'img/icon_brython_192x192.png',
+  'img/icon_brython_256x256.png',
+  'img/icon_brython_512x512.png',
   'fonts/Montserrat-Light.otf',
   //brython
   'brython/BirdBrain.py',
@@ -1899,7 +1926,33 @@ const BRYTHON_FILES_TO_CACHE_2 = [
   'brython/src/Lib/site-packages/ui/widget.py'
 ];
 
-function addEventListeners(usingSnap) {
+const FINCHBLOX_FILES_TO_CACHE = [
+  'FinchBlox.html',
+  'manifest-finchblox.json',
+  'js/finchblox.js',
+  'finchblox/all.js',
+  'finchblox/click2.wav',
+  'finchblox/Fonts/Nunito-ExtraBold.ttf',
+  'finchblox/Fonts/Nunito-Regular.ttf',
+  'finchblox/HummingbirdDragAndDrop.html',
+  'finchblox/MyCSS.css',
+  'finchblox/MyCSS_rtl.css',
+  'img/fb_icon_32x32.png',
+  'img/fb_icon_128x128.png',
+  'img/fb_icon_152x152.png',
+  'img/fb_icon_192x192.png',
+  'img/fb_icon_256x256.png',
+  'img/fb_icon_512x512.png'
+];
+
+
+function bypassBrowserCache(urls) {
+  return urls.map((url) => new Request(url, {
+    cache: 'no-store', //there are other options here, but since we're building a cache it seems reasonable to not store files in the browser cache as well...
+  }))
+}
+
+function addEventListeners(usingSnap, usingFinchBlox) {
   //The install event is called once per service worker.
   //Changes to the service worker script count as a new service worker
   self.addEventListener('install', (evt) => {
@@ -1907,22 +1960,30 @@ function addEventListeners(usingSnap) {
     //Precache static resources
     evt.waitUntil(
       caches.open(CACHE_NAME).then((cache) => {
-        console.log('[ServiceWorker] Pre-caching...');
+        console.log('[ServiceWorker] Pre-caching to '+CACHE_NAME+'...');
         //return cache.addAll(FILES_TO_CACHE_1);
-        return cache.addAll(FILES_TO_CACHE_1).then(() => {
+        console.log('[ServiceWorker] Adding ' + FILES_TO_CACHE_1.length + ' basic files.');
+        return cache.addAll(bypassBrowserCache(FILES_TO_CACHE_1)).then(() => {
           if (usingSnap) {
-            console.log("[ServiceWorker] About to cache snap files")
-            return cache.addAll(SNAP_FILES_TO_CACHE_1).then(() =>
-                    cache.addAll(SNAP_FILES_TO_CACHE_2)).then(() =>
-                    cache.addAll(SNAP_FILES_TO_CACHE_3)).then(() =>
-                    cache.addAll(SNAP_FILES_TO_CACHE_4)).catch(error => {
+            const fileCount = SNAP_FILES_TO_CACHE_1.length + SNAP_FILES_TO_CACHE_2.length + SNAP_FILES_TO_CACHE_3.length + SNAP_FILES_TO_CACHE_4.length
+            console.log("[ServiceWorker] About to cache " + fileCount + " snap files")
+            return cache.addAll(bypassBrowserCache(SNAP_FILES_TO_CACHE_1)).then(() =>
+                    cache.addAll(bypassBrowserCache(SNAP_FILES_TO_CACHE_2))).then(() =>
+                    cache.addAll(bypassBrowserCache(SNAP_FILES_TO_CACHE_3))).then(() =>
+                    cache.addAll(bypassBrowserCache(SNAP_FILES_TO_CACHE_4))).catch(error => {
                       console.error("Error caching snap files: " + error.message);
                       throw error;
                     })
+          } else if (usingFinchBlox) {
+            console.log("[ServiceWorker] About to cache " + FINCHBLOX_FILES_TO_CACHE.length + " FinchBlox files")
+            return cache.addAll(bypassBrowserCache(FINCHBLOX_FILES_TO_CACHE)).catch(error => {
+                      console.error("Error caching FinchBlox files: " + error.message);
+                      throw error;
+                    })
           } else {
-            console.log("[ServiceWorker] About to cache brython files")
-            return cache.addAll(BRYTHON_FILES_TO_CACHE_1).then(() =>
-                    cache.addAll(BRYTHON_FILES_TO_CACHE_2)).catch(error => {
+            console.log("[ServiceWorker] About to cache " + (BRYTHON_FILES_TO_CACHE_1.length+BRYTHON_FILES_TO_CACHE_2.length) + " brython files")
+            return cache.addAll(bypassBrowserCache(BRYTHON_FILES_TO_CACHE_1)).then(() =>
+                    cache.addAll(bypassBrowserCache(BRYTHON_FILES_TO_CACHE_2))).catch(error => {
                       console.error("Error caching brython files: " + error.message);
                       throw error;
                     })
@@ -1956,7 +2017,7 @@ function addEventListeners(usingSnap) {
         console.error(error.message);
       })
     );
-    self.clients.claim();
+    self.clients.claim(); //only matters on the first load - so the page that registered the service worker then gets controlled by it.
   });
 
   self.addEventListener('fetch', (evt) => {
@@ -1970,8 +2031,8 @@ function addEventListeners(usingSnap) {
         return cache.match(evt.request, options)
           .then((response) => {
             let success = (response != undefined);
-            console.log("[ServiceWorker] Fetch: found in cache? " + success + " Requested url: " + evt.request.url);
-            console.log(response);
+            //console.log("[ServiceWorker] Fetch: found in cache? " + success + " Requested url: " + evt.request.url);
+            //console.log(response);
             //return the cached page if possible otherwise get from network
             return response || fetch(evt.request);
           }).catch(error => {

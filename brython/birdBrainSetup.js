@@ -7,17 +7,22 @@ window.birdbrain.sensorData = {};
 window.birdbrain.sensorData.A = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 window.birdbrain.sensorData.B = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 window.birdbrain.sensorData.C = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+window.birdbrain.microbitIsV2 = {};
+window.birdbrain.microbitIsV2.A = false;
+window.birdbrain.microbitIsV2.B = false;
+window.birdbrain.microbitIsV2.C = false;
 window.birdbrain.robotType = {
   FINCH: 1,
   HUMMINGBIRDBIT: 2,
   MICROBIT: 3,
-  //connected robots default to type MICROBIT
-  A: 3,
-  B: 3,
-  C: 3
+  UNKNOWN: 4,
+  //connected robots default unknown type
+  A: 4,
+  B: 4,
+  C: 4
 };
 
-console.log("setting up message channel")
+//console.log("setting up message channel")
 window.birdbrain.messageChannel = new MessageChannel();
 window.birdbrain.messageChannel.port1.onmessage = function(e) {
   //console.log("Got a message: ");
@@ -35,6 +40,7 @@ window.birdbrain.messageChannel.port1.onmessage = function(e) {
       }
       window.birdbrain.sensorData[robot] = e.data.sensorData;
       window.birdbrain.robotType[robot] = e.data.robotType;
+      window.birdbrain.microbitIsV2[robot] = e.data.hasV2Microbit;
       window.birdbrain.isConnected[robot] = true;
     }
 
@@ -285,19 +291,30 @@ window.birdbrain.finchIsMoving = function(finch) {
  */
 window.birdbrain.wrapPython = function(src) {
 
-  //Get a list of functions defined so that they can be turned into async functions
-  let functionsDefined = src.match(/def [a-zA-Z_][a-zA-Z_0-9]*/g) || []
+  //Remove all the strings and hold on to them for later
+  let longStringText = "LONGSTRINGREPLACEMENT"
+  let lsr = new RegExp("([\"'])\\1\\1.*?\\1\\1\\1", "gs")
+  let longStrings = src.match(lsr) || []
+  let stringsRemoved = src.replace(lsr, "$1$1$1"+longStringText+"$1$1$1")
+  let normalStringText = "NORMALSTRINGREPLACEMENT"
+  let nsr = new RegExp("([\"']).+?\\1", "g")
+  let strings = stringsRemoved.match(nsr) || []
+  stringsRemoved = stringsRemoved.replace(nsr, "$1"+normalStringText+"$1")
 
-  //Remove comments: We don't need them and they occasionally cause problems with the other changes below
-  let replaced = src.replace(/#.*/g, "")
+  //Get a list of functions defined so that they can be turned into async functions
+  let functionsDefined = stringsRemoved.match(/def [a-zA-Z_][a-zA-Z_0-9]*/g) || []
+
+  //Remove comments: They occasionally cause problems with the other changes below
+  let commentText = "THISISACOMMENT"
+  let cr = new RegExp("#.*", "g")
+  let comments = stringsRemoved.match(cr) || []
+  let replaced = stringsRemoved.replace(cr, commentText)
+  //let replaced = stringsRemoved.replace(/#.*/g, "")
+
   //Replace birdbrain function calls with async versions
-  replaced = replaced.replace(/([a-zA-Z_][a-zA-Z_0-9]*)\.(setMove|setTurn|setMotors|playNote|setTail|setBeak|setDisplay|print|setPoint|stopAll|setLED|setTriLED|setPositionServo|setRotationServo|stop|resetEncoders|getAcceleration|getCompass|getMagnetometer|getButton|isShaking|getOrientation|getLight|getSound|getDistance|getDial|getVoltage|getLine|getEncoder)/g, "await $1.$2")
+  replaced = replaced.replace(/([a-zA-Z_][a-zA-Z_0-9]*)\.(setMove|setTurn|setMotors|playNote|setTail|setBeak|setDisplay|print|setPoint|stopAll|setLED|setTriLED|setPositionServo|setRotationServo|stop|resetEncoders|getAcceleration|getCompass|getMagnetometer|getButton|isShaking|getOrientation|getLight|getSound|getDistance|getDial|getVoltage|getLine|getEncoder|getTemperature)/g, "await $1.$2")
   //Replace sleep with async sleep
   replaced = replaced.replace(/(time\.)?sleep/g, "await aio.sleep")
-  //Add sleep to while loops so that they will not hang
-  //replaced = replaced.replace(/(while[^:]*:)[ \t]*\n*([ \t]*)/g, "$1\n$2await aio.sleep(0.01)\n$2")
-  //Add sleep to for loops so that they will not hang
-  //replaced = replaced.replace(/(for[^:]*:)[ \t]*\n*([ \t]*)/g, "$1\n$2await aio.sleep(0.01)\n$2")
   //Replace user function definitions with async definitions
   replaced = replaced.replace(/def /g, "async def ")
   //Replace user defined function calls with async versions
@@ -314,6 +331,24 @@ window.birdbrain.wrapPython = function(src) {
   //Wrap the whole script in an async function and call the function at the end
   wrapped = "from browser import aio\n\nasync def main():\n\t" + wrapped + "\n\naio.run(main())"
 
+  //Put back the comments
+  var cTextRe = new RegExp(commentText)
+  comments.forEach((comment, i) => {
+    wrapped = wrapped.replace(cTextRe, comment)
+  });
+
+  //Put back the strings
+  var stringTextRe = new RegExp(normalStringText);
+  strings.forEach((str, i) => {
+    str = str.replace(/^["']/, "").replace(/["']$/, "")
+    wrapped = wrapped.replace(stringTextRe, str)
+  });
+  var longStTextRe = new RegExp(longStringText);
+  longStrings.forEach((str, i) => {
+    str = str.replace(/^["']["']["']/, "").replace(/["']["']["']$/, "")
+    wrapped = wrapped.replace(longStTextRe, str)
+  });
+
   console.log("WRAPPED SCRIPT:")
   console.log(wrapped)
   return wrapped
@@ -321,11 +356,11 @@ window.birdbrain.wrapPython = function(src) {
 
 function onFileChoice() {
   var input = document.getElementById('chooseFile')
-  console.log("found " + input.files.length + " files.")
-  console.log(input.files[0].name + " " + input.files[0].size + " " + input.files[0].type)
+  //console.log("found " + input.files.length + " files.")
+  //console.log(input.files[0].name + " " + input.files[0].size + " " + input.files[0].type)
   input.files[0].text().then(contents => {
-    console.log("found contents:")
-    console.log(contents)
+    //console.log("found contents:")
+    //console.log(contents)
     var container = document.getElementById('loadedScript');
     container.value = contents;
     container.click();

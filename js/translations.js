@@ -20,8 +20,10 @@ const fullTranslationTable = {
     Connection_Failure: 'Connection Failure',
     Incompatible_Browser: 'Incompatible Browser',
     Use_Chrome: 'Please visit this page in Google Chrome (version 70 or later).',
+    Use_Chrome89: 'Please visit this page in Google Chrome (version 89 or later).',
     No_Ble: 'No Bluetooth Detected',
-    Ble_Required: 'This app requires Bluetooth.'
+    Ble_Required: 'This app requires Bluetooth.',
+    Choose_Snap_Level: 'Choose Snap! Level'
   },
   ko: {
     say_this: '(Slot 1 = 안녕!) 말하기',
@@ -37,8 +39,10 @@ const fullTranslationTable = {
     Connection_Failure: '연결 실패',
     Incompatible_Browser: '올바르지 않은 브라우저입니다.',
     Use_Chrome: '이 페이지를 구글 크롬에서 열어주세요(버전 70 또는 그 후).',
+    Use_Chrome89: '이 페이지를 구글 크롬에서 열어주세요(버전 89 또는 그 후).',
     No_Ble: '블루투스 장치를 찾을 수 없습니다.',
-    Ble_Required: '이 앱은 블루투스 통신이 필요합니다.'
+    Ble_Required: '이 앱은 블루투스 통신이 필요합니다.',
+    Choose_Snap_Level: 'Choose Snap! Level'
   },
   de: {
     say_this: 'Sage',
@@ -54,8 +58,10 @@ const fullTranslationTable = {
     Connection_Failure: 'Verbindung fehlgeschlagen',
     Incompatible_Browser: 'Browser nicht kompatibel',
     Use_Chrome: 'Bitte besuche diese Seite in Google Chrome (Version 70 oder höher).',
+    Use_Chrome89: 'Bitte besuche diese Seite in Google Chrome (Version 89 oder höher).',
     No_Ble: 'Kein Bluetooth gefunden',
-    Ble_Required: 'Diese App benötigt Bluetooth'
+    Ble_Required: 'Diese App benötigt Bluetooth',
+    Choose_Snap_Level: 'Choose Snap! Level'
   },
   pt: {
     say_this: 'Diga Isso',
@@ -71,8 +77,10 @@ const fullTranslationTable = {
     Connection_Failure: 'Falha na Conexão',
     Incompatible_Browser: 'Navegador incompatível',
     Use_Chrome: 'Visite esta página no Google Chrome (versão 70 ou posterior).',
+    Use_Chrome89: 'Visite esta página no Google Chrome (versão 89 ou posterior).',
     No_Ble: 'Nenhum Bluetooth Detectado',
-    Ble_Required: 'Este aplicativo requer Bluetooth.'
+    Ble_Required: 'Este aplicativo requer Bluetooth.',
+    Choose_Snap_Level: 'Choose Snap! Level'
   },
   fr: {
     say_this: 'Dites ceci',
@@ -88,8 +96,10 @@ const fullTranslationTable = {
     Connection_Failure: 'Échec de connexion',
     Incompatible_Browser: 'Navigateur incompatible',
     Use_Chrome: 'Veuillez visiter cette page dans Google Chrome (version 70 ou version ultérieure).',
+    Use_Chrome89: 'Veuillez visiter cette page dans Google Chrome (version 89 ou version ultérieure).',
     No_Ble: 'Aucun Bluetooth détecté',
-    Ble_Required: 'Cette application nécessite Bluetooth.'
+    Ble_Required: 'Cette application nécessite Bluetooth.',
+    Choose_Snap_Level: 'Choose Snap! Level'
   },
   nl: {
     say_this: 'Zeg Dit',
@@ -105,8 +115,10 @@ const fullTranslationTable = {
     Connection_Failure: 'Verbindingsfout',
     Incompatible_Browser: 'Browser niet compatibel',
     Use_Chrome: 'Bezoek deze pagina in Google Chrome (versie 70 of hoger).',
+    Use_Chrome89: 'Bezoek deze pagina in Google Chrome (versie 89 of hoger).',
     No_Ble: 'Bluetooth niet gedetecteerd',
-    Ble_Required: 'Deze app vereist Bluetooth.'
+    Ble_Required: 'Deze app vereist Bluetooth.',
+    Choose_Snap_Level: 'Choose Snap! Level'
   },
   zh_Hans: {
     say_this: '说',
@@ -122,8 +134,10 @@ const fullTranslationTable = {
     Connection_Failure: '连接失败',
     Incompatible_Browser: '浏览器不兼容。',
     Use_Chrome: '请使用谷歌浏览器。 (版本号 70或者此后的版本)',
+    Use_Chrome89: '请使用谷歌浏览器。 (版本号 89或者此后的版本)',
     No_Ble: '未检测到蓝牙。',
-    Ble_Required: '该设备需要链接蓝牙。'
+    Ble_Required: '该设备需要链接蓝牙。',
+    Choose_Snap_Level: 'Choose Snap! Level'
   },
   zh_Hant: {
     say_this: '說',
@@ -139,8 +153,10 @@ const fullTranslationTable = {
     Connection_Failure: '連接失敗',
     Incompatible_Browser: '不兼容的瀏覽器',
     Use_Chrome: '請用Google Chrome瀏覽器（版本70或更高版本）瀏覽此頁面。',
+    Use_Chrome89: '請用Google Chrome瀏覽器（版本89或更高版本）瀏覽此頁面。',
     No_Ble: '未能檢測到藍牙',
-    Ble_Required: '此應用程式需要藍牙'
+    Ble_Required: '此應用程式需要藍牙',
+    Choose_Snap_Level: 'Choose Snap! Level'
   },
   ar: {
     say_this: 'قل هذا',
@@ -156,8 +172,10 @@ const fullTranslationTable = {
     Connection_Failure: 'فشل الاتصال',
     Incompatible_Browser: 'Incompatible Browser',
     Use_Chrome: 'Please visit this page in Google Chrome (version 70 or later).',
+    Use_Chrome89: 'Please visit this page in Google Chrome (version 89 or later).',
     No_Ble: 'No Bluetooth Detected',
-    Ble_Required: 'This app requires Bluetooth.'
+    Ble_Required: 'This app requires Bluetooth.',
+    Choose_Snap_Level: 'Choose Snap! Level'
   },
   da: {
     say_this: 'Sig dette',
@@ -173,8 +191,10 @@ const fullTranslationTable = {
     Connection_Failure: 'Forbindelse mislykket',
     Incompatible_Browser: 'Incompatible Browser',
     Use_Chrome: 'Please visit this page in Google Chrome (version 70 or later).',
+    Use_Chrome89: 'Please visit this page in Google Chrome (version 89 or later).',
     No_Ble: 'No Bluetooth Detected',
-    Ble_Required: 'This app requires Bluetooth.'
+    Ble_Required: 'This app requires Bluetooth.',
+    Choose_Snap_Level: 'Choose Snap! Level'
   },
   he: {
     say_this: 'להגיד',
@@ -190,8 +210,10 @@ const fullTranslationTable = {
     Connection_Failure: 'חיבור נכשל',
     Incompatible_Browser: 'דפדפן לא תואם',
     Use_Chrome: 'אנא בקר באתר זה ב- Google Chrome (גרסה 70 ואילך).',
+    Use_Chrome89: 'אנא בקר באתר זה ב- Google Chrome (גרסה 89 ואילך).',
     No_Ble: 'לא זוהה Bluetooth',
-    Ble_Required: 'אפליקציה זו דורשת Bluetooth.'
+    Ble_Required: 'אפליקציה זו דורשת Bluetooth.',
+    Choose_Snap_Level: 'Choose Snap! Level'
   },
   es: {
     say_this: 'Decir esto',
@@ -207,8 +229,10 @@ const fullTranslationTable = {
     Connection_Failure: 'Coneccion fallada',
     Incompatible_Browser: 'Navegador no compatible',
     Use_Chrome: 'Por favor, utiliza Google Chrome (versión 70 o superior) para visitar esta página.',
+    Use_Chrome89: 'Por favor, utiliza Google Chrome (versión 89 o superior) para visitar esta página.',
     No_Ble: 'Bluetooth no detectado',
-    Ble_Required: 'Esta aplicación requiere Bluetooth.'
+    Ble_Required: 'Esta aplicación requiere Bluetooth.',
+    Choose_Snap_Level: 'Choose Snap! Level'
   },
   ca: {
     say_this: 'Digues això',
@@ -224,8 +248,10 @@ const fullTranslationTable = {
     Connection_Failure: 'Error de connexió',
     Incompatible_Browser: 'Navegador no compatible',
     Use_Chrome: 'Si us plau, utilitza Google Chromve (versió 70 o superior) per visitar aquesta pàgina.',
+    Use_Chrome89: 'Si us plau, utilitza Google Chromve (versió 89 o superior) per visitar aquesta pàgina.',
     No_Ble: 'Bluetooth no detectat',
-    Ble_Required: 'Aquesta aplicació requereix Bluetooth.'
+    Ble_Required: 'Aquesta aplicació requereix Bluetooth.',
+    Choose_Snap_Level: 'Choose Snap! Level'
   },
   fi: {
     say_this: 'Sano tämä',
@@ -241,8 +267,10 @@ const fullTranslationTable = {
     Connection_Failure: 'Virhe yhdistettäessä',
     Incompatible_Browser: 'Incompatible Browser',
     Use_Chrome: 'Please visit this page in Google Chrome (version 70 or later).',
+    Use_Chrome89: 'Please visit this page in Google Chrome (version 89 or later).',
     No_Ble: 'No Bluetooth Detected',
-    Ble_Required: 'This app requires Bluetooth.'
+    Ble_Required: 'This app requires Bluetooth.',
+    Choose_Snap_Level: 'Choose Snap! Level'
   },
   sv: {
     say_this: 'Säg detta',
@@ -258,8 +286,10 @@ const fullTranslationTable = {
     Connection_Failure: 'Problem med kopplingen',
     Incompatible_Browser: 'Incompatible Browser',
     Use_Chrome: 'Please visit this page in Google Chrome (version 70 or later).',
+    Use_Chrome89: 'Please visit this page in Google Chrome (version 89 or later).',
     No_Ble: 'No Bluetooth Detected',
-    Ble_Required: 'This app requires Bluetooth.'
+    Ble_Required: 'This app requires Bluetooth.',
+    Choose_Snap_Level: 'Choose Snap! Level'
   }
 };
 
@@ -284,7 +314,7 @@ function translateStrings() {
  */
 function setLanguage() {
   language = window.navigator.language;
-  console.log("window.navigator.language = " + language);
+  //console.log("window.navigator.language = " + language);
 
   if (language.startsWith("zh")) {
     if (language == "zh-TW" || language == "zh-tw") { language = "zh_Hant"; } // Specify trad chinese
@@ -295,17 +325,17 @@ function setLanguage() {
   // Convert old code for Hebrew to new
   if (language == "iw") { language = "he"; }
 
-  console.log("Language code used: " + language);
+  //console.log("Language code used: " + language);
 
   thisLocaleTable = fullTranslationTable[language];
   if (thisLocaleTable === null) {
-    console.log("Language unsupported. Defaulting to English (en)");
+    //console.log("Language unsupported. Defaulting to English (en)");
     language = "en";
     thisLocaleTable = fullTranslationTable[language]; // populate the locale phrases
   }
 
-  console.log("thisLocaleTable:");
-  console.log(thisLocaleTable);
+  //console.log("thisLocaleTable:");
+  //console.log(thisLocaleTable);
 
   translateStrings();
 }

@@ -64,14 +64,14 @@ RobotData.prototype.update = function(startIndex, valueArray) {
   //values must be between 0 and 255
   for(let i = 0; i < valueArray.length; i++) {
     if (valueArray[i] < 0 || valueArray[i] > 255) {
-      console.log("updateData invalid value: " + value);
+      console.error("updateData invalid value: " + value);
       return;
     }
   }
 
   //make sure the index is not out of bounds
   if (startIndex < 0 || (startIndex + valueArray.length) > this.length) {
-    console.log("updateData invalid index: " + startIndex);
+    console.error("updateData invalid index: " + startIndex);
     return;
   }
 
@@ -116,13 +116,13 @@ RobotData.prototype.updatePending = function() {
   }
 
   if (!RobotData.isEqual(this.values, newData)) {
-    console.log("processing pending change {" + nextChange.startIndex + ", [" + nextChange.valueArray + "]}");
+    //console.log("processing pending change {" + nextChange.startIndex + ", [" + nextChange.valueArray + "]}");
     //console.log(newData);
     this.length = newData.length;
     this.values = newData;
     this.isNew = true;
   } else {
-    console.log("change did not include new data {" + nextChange.startIndex + ", [" + nextChange.valueArray + "]}");
+    //console.log("change did not include new data {" + nextChange.startIndex + ", [" + nextChange.valueArray + "]}");
     //console.log(newData);
   }
 

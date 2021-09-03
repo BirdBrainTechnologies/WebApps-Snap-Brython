@@ -18,27 +18,28 @@ const FINCH_INITIAL_MOTOR_ARRAY = [0, 0, 0, 1, 0, 0, 0, 1];
  * Robot - Initializer called when a new robot is connected.
  *
  * @param  {Object} device    Device object from navigator.bluetooth
- * @param  {string} devLetter Character to identify device with (A, B, or C)
  */
-function Robot(device, devLetter) {
+function Robot(device) {
   this.device = device;
-  this.devLetter = devLetter;
+  this.devLetter = "X";
   this.fancyName = getDeviceFancyName(device.name);
   this.batteryLevel = Robot.batteryLevel.UNKNOWN
   this.RX = null; //receiving
   this.TX = null; //sending
+  this.writeMethod = null; //Once TX is set we can determine whether we can use writeValueWithoutResponse
   this.displayElement = null;
   this.type = Robot.getTypeFromName(device.name);
-  console.log("type set to " + this.type);
   this.writeInProgress = false;
   this.dataQueue = [];
   this.printTimer = null;
   this.isCalibrating = false;
   this.setAllTimeToAdd = 0;
-  this.isConnected = true;
-
-  //Robot state arrays
-  this.initializeDataArrays();
+  this.isConnected = false;
+  this.userDisconnected = false;
+  //this.isReconnecting = false; //uncomment for autoreconnect
+  this.currentSensorData = [];
+  this.isInitialized = false;
+  this.hasV2Microbit = false;
 }
 
 /**
@@ -48,6 +49,7 @@ Robot.ofType = {
   FINCH: 1,
   HUMMINGBIRDBIT: 2,
   MICROBIT: 3,
+  GLOWBOARD: 4,
 }
 
 /**
@@ -60,6 +62,7 @@ Robot.propertiesFor = {
     setAllLength: 20,
     triLedCount: 5,
     buzzerIndex: 16,
+    buzzerBytes: 4,
     stopCommand: new Uint8Array([0xDF]),
     calibrationCommand: new Uint8Array([0xCE, 0xFF, 0xFF, 0xFF]),
     calibrationIndex: 16,
@@ -67,7 +70,8 @@ Robot.propertiesFor = {
     batteryFactor: 0.00937, //0.0376,
     batteryConstant: 320,
     greenThreshold: 3.51375, //3.386,
-    yellowThreshold: 3.3732 //3.271
+    yellowThreshold: 3.3732, //3.271
+    getFirmwareCommand: new Uint8Array([0xD4])
   },
   //hummingbird bit
   2: {
@@ -75,6 +79,7 @@ Robot.propertiesFor = {
     setAllLength: 19,
     triLedCount: 2,
     buzzerIndex: 15,
+    buzzerBytes: 4,
     stopCommand: new Uint8Array([0xCB, 0xFF, 0xFF, 0xFF]),
     calibrationCommand: new Uint8Array([0xCE, 0xFF, 0xFF, 0xFF]),
     calibrationIndex: 7,
@@ -82,22 +87,42 @@ Robot.propertiesFor = {
     batteryFactor: 0.0406,
     batteryConstant: 0,
     greenThreshold: 4.75,
-    yellowThreshold: 4.4
+    yellowThreshold: 4.4,
+    getFirmwareCommand: new Uint8Array([0xCF])
   },
   //micro:bit
   3: {
     setAllLetter: 0x90,
     setAllLength: 8,
     triLedCount: 0,
-    buzzerIndex: null, //no buzzer on the micro:bit
-    stopCommand: new Uint8Array([144, 0, 0, 0, 0, 0, 0, 0]),
+    buzzerIndex: 1,
+    buzzerBytes: 5,
+    stopCommand: new Uint8Array([0xCB, 0xFF, 0xFF, 0xFF]),
     calibrationCommand: new Uint8Array([0xCE, 0xFF, 0xFF, 0xFF]),
     calibrationIndex: 7,
     batteryIndex: null, //no battery monitoring for micro:bit
     batteryFactor: null,
     batteryConstant: null,
     greenThreshold: null,
-    yellowThreshold: null
+    yellowThreshold: null,
+    getFirmwareCommand: new Uint8Array([0xCF])
+  },
+  //GlowBoard
+  4: {
+    setAllLetter: 0x50,
+    setAllLength: 80,
+    triLedCount: 0,
+    buzzerIndex: null,
+    buzzerBytes: null,
+    stopCommand: new Uint8Array([0x51, 0x02]),
+    calibrationCommand: null,
+    calibrationIndex: null,
+    batteryIndex: 6,
+    batteryFactor: 0.41,
+    batteryConstant: 0,
+    greenThreshold: 223,
+    yellowThreshold: 210,
+    getFirmwareCommand: null
   }
 }
 
@@ -105,9 +130,9 @@ Robot.propertiesFor = {
  * Enum for battery level options
  */
 Robot.batteryLevel = {
-  HIGH: 1,
-  MEDIUM: 2,
-  LOW: 3,
+  HIGH: 2,
+  MEDIUM: 1,
+  LOW: 0,
   UNKNOWN: 4
 }
 
@@ -124,6 +149,8 @@ Robot.getTypeFromName = function(name) {
     return Robot.ofType.HUMMINGBIRDBIT
   } else if (name.startsWith("MB")) {
     return Robot.ofType.MICROBIT
+  } else if (name.startsWith("GB")) {
+    return Robot.ofType.GLOWBOARD
   } else return null;
 }
 
@@ -144,7 +171,43 @@ Robot.initialSetAllFor = function(type) {
     array[11] = 0xFF;
     array[12] = 0xFF;
   }
+  if (type == Robot.ofType.GLOWBOARD) {
+    array[1] = 0b01100000 //96 mode dim
+    array[20] = array[0]
+    array[21] = 0b01100101 //101 mode red
+    array[40] = array[0]
+    array[41] = 0b01101010 //106 mode green
+    array[60] = array[0]
+    array[61] = 0b01101111 //111 mode blue
+  }
   return array;
+}
+
+Robot.prototype.initialize = function() {
+
+  if ("writeValueWithoutResponse" in this.TX) { //Available in Chrome 85+
+    this.writeMethod = this.TX.writeValueWithoutResponse
+    console.log("Using writeValueWithoutResponse")
+  } else {
+    this.writeMethod = this.TX.writeValue
+    console.log("Using writeValue")
+  }
+
+  //Robot state arrays
+  this.initializeDataArrays();
+  this.isConnected = true;
+  this.userDisconnected = false;
+  //this.isReconnecting = false; //uncomment for autoreconnect
+  this.isInitialized = false;
+
+  if (Robot.propertiesFor[this.type].getFirmwareCommand != null) {
+    //Read the current robot's firmware version to determine if it includes a V2 micro:bit
+    this.write(Robot.propertiesFor[this.type].getFirmwareCommand)
+  } else {
+    this.write(Uint8Array.of(0x62, 0x67));
+    this.startSetAll();
+    this.isInitialized = true;
+  }
 }
 
 /**
@@ -166,15 +229,17 @@ Robot.prototype.initializeDataArrays = function() {
  * to the robot. Stops the current timer if one is running.
  */
 Robot.prototype.startSetAll = function() {
-  console.log("Starting setAll. interval=" + (MIN_SET_ALL_INTERVAL + this.setAllTimeToAdd));
+  //console.log("Starting setAll. interval=" + (MIN_SET_ALL_INTERVAL + this.setAllTimeToAdd));
   if (this.setAllInterval != null) {
     clearInterval(this.setAllInterval)
   }
 
-  this.setAllInterval = setInterval(
-    this.sendSetAll.bind(this),
-    MIN_SET_ALL_INTERVAL + this.setAllTimeToAdd
-  );
+  let interval = MIN_SET_ALL_INTERVAL + this.setAllTimeToAdd
+  if (this.isA(Robot.ofType.GLOWBOARD)) {
+    interval = MIN_SET_ALL_INTERVAL + this.setAllTimeToAdd
+  }
+
+  this.setAllInterval = setInterval( this.sendSetAll.bind(this), interval );
 }
 
 /**
@@ -197,19 +262,30 @@ Robot.prototype.isA = function(type) {
   else return false
 }
 
+Robot.prototype.setDisconnected = function() {
+  this.isConnected = false;
+  this.devLetter = "X"
+  this.RX = null
+  this.TX = null
+  this.batteryLevel = Robot.batteryLevel.UNKNOWN
+  if (this.setAllInterval != null) {
+    clearInterval(this.setAllInterval)
+  }
+  updateConnectedDevices();
+}
+
 /**
  * Robot.prototype.disconnect - Disconnect this robot and remove it from the
  * list.
  */
-Robot.prototype.disconnect = function() {
-  var index = robots.indexOf(this);
-  if (index !== -1) robots.splice(index, 1);
-  console.log("after disconnect: " + robots.length);
-  if (this.setAllInterval != null) {
-    clearInterval(this.setAllInterval)
-  }
+Robot.prototype.userDisconnect = function() {
+  //console.log("User disconnected " + this.fancyName)
+  //var index = robots.indexOf(this);
+  //if (index !== -1) robots.splice(index, 1);
+  this.userDisconnected = true;
+  this.setDisconnected()
   this.device.gatt.disconnect();
-  updateConnectedDevices();
+
 }
 
 /**
@@ -217,21 +293,14 @@ Robot.prototype.disconnect = function() {
  * (rather than the user disconnecting through the app)
  */
 Robot.prototype.externalDisconnect = function() {
-  console.log("setting isConnected to false for " + this.fancyName)
-  this.isConnected = false;
-  this.devLetter = "X"
-}
+  this.setDisconnected()
 
-/**
- * Robot.prototype.reconnect - Connect again. Only used in the case of external
- * disconnect.
- *
- * @param  {type} devLetter New device letter for the robot
- */
-Robot.prototype.reconnect = function(device, devLetter) {
-  this.isConnected = true;
-  this.device = device
-  this.devLetter = devLetter;
+  //uncomment for autoreconnect
+  /*setTimeout(function() {
+    //console.log("Attempting to reconnect to " + this.fancyName)
+    this.isReconnecting = true
+    connectToRobot(this)
+  }.bind(this), 1000)*/
 }
 
 /**
@@ -252,7 +321,7 @@ Robot.prototype.write = function(data) {
       this.dataQueue.push(data);
     }
     setTimeout(function() {
-      //console.log("Timeout. data queue length = " + this.dataQueue.length);
+      console.log("Timeout. data queue length = " + this.dataQueue.length);
       this.write()
     }.bind(this), MIN_SET_ALL_INTERVAL);
     return;
@@ -266,18 +335,20 @@ Robot.prototype.write = function(data) {
     data = this.dataQueue.shift();
     //console.log(data);
     if (this.dataQueue.length > 10) {
-      console.log("Too many writes queued (" + this.dataQueue.length + "). Increasing interval between setAll attempts...")
+      //console.log("Too many writes queued (" + this.dataQueue.length + "). Increasing interval between setAll attempts...")
       this.increaseSetAllInterval();
     }
   }
-  this.TX.writeValue(data).then(_ => {
-      //console.log('Wrote to ' + this.fancyName + ":");
-      //console.log(data);
+
+  this.writeMethod.call(this.TX, data).then(_ => {
+      console.log('Wrote to ' + this.fancyName + ":");
+      console.log(data);
       this.writeInProgress = false;
     }).catch(error => {
-      console.error("Error writting to " + this.fancyName + ": " + error);
+      console.error("Error writing to " + this.fancyName + ": " + error);
       this.writeInProgress = false;
     });
+
 }
 
 /**
@@ -286,6 +357,29 @@ Robot.prototype.write = function(data) {
  * a setInterval set up in the initializer (setAllInterval).
  */
 Robot.prototype.sendSetAll = function() {
+  if (this.isA(Robot.ofType.GLOWBOARD)) {
+    console.log("setall")
+    if (this.setAllData.isNew) {
+      const data = this.setAllData.getSendable();
+
+      console.log("sending setDim " + data.slice(0,20))
+      this.write(data.slice(0,20))
+      setTimeout(function() {
+        console.log("sending setRed " + data.slice(20,40))
+        this.write(data.slice(20,40))
+      }.bind(this), MIN_SET_ALL_INTERVAL/4)
+      setTimeout(function() {
+        console.log("sending setGreen " + data.slice(40,60))
+        this.write(data.slice(40,60))
+      }.bind(this), MIN_SET_ALL_INTERVAL/2)
+      setTimeout(function() {
+        console.log("sending setBlue " + data.slice(60,80))
+        this.write(data.slice(60,80))
+      }.bind(this), MIN_SET_ALL_INTERVAL*3/4)
+    }
+
+    return
+  }
   //var setAllChanged = !Robot.dataIsEqual(this.setAllData, this.oldSetAllData);
 
   //console.log("sendSetAll " + setAllChanged + " " + this.setAllData + " " + this.oldSetAllData);
@@ -312,7 +406,7 @@ Robot.prototype.sendSetAll = function() {
         symbolSet = (this.ledDisplayData.values[1] == 0x80)
         //if (!symbolSet) { flashSet = true; }
         if (!symbolSet) { flashSet = (this.ledDisplayData.values[1] != 0) }
-        console.log("Found new led display data. Symbol? " + symbolSet + " flash? " + flashSet);
+        //console.log("Found new led display data. Symbol? " + symbolSet + " flash? " + flashSet);
         ledArray = Array.prototype.slice.call(this.ledDisplayData.getSendable(flashSet), 2);
       }
       //const motorsChanged = !Robot.dataIsEqual(this.motorsData, this.oldMotorsData);
@@ -348,7 +442,7 @@ Robot.prototype.sendSetAll = function() {
         //const cmdArray = [0xD2, mode].concat(motorArray, Array.prototype.slice.call(this.ledDisplayData, 2))
 
         const cmdArray = [0xD2, mode].concat(motorArray, ledArray);
-        console.log("Sending " + cmdArray);
+        //console.log("Sending " + cmdArray);
         const command = new Uint8Array(cmdArray)
         this.write(command);
       }
@@ -378,7 +472,7 @@ Robot.prototype.sendSetAll = function() {
 Robot.prototype.setLED = function(port, intensity) {
   //Only Hummingbird bits have single color leds
   if (!this.isA(Robot.ofType.HUMMINGBIRDBIT)) {
-    console.log("setLED called but robot is not a hummingbird.");
+    //console.log("setLED called but robot is not a hummingbird.");
     return;
   }
 
@@ -406,19 +500,19 @@ Robot.prototype.setLED = function(port, intensity) {
  * values. Hummingbird and Finch only.
  *
  * @param  {number} port  Position of the LED to set (1-triLedCount)
- * @param  {number} red   Red intensity (0-100)
- * @param  {number} green Green intensity (0-100)
- * @param  {number} blue  Blue intensity (0-100)
+ * @param  {number} red   Red intensity (0-255)
+ * @param  {number} green Green intensity (0-255)
+ * @param  {number} blue  Blue intensity (0-255)
  */
 Robot.prototype.setTriLED = function(port, red, green, blue) {
   //microbits do not have any trileds
   if (this.isA(Robot.ofType.MICROBIT)) {
-    console.log("setTriLED called on a robot of type microbit");
+    //console.log("setTriLED called on a robot of type microbit");
     return;
   }
   if (port == "all") { //finch tail requests only
     if (this.type != Robot.ofType.FINCH) {
-      console.log("setTriLED port=all only for finch tail leds.");
+      //console.log("setTriLED port=all only for finch tail leds.");
       return;
     }
 
@@ -427,7 +521,7 @@ Robot.prototype.setTriLED = function(port, red, green, blue) {
 
   } else {
     if (port < 1 || port > Robot.propertiesFor[this.type].triLedCount){
-      console.log("setTriLED invalid port: " + port);
+      //console.log("setTriLED invalid port: " + port);
       return;
     }
     var index;
@@ -440,7 +534,7 @@ Robot.prototype.setTriLED = function(port, red, green, blue) {
         index = 1 + portAdjust;
         break;
       default:
-        console.log("setTriLED invalid robot type: " + this.type);
+        console.error("setTriLED invalid robot type: " + this.type);
         return;
     }
 
@@ -457,11 +551,12 @@ Robot.prototype.setTriLED = function(port, red, green, blue) {
  */
 Robot.prototype.setServo = function(port, value) {
   if (!this.isA(Robot.ofType.HUMMINGBIRDBIT)) {
-    console.log("Only hummingbirds have servos.")
+    //console.log("Only hummingbirds have servos.")
     return
   }
   if (port < 1 || port > 4) {
-    console.log("setServo invalid port: " + port);
+    //console.log("setServo invalid port: " + port);
+    return
   }
 
   this.setAllData.update(port + 8, [value]);
@@ -478,7 +573,7 @@ Robot.prototype.setServo = function(port, value) {
  */
 Robot.prototype.setMotors = function(speedL, ticksL, speedR, ticksR) {
   if (!this.isA(Robot.ofType.FINCH)) {
-    console.log("Only finches have motors.")
+    //console.log("Only finches have motors.")
     return
   }
 
@@ -520,7 +615,7 @@ Robot.prototype.setMotors = function(speedL, ticksL, speedR, ticksR) {
 Robot.prototype.setBuzzer = function(note, duration) {
   var index = Robot.propertiesFor[this.type].buzzerIndex
   if (index == null) {
-    console.log("setBuzzer invalid robot type: " + this.type);
+    //console.log("setBuzzer invalid robot type: " + this.type);
     return;
   }
 
@@ -528,9 +623,12 @@ Robot.prototype.setBuzzer = function(note, duration) {
   let period = (1/frequency) * 1000000
   //TODO: check if period is in range?
 
-  this.setAllData.update(index, [
-    period >> 8, period & 0x00ff, duration >> 8, duration & 0x00ff
-  ])
+  let buzzerArray = [period >> 8, period & 0x00ff, duration >> 8, duration & 0x00ff]
+  if (this.isA(Robot.ofType.MICROBIT)) {
+    buzzerArray.splice(3, 0, 0x20)
+  }
+
+  this.setAllData.update(index, buzzerArray)
 }
 
 /**
@@ -538,13 +636,14 @@ Robot.prototype.setBuzzer = function(note, duration) {
  * that a note is only sent to the robot once.
  */
 Robot.prototype.clearBuzzerBytes = function() {
-  var index = Robot.propertiesFor[this.type].buzzerIndex
-  if (index == null) {
-    console.log("clearBuzzerBytes invalid robot type: " + this.type);
+  let index = Robot.propertiesFor[this.type].buzzerIndex
+  let bytes = Robot.propertiesFor[this.type].buzzerBytes
+  if (index == null || bytes == null) {
+    //console.log("clearBuzzerBytes invalid robot type: " + this.type);
     return;
   }
 
-  this.setAllData.reset(index, index + 4);
+  this.setAllData.reset(index, index + bytes);
 }
 
 /**
@@ -564,9 +663,15 @@ Robot.prototype.setSymbol = function(symbolString) {
   let iData = 2
   let shift = 0
 
-  //Convert the true/false string to bits. Requires 4 data bytes.
+  //Convert the true/false or bit string to bits. Requires 4 data bytes.
   for (let i = 24; i >= 0; i--) {
-    data[iData] = (sa[i] == "true") ? (data[iData] | (1 << shift)) : (data[iData] & ~(1 << shift));
+    let bit = false;
+    if (FinchBlox) {
+      bit = ( symbolString.charAt(i) == "1" )
+    } else {
+      bit = ( sa[i] == "true" )
+    }
+    data[iData] = bit ? (data[iData] | (1 << shift)) : (data[iData] & ~(1 << shift));
     if (shift == 0) {
       shift = 7
       iData += 1
@@ -576,6 +681,113 @@ Robot.prototype.setSymbol = function(symbolString) {
   }
 
   this.ledDisplayData.update(0, data);
+}
+
+Robot.prototype.setGlowBoard = function(color, brightness, symbolString) {
+  if (!this.isA(Robot.ofType.GLOWBOARD)) {
+    console.error("setGlowBoard only available for GlowBoards.")
+    return
+  }
+
+  //console.log("set Glowboard! " + symbolString)
+
+  let data = [];
+  const sa = symbolString.split("/")
+  let iData = 2
+  let shift = 7
+
+  //Convert the true/false or bit string to bits. Requires 4 data bytes.
+  for (let i = 0; i < 144; i++) {
+    let bit = ( sa[i] == "true" )
+    data[iData] = bit ? (data[iData] | (1 << shift)) : (data[iData] & ~(1 << shift));
+    if (shift == 0) {
+      shift = 7
+      iData += 1
+    } else {
+      shift -= 1
+    }
+  }
+
+  let fullArray = this.setAllData.values.slice(); //TODO: don't pull data this way - there may be pending changes
+  let setArrayValues = function(set, offset) {
+    console.log("setArrayValues: " + set + ", " + offset + ", " + data)
+    for (let i = 2; i < 20; i++) {
+      if (set) {
+        fullArray[i + offset] = fullArray[i + offset] | data[i]
+      } else {
+        fullArray[i + offset] = fullArray[i + offset] & ~data[i]
+      }
+    }
+  }
+
+  const rgb = Robot.getColorArray(color, brightness)
+
+  for (let i = 0; i < 4; i++) {
+    setArrayValues(rgb[i], i*20)
+  }
+
+  console.log(color)
+  console.log(brightness)
+  console.log(rgb)
+  console.log(fullArray)
+  this.setAllData.update(0, fullArray);
+}
+Robot.getColorArray = function(color, brightness) {
+  let rgb = [false, false, false]
+  switch (color) {
+    case "white":
+      rgb = [true, true, true]
+      break;
+    case "red":
+      rgb = [true, false, false]
+      break;
+    case "yellow":
+      rgb = [true, true, false]
+      break;
+    case "green":
+      rgb = [false, true, false]
+      break;
+    case "cyan":
+      rgb = [false, true, true]
+      break;
+    case "blue":
+      rgb = [false, false, true]
+      break;
+    case "magenta":
+      rgb = [true, false, true]
+      break;
+    case "black":
+      rgb = [false, false, false]
+      break;
+    default:
+      console.error("Unhandled glow board color: " + color);
+  }
+  rgb.unshift(brightness == "dim") //first value will be brightness
+
+  return rgb
+}
+
+Robot.prototype.setGBPoint = function(xPos, yPos, color, brightness) {
+  console.log("setGPPoint " + xPos + ", " + yPos + ", " + color + ", " + brightness)
+  const rgb = Robot.getColorArray(color, brightness)
+
+  xPos -= 1
+  yPos -= 1
+  const bitIndex = xPos + (yPos)*12
+  let byte = 1 << (7 - (bitIndex % 8))
+  let index = Math.floor(bitIndex/8)
+
+  let fullArray = this.setAllData.values.slice(); //TODO: don't pull data this way - there may be pending changes
+  for (let i = 0; i < 4; i++) {
+    let offset = 2 + i*20
+    if (rgb[i]) {
+      fullArray[index + offset] = fullArray[index + offset] | byte
+    } else {
+      fullArray[i + offset] = fullArray[i + offset] & ~byte
+    }
+  }
+
+  this.setAllData.update(0, fullArray);
 }
 
 /**
@@ -648,6 +860,43 @@ Robot.prototype.startCalibration = function() {
  * @param  {Uint8Array} data Incoming data
  */
 Robot.prototype.receiveSensorData = function(data) {
+  if (!this.isInitialized) {
+    //This data is the response to the get firmware version command.
+    this.hasV2Microbit = data[3] == 0x22
+
+    //Start polling sensors
+    var pollStart = Uint8Array.of(0x62, 0x67);
+    if (this.hasV2Microbit) {
+      console.log(this.fancyName + " has a V2 micro:bit")
+      if (FinchBlox) {
+        fbFrontend.CallbackManager.robot.updateHasV2Microbit(this.device.name, 'true')
+      }
+      //trigger V2 specific notifications
+      pollStart = Uint8Array.of(0x62, 0x70);
+    } else {
+      console.log(this.fancyName + " does not have a V2 micro:bit")
+      if (FinchBlox) {
+        fbFrontend.CallbackManager.robot.updateHasV2Microbit(this.device.name, 'false')
+      }
+    }
+    var pollStop = Uint8Array.of(0x62, 0x73);
+    this.write(pollStart);
+
+    //Start the setAll timer
+    this.startSetAll();
+    this.isInitialized = true
+    return
+  }
+
+  this.currentSensorData = data
+  //console.log(data)
+  sendMessage({
+    robot: this.devLetter,
+    robotType: this.type,
+    sensorData: data,
+    hasV2Microbit: this.hasV2Microbit
+  });
+
   const batteryIndex = Robot.propertiesFor[this.type].batteryIndex;
   const batteryFactor = Robot.propertiesFor[this.type].batteryFactor;
   const batteryConstant = Robot.propertiesFor[this.type].batteryConstant;
@@ -655,19 +904,26 @@ Robot.prototype.receiveSensorData = function(data) {
   const yellowThreshold = Robot.propertiesFor[this.type].yellowThreshold;
 
   if (batteryIndex != null) { //null for micro:bit which does not have battery monitoring
-    const rawVoltage = data[batteryIndex]
-    const voltage = batteryFactor * (rawVoltage + batteryConstant)//rawVoltage * batteryFactor
     var newLevel = Robot.batteryLevel.UNKNOWN
-    if (voltage > greenThreshold) {
-      newLevel = Robot.batteryLevel.HIGH
-    } else if (voltage > yellowThreshold) {
-      newLevel = Robot.batteryLevel.MEDIUM
+    if (this.hasV2Microbit && this.isA(Robot.ofType.FINCH)) {
+      newLevel = data[batteryIndex] & 0x3
+      //Battery level 3 represents a complete charge and is not currently handled.
+      if (newLevel == 3) { newLevel = Robot.batteryLevel.HIGH }
     } else {
-      newLevel = Robot.batteryLevel.LOW
+      const rawVoltage = data[batteryIndex]
+      const voltage = batteryFactor * (rawVoltage + batteryConstant)//rawVoltage * batteryFactor
+      if (voltage > greenThreshold) {
+        newLevel = Robot.batteryLevel.HIGH
+      } else if (voltage > yellowThreshold) {
+        newLevel = Robot.batteryLevel.MEDIUM
+      } else {
+        newLevel = Robot.batteryLevel.LOW
+      }
     }
+
     if (newLevel != this.batteryLevel) {
       this.batteryLevel = newLevel
-      updateBatteryStatus(this)
+      updateBatteryStatus()
     }
   }
 

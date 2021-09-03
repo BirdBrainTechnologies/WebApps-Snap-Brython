@@ -18,19 +18,52 @@ function onMessage(e) {
     messagePort = e.ports[0]
     // Use the transfered port to post a message back to the main frame
     messagePort.postMessage('Port received');
+  } else if (e.data.message == "SPEAK") {
+    console.log("tts " + e.data.val)
+    textToSpeech(e.data.val)
+
+  } else if (useHID) {
+    //This is a legacy robot command
+    parseLegacyMessage(e.data)
   } else {
-    //This message is a robot command
+    //This message is a micro:bit robot command
     parseMessage(e.data);
   }
 }
 
 /**
- * parseMessage - Function for parsing robot commands
+ * parseLegacyMessage - Parse commands for the original finch and hummingbird
+ * and send to connected robot.
+ *
+ * @param  {Object} request command object
+ */
+function parseLegacyMessage(request) {
+  console.log(request)
+  if (hidRobot === undefined || hidRobot == null) { return }
+
+  var bytes = new Uint8Array(8); //array of bytes to send to Hummingbird
+  var counter = 0;
+  for (var prop in request) { //read through request, adding each property to byte array
+      if (request.hasOwnProperty(prop)) {
+          bytes[counter] = request[prop];
+          counter++;
+      }
+  }
+  for (var i = counter; i < bytes.length; ++i) {
+      bytes[i] = 0;
+  }
+  console.log("Sending " + bytes)
+  hidRobot.sendBytes(bytes)
+}
+
+/**
+ * parseMessage - Function for parsing commands for micro:bit based robots.
  *
  * @param  {Object} message Object containing command information
  */
 function parseMessage(message) {
-  const robot = getRobotByLetter(message.robot);
+  let robot = getRobotByLetter(message.robot);
+  if (FinchBlox) { robot = finchBloxRobot }
   if (robot == null) {
     console.error("Unable to find robot " + message.robot);
     return;
@@ -85,6 +118,9 @@ function parseMessage(message) {
         }
       }
       break;
+    case "motors": //FinchBlox specific
+      robot.setMotors(message.speedL * 100/36, message.ticksL, message.speedR * 100/36, message.ticksR);
+      break;
     case "stopFinch":
       robot.setMotors(0, 0, 0, 0);
 
@@ -105,8 +141,16 @@ function parseMessage(message) {
       robot.setLED(message.port, message.intensity);
 
       break;
+    case "glowboard":
+      robot.setGlowBoard(message.color, message.brightness, message.symbolString)
+
+      break;
+    case "setPoint":
+      robot.setGBPoint(message.xPos, message.yPos, message.color, message.brightness)
+
+      break;
     default:
-      console.log("Command not implemented: " + message.cmd);
+      console.error("Command not implemented: " + message.cmd);
   }
 }
 
@@ -125,4 +169,9 @@ function sendMessage(message) {
   //console.log("Sending: ");
   //console.log(message);
   messagePort.postMessage(message);
+}
+
+function textToSpeech(text) {
+  var msg = new SpeechSynthesisUtterance(text);
+  window.speechSynthesis.speak(msg);
 }

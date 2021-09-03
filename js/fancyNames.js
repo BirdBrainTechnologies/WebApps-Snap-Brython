@@ -687,7 +687,7 @@ const blacklistArray = ['ANL',
  * @return {string}         Fancy name derived from advertised name.
  */
 function getDeviceFancyName(devName) {
-  if ((devName.startsWith("MB")) || (devName.startsWith("BB")) || (devName.startsWith("FN"))) {
+  if ((devName.startsWith("MB")) || (devName.startsWith("BB")) || (devName.startsWith("FN")) || (devName.startsWith("GB"))) {
     //console.log("Code: " + devName.substr(devName.length - 5));
 
     var numberInDec = parseInt(devName.substr(devName.length - 5), 16);
@@ -712,7 +712,7 @@ function getDeviceFancyName(devName) {
     var initials = names[first][0].charAt(0) + names[second][1].charAt(0) + names[third][2].charAt(0);
 
     while (blacklistArray.includes(initials)) {
-      console.log("Found bad word: {} in {}" + initials + " " + fancyName);
+      //console.log("Found bad word: {} in {}" + initials + " " + fancyName);
       // add 1 and mod the result by 512 to the index of the second word:
       second++;
       second %= 512;
@@ -721,7 +721,9 @@ function getDeviceFancyName(devName) {
     }
 
     fancyName += " (" + initials + ")";
-    console.log("Fancy Name assigned to device: " + fancyName);
+    //console.log("Fancy Name assigned to device: " + fancyName);
     return fancyName;
+  } else {
+    return "Unknown device"
   }
 }
