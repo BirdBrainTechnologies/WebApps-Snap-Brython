@@ -41,10 +41,12 @@ $('#btn-collapse-section').on('click', function(e) { expandIDE(); })
  * Called right after the service worker registration is started.
  */
 function onLoad() {
-  if (useHID && !("hid" in navigator)) {
-    let title = " " + thisLocaleTable["Incompatible_Browser"] + " "
-    let message = thisLocaleTable["Use_Chrome89"]
-    showErrorModal(title, message, false);
+  if (useHID) {
+    if (!("hid" in navigator)) {
+      let title = " " + thisLocaleTable["Incompatible_Browser"] + " "
+      let message = thisLocaleTable["Use_Chrome89"]
+      showErrorModal(title, message, false);
+    }
   } else if (!("bluetooth" in navigator)) {
     let title = " " + thisLocaleTable["Incompatible_Browser"] + " "
     let message = thisLocaleTable["Use_Chrome"]
