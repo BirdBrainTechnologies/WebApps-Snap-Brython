@@ -16,11 +16,16 @@ window.birdbrain.robotType = {
   FINCH: 1,
   HUMMINGBIRDBIT: 2,
   MICROBIT: 3,
+  GLOWBOARD: 4,
   //connected robots default to type MICROBIT
   A: 3,
   B: 3,
   C: 3
 };
+
+//For the old style robots that connect over hid.
+window.bbtLegacy = {};
+window.bbtLegacy.sensorData = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
 
 console.log("setting up message channel")
 window.birdbrain.messageChannel = new MessageChannel();
@@ -32,6 +37,10 @@ window.birdbrain.messageChannel.port1.onmessage = function (e) {
       window.birdbrain.sensorData[robot] = e.data.sensorData;
       window.birdbrain.robotType[robot] = e.data.robotType;
       window.birdbrain.microbitIsV2[robot] = e.data.hasV2Microbit;
+    }
+
+    if (e.data.hidSensorData != null ) {
+      window.bbtLegacy.sensorData = e.data.hidSensorData;
     }
 }
 window.parent.postMessage("hello from snap", "*", [window.birdbrain.messageChannel.port2]);
@@ -384,6 +393,9 @@ SnapExtensions.primitives.set(
         return Math.round(value * soundScaling);
       case "Other (V)":
         return Math.round(value * voltageScaling * 100) / 100;
+      default:
+        console.log("Unknown sensor: " + sensor);
+        return 0;
     }
   }
 );
@@ -617,6 +629,9 @@ SnapExtensions.primitives.set(
       case "Level":
         return (acceleration < -threshold);
     }
+
+    console.log("Unknown dimension " + dim);
+    return false;
   }
 );
 
@@ -661,6 +676,9 @@ SnapExtensions.primitives.set(
       case "Screen Up":
         return (acceleration < -threshold);
     }
+
+    console.log("Unknown dimension " + dim);
+    return false;
   }
 );
 
@@ -693,5 +711,319 @@ SnapExtensions.primitives.set(
     } else {
       return "micro:bit V2 required"
     }
+  }
+);
+
+//// GlowBoard Blocks ////
+
+SnapExtensions.primitives.set(
+  'bbt_gbbutton(robot, button)',
+  function (robot, button) {
+    var buttonState = window.birdbrain.sensorData[robot][5] & 0xF0; //Button Byte position = 7, clear LS Bits as it is for shake and calibrate
+
+    switch (button) {
+      case 'right':
+        return (buttonState == 0x00 || buttonState == 0x20)
+      case 'left':
+        return (buttonState == 0x00 || buttonState == 0x10)
+      default:
+        console.log("unknown button " + button);
+        return false;
+    }
+  }
+);
+
+SnapExtensions.primitives.set(
+  'bbt_gbdial(robot, dial)',
+  function (robot, sensor) {
+    let index = 1
+    if (sensor == "Right") { index = 3 }
+    const msb = window.birdbrain.sensorData[robot][index];
+    const lsb = window.birdbrain.sensorData[robot][index + 1];
+    const value = msb << 8 | lsb;
+    return value;
+  }
+);
+
+SnapExtensions.primitives.set(
+  'bbt_gbdisplay(robot, color, brightness, symbol)',
+  function (robot, color, brightness, symbolString) {
+    var thisCommand = {
+      robot: devId,
+      cmd: "glowboard",
+      color: color,
+      brightness: brightness,
+      symbolString: symbolString
+    }
+
+   window.birdbrain.sendCommand(thisCommand);
+  }
+);
+
+SnapExtensions.primitives.set(
+  'bbt_gbsetpoint(robot, X, Y, color, brightness)',
+  function (robot, xPos, yPos, color, brightness) {
+    var thisCommand = {
+      robot: robot,
+      cmd: "setPoint",
+      xPos: Math.round(Math.max(Math.min(xPos, 12), 1)),
+      yPos: Math.round(Math.max(Math.min(yPos, 12), 1)),
+      color: color,
+      brightness: brightness
+    }
+
+    window.birdbrain.sendCommand(thisCommand);
+  }
+);
+
+//// Blocks for old style robots ////
+
+SnapExtensions.primitives.set(
+  'bbt_legacyled(port, intensity)',
+  function (portnum, intensitynum) {
+    var realPort = portnum-1;
+    var realIntensity = Math.floor(intensitynum*2.55);
+
+    var report = {
+      message:"L".charCodeAt(0),
+      port: realPort.toString().charCodeAt(0),
+      intensity: realIntensity
+    };
+
+    window.birdbrain.sendCommand( report );
+  }
+);
+
+SnapExtensions.primitives.set(
+  'bbt_legacytriled(port, red, green, blue)',
+  function (portnum, rednum, greennum, bluenum) {
+    var realPort = portnum-1;
+    var realIntensities = [rednum, greennum, bluenum].map(function(intensity) {
+      return Math.floor(Math.max(Math.min(intensity*2.55, 255), 0));
+    });
+
+    var report = {
+      message:"O".charCodeAt(0),
+      port: realPort.toString().charCodeAt(0),
+      red: realIntensities[0],
+      green: realIntensities[1],
+      blue: realIntensities[2]
+    };
+
+    window.birdbrain.sendCommand( report );
+  }
+);
+
+SnapExtensions.primitives.set(
+  'bbt_legacyservo(port, position)',
+  function (portnum, ang) {
+    var realPort = portnum-1;
+    var realAngle = Math.floor(ang*1.25);
+    realAngle = Math.max(Math.min(realAngle,225.0),0.0);
+
+    var report = {
+      message: "S".charCodeAt(0),
+      port: realPort.toString().charCodeAt(0),
+      angle: realAngle
+    };
+
+    window.birdbrain.sendCommand( report );
+  }
+);
+
+SnapExtensions.primitives.set(
+  'bbt_legacymotor(port, speed)',
+  function (portnum, velocity) {
+    var realPort = portnum-1;
+    var realVelocity = Math.floor(velocity*2.55);
+    realVelocity = Math.max(Math.min(realVelocity,255), -255);
+
+    var report = {
+        message: "M".charCodeAt(0),
+        port: realPort.toString().charCodeAt(0),
+        direction: (realVelocity < 0 ? 1 : 0).toString().charCodeAt(0),
+        velocity: Math.abs(realVelocity)
+    };
+
+    window.birdbrain.sendCommand( report );
+  }
+);
+
+SnapExtensions.primitives.set(
+  'bbt_legacyvibration(port, intensity)',
+  function (portnum, intensitynum) {
+    var realPort = portnum-1;
+    var realIntensity = Math.floor(intensitynum*2.55);
+    realIntensity = Math.max(Math.min(realIntensity,255.0),0.0);
+
+    var report = {
+      message: "V".charCodeAt(0),
+      port: realPort.toString().charCodeAt(0),
+      intensity: realIntensity
+    };
+
+    window.birdbrain.sendCommand( report );
+  }
+);
+
+SnapExtensions.primitives.set(
+  'bbt_legacysaythis(phrase)',
+  function (phrase) {
+    var report = { message: "SPEAK", val: phrase};
+    window.birdbrain.sendCommand( report );
+  }
+);
+
+SnapExtensions.primitives.set(
+  'bbt_legacyhbsensor(sensor, port)',
+  function (sensor, port) {
+    var realport = port - 1;
+    var sensorvalue = window.bbtLegacy.sensorData[realport]
+
+    switch(sensor) {
+      case "Light":
+        return parseInt(sensorvalue / 2.55);
+      case "Temperature": //Celsius
+        return Math.floor(((sensorvalue-127)/2.4+25)*100/100);
+      case "Distance": //cm
+        var reading = sensorvalue*4;
+        if (reading < 130) {
+          sensorvalue = 100;
+        } else { //formula based on mathematical regression
+          reading = reading - 120;
+          var distance;
+          if (reading > 680) {
+            distance = 5.0;
+          } else {
+            var sensor_val_square = reading*reading;
+            distance = sensor_val_square*sensor_val_square*reading*-0.000000000004789
+              + sensor_val_square*sensor_val_square*0.000000010057143
+              - sensor_val_square*reading*0.000008279033021
+              + sensor_val_square*0.003416264518201
+              - reading*0.756893112198934
+              + 90.707167605683000;
+           }
+          sensorvalue = parseInt(distance);
+        }
+        return sensorvalue;
+      case "Dial":
+        return parseInt(sensorvalue / 2.55);
+      case "Sound":
+        if (sensorvalue > 14) {
+          return (sensorvalue - 15) * 3/2
+        } else {
+          return 0
+        }
+      case "Raw":
+        return parseInt(sensorvalue / 2.55);
+      default:
+        console.log("Unknown sensor: " + sensor);
+        return 0;
+    }
+  }
+);
+
+SnapExtensions.primitives.set(
+  'bbt_legacyfinchmove(left, right)',
+  function (left, right) {
+    function constrain(n) {
+      return Math.max(Math.min(n, 255), -255);
+    }
+    var speeds = [constrain(Math.round(left * 2.55)), constrain(Math.round(right * 2.55))];
+
+    var report = {
+      message: "M".charCodeAt(0),
+      leftDirection: speeds[0] < 0 ? 1 : 0,
+      leftSpeed: Math.abs(speeds[0]),
+      rightDirection: speeds[1] < 0 ? 1 : 0,
+      rightSpeed: Math.abs(speeds[1]),
+    };
+
+    window.birdbrain.sendCommand( report );
+  }
+);
+
+SnapExtensions.primitives.set(
+  'bbt_legacyfinchled(red, green, blue)',
+  function (red, green, blue) {
+    // constrain n to the range [0..255]
+    function constrain(n) {
+      return Math.max(Math.min(n, 255), 0);
+    }
+
+    var values = [constrain(Math.round(red * 2.55)), constrain(Math.round(green * 2.55)), constrain(Math.round(blue * 2.55))];
+
+    var report = {
+      message: "O".charCodeAt(0),
+      red: values[0],
+      green: values[1],
+      blue: values[2]
+    };
+
+    window.birdbrain.sendCommand( report );
+  }
+);
+
+SnapExtensions.primitives.set(
+  'bbt_legacyfinchbuzzer(frequency, duration)',
+  function (freq, time) {
+    //constrain n to the range [0..65535]
+    function constrain(n) {
+      return Math.max(Math.min(n, 0xFFFF), 0);
+    }
+    var value = {
+      freq: constrain(Math.round(freq)),
+      time: constrain(Math.round(time))
+    };
+
+    var report = {
+      message: "B".charCodeAt(0),
+      timeHigh: value.time >> 8, // Since the report must be in bytes
+      timeLow: value.time & 0xFF, // and these values are bigger than a byte
+      freqHigh: value.freq >> 8, // they are split into two bytes
+      freqLow: value.freq & 0xFF
+    };
+
+    window.birdbrain.sendCommand( report );
+  }
+);
+
+SnapExtensions.primitives.set(
+  'bbt_legacyfinchsensor(port)',
+  function (port) {
+    //Ports: Left Light = 0; Right Light = 1;
+    // Acceleration (X, Y, Z) = (2, 3, 4);
+    // Left Obstacle = 5; Right Obstacle = 6;
+    // Temperature C = 7;
+    return window.bbtLegacy.sensorData[port];
+  }
+);
+
+SnapExtensions.primitives.set(
+  'bbt_legacyfinchorientation()',
+  function () {
+    var acceleration = Array(3);
+    acceleration[0] = window.bbtLegacy.sensorData[2]
+    acceleration[1] = window.bbtLegacy.sensorData[3]
+    acceleration[2] = window.bbtLegacy.sensorData[4]
+
+    var orientation;
+
+    if(acceleration[0] > -0.5 && acceleration[0] < 0.5 && acceleration[1] < 0.5 && acceleration[1] > -0.5 && acceleration[2] > 0.65 && acceleration[2] < 1.5)
+      orientation = "level";
+    else if(acceleration[0] > -0.5 && acceleration[0] < 0.5 && acceleration[1] < 0.5 && acceleration[1] > -0.5 && acceleration[2] > -1.5 && acceleration[2] < -0.65)
+      orientation = "upside down";
+    else if(acceleration[0] < 1.5 && acceleration[0] > 0.8 && acceleration[1] > -0.3 && acceleration[1] < 0.3 && acceleration[2] > -0.3 && acceleration[2] < 0.3)
+      orientation = "beak down";
+    else if(acceleration[0] < -0.8 && acceleration[0] > -1.5 && acceleration[1] > -0.3 && acceleration[1] < 0.3 && acceleration[2] > -0.3 && acceleration[2] < 0.3)
+      orientation = "beak up";
+    else if(acceleration[0] > -0.5 && acceleration[0] < 0.5 && acceleration[1] > 0.7 && acceleration[1] < 1.5 && acceleration[2] > -0.5 && acceleration[2] < 0.5)
+      orientation = "left wing down";
+    else if(acceleration[0] > -0.5 && acceleration[0] < 0.5 && acceleration[1] > -1.5 && acceleration[1] < -0.7 && acceleration[2] > -0.5 && acceleration[2] < 0.5)
+      orientation = "right wing down";
+    else
+      orientation = "in between";
+
+    return orientation
   }
 );
