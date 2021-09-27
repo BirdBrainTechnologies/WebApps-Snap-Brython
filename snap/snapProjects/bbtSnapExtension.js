@@ -749,7 +749,7 @@ SnapExtensions.primitives.set(
   'bbt_gbdisplay(robot, color, brightness, symbol)',
   function (robot, color, brightness, symbolString) {
     var thisCommand = {
-      robot: devId,
+      robot: robot,
       cmd: "glowboard",
       color: color,
       brightness: brightness,
