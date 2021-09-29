@@ -951,34 +951,79 @@ class Finch(Microbit):
 class MachineLearningModel:
     """Machine Learning"""
 
-    def __init__(self, url):
-        self.url = url
-        self.modelLoaded = False
+    @staticmethod
+    async def load(url, type):
+        import time
+        startTime = time.time()
+        timeout = False
+        #print(url + " " + type)
         window.birdbrain.ml.loadLibraries()
 
+        while not window.birdbrain.ml.librariesLoaded and not timeout:
+            print("Waiting for libraries to load...")
+            await aio.sleep(1)
+            if time.time() > (startTime + 10):
+                timeout = True
 
-    async def startPredictions(self):
-        if not self.modelLoaded:
-            while not window.birdbrain.ml.librariesLoaded:
-                print("waiting on libraries...")
+        if not timeout and window.birdbrain.ml.loadModel(url, type):
+            while not window.birdbrain.ml.modelLoaded and not timeout:
+                print("Waiting for model to load...")
                 await aio.sleep(0.1)
-                #TODO: probably shouldn't wait forever...
+                if time.time() > (startTime + 10):
+                    timeout = True
+        elif not timeout:
+            print("Predictions are not supported for model type '" + type + "'.")
+            return
 
-            window.birdbrain.ml.loadVideoModel(self.url)
-            while not window.birdbrain.ml.videoModelLoaded or not window.birdbrain.ml.webcamRunning:
-                print("waiting on video model...")
-                await aio.sleep(0.1)
-                #TODO: probably shouldn't wait forever...
+        if not timeout and not window.birdbrain.ml.startPredictions():
+            print("Predictions cannot be started for model type '" + type + "'.")
+            return
 
-            self.modelLoaded = True
+#        if type == "audio":
+#            window.birdbrain.ml.loadAudioModel(url)
+#            while not window.birdbrain.ml.audioModelLoaded:
+#                print("Waiting for audio model to load...")
+#                await aio.sleep(0.1)
+#                #TODO: probably shouldn't wait forever...
+#            window.birdbrain.ml.startAudioPredictions()
+#        elif type == "image":
+#            window.birdbrain.ml.loadVideoModel(url)
+#            while not window.birdbrain.ml.videoModelLoaded or not window.birdbrain.ml.webcamRunning:
+#                print("waiting on video model...")
+#                await aio.sleep(0.1)
+#                #TODO: probably shouldn't wait forever...
+#            window.birdbrain.ml.startVideoPredictions()
+#        elif type == "pose":
+#            window.birdbrain.ml.loadPoseModel(url)
+#            while not window.birdbrain.ml.poseModelLoaded or not window.birdbrain.ml.webcamRunning:
+#                print("waiting on pose model...")
+#                await aio.sleep(0.1)
+#                #TODO: probably shouldn't wait forever...
+#            window.birdbrain.ml.startPosePredictions()
+#        else:
+#            print("Predictions are not supported for model type '" + self.type + "'.")
+#            return
 
-        window.birdbrain.ml.startVideoPredictions()
-        while not window.birdbrain.ml.predictionsRunning:
-            print("waiting for first prediction...")
-            await aio.sleep(0.1)
+        while not window.birdbrain.ml.predictionsRunning and not timeout:
+            print("Waiting for first prediction...")
+            await aio.sleep(1)
+            if time.time() > (startTime + 10):
+                timeout = True
+
+        if timeout:
+            print("Model loading timeout: " + url + " could not be loaded.")
 
 
-    def printCurrentPrediction(self):
-        print("prediction: ")
-        print(window.prediction)
-        print("")
+    @staticmethod
+    def getPrediction():
+        if not window.birdbrain.ml.modelLoaded or not window.birdbrain.ml.predictionsRunning:
+            print("Error: No model loaded. Please use MachineLearningModel.load(url, type) to load a model.")
+            return
+        #print("prediction: ")
+        #print(window.prediction)
+        dict = {}
+        for p in window.prediction: #TODO: add default prediction just in case
+            dict[p[0]] = p[1]
+        #print(dict)
+        #print("")
+        return dict
