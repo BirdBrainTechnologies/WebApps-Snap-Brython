@@ -962,14 +962,14 @@ class MachineLearningModel:
         while not window.birdbrain.ml.librariesLoaded and not timeout:
             print("Waiting for libraries to load...")
             await aio.sleep(1)
-            if time.time() > (startTime + 10):
+            if time.time() > (startTime + 30):
                 timeout = True
 
         if not timeout and window.birdbrain.ml.loadModel(url, type):
             while not window.birdbrain.ml.modelLoaded and not timeout:
                 print("Waiting for model to load...")
-                await aio.sleep(0.1)
-                if time.time() > (startTime + 10):
+                await aio.sleep(1)
+                if time.time() > (startTime + 30):
                     timeout = True
         elif not timeout:
             print("Predictions are not supported for model type '" + type + "'.")
@@ -979,35 +979,10 @@ class MachineLearningModel:
             print("Predictions cannot be started for model type '" + type + "'.")
             return
 
-#        if type == "audio":
-#            window.birdbrain.ml.loadAudioModel(url)
-#            while not window.birdbrain.ml.audioModelLoaded:
-#                print("Waiting for audio model to load...")
-#                await aio.sleep(0.1)
-#                #TODO: probably shouldn't wait forever...
-#            window.birdbrain.ml.startAudioPredictions()
-#        elif type == "image":
-#            window.birdbrain.ml.loadVideoModel(url)
-#            while not window.birdbrain.ml.videoModelLoaded or not window.birdbrain.ml.webcamRunning:
-#                print("waiting on video model...")
-#                await aio.sleep(0.1)
-#                #TODO: probably shouldn't wait forever...
-#            window.birdbrain.ml.startVideoPredictions()
-#        elif type == "pose":
-#            window.birdbrain.ml.loadPoseModel(url)
-#            while not window.birdbrain.ml.poseModelLoaded or not window.birdbrain.ml.webcamRunning:
-#                print("waiting on pose model...")
-#                await aio.sleep(0.1)
-#                #TODO: probably shouldn't wait forever...
-#            window.birdbrain.ml.startPosePredictions()
-#        else:
-#            print("Predictions are not supported for model type '" + self.type + "'.")
-#            return
-
         while not window.birdbrain.ml.predictionsRunning and not timeout:
             print("Waiting for first prediction...")
             await aio.sleep(1)
-            if time.time() > (startTime + 10):
+            if time.time() > (startTime + 30):
                 timeout = True
 
         if timeout:
@@ -1019,11 +994,13 @@ class MachineLearningModel:
         if not window.birdbrain.ml.modelLoaded or not window.birdbrain.ml.predictionsRunning:
             print("Error: No model loaded. Please use MachineLearningModel.load(url, type) to load a model.")
             return
-        #print("prediction: ")
-        #print(window.prediction)
+
         dict = {}
-        for p in window.prediction: #TODO: add default prediction just in case
-            dict[p[0]] = p[1]
-        #print(dict)
-        #print("")
+        for p in window.birdbrain.ml.prediction:
+            dict[p.className] = p.probability
+            
         return dict
+
+    @staticmethod
+    def unload():
+        window.birdbrain.ml.stopPredictions()

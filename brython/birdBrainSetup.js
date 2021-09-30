@@ -315,6 +315,9 @@ window.birdbrain.wrapPython = function(src) {
   replaced = replaced.replace(/([a-zA-Z_][a-zA-Z_0-9]*)\.(setMove|setTurn|setMotors|playNote|setTail|setBeak|setDisplay|print|setPoint|stopAll|setLED|setTriLED|setPositionServo|setRotationServo|stop|resetEncoders|getAcceleration|getCompass|getMagnetometer|getButton|isShaking|getOrientation|getLight|getSound|getDistance|getDial|getVoltage|getLine|getEncoder|getTemperature)/g, "await $1.$2")
   //Machine Learning
   replaced = replaced.replace(/MachineLearningModel\.load/g, "await MachineLearningModel.load")
+  if (replaced.includes("MachineLearningModel")) {
+    replaced = replaced + "\nMachineLearningModel.unload()"
+  }
   //Replace sleep with async sleep
   replaced = replaced.replace(/(time\.)?sleep/g, "await aio.sleep")
   //Replace user function definitions with async definitions
@@ -399,10 +402,12 @@ window.birdbrain.savePythonProject = function(fileName, contents) {
 }
 
 //*** Machine Learning ***
+// See also: https://github.com/googlecreativelab/teachablemachine-community/
 window.birdbrain.ml = {}
 window.birdbrain.ml.librariesLoaded = false;
 window.birdbrain.ml.librariesLoading = false;
 window.birdbrain.ml.modelLoaded = false;
+window.birdbrain.ml.prediction = {};
 window.birdbrain.ml.predictionsRunning = false;
 window.birdbrain.ml.loadLibrary = function(url, onloadFn) {
   console.log("loading " + url);
@@ -440,6 +445,8 @@ window.birdbrain.ml.loadLibraries = function() {
 window.birdbrain.ml.loadModel = function(URL, type) {
   window.birdbrain.ml.modelLoaded = false;
   window.birdbrain.ml.modelType = type
+  window.birdbrain.ml.modelURL = URL + "model.json"; // model topology
+  window.birdbrain.ml.metadataURL = URL + "metadata.json"; // model metadata
   switch (type) {
     case "audio":
       window.birdbrain.ml.loadAudioModel(URL)
@@ -457,79 +464,75 @@ window.birdbrain.ml.loadModel = function(URL, type) {
 }
 window.birdbrain.ml.loadVideoModel = function(URL) {
   console.log("loading video model...")
-  window.birdbrain.ml.webcamRunning = false;
-  //Krissie's model: https://teachablemachine.withgoogle.com/models/b2KShpN19/
+  const ml = window.birdbrain.ml
+  ml.webcamRunning = false;
 
-  const modelURL = URL + "model.json"; // model topology
-  const metadataURL = URL + "metadata.json"; // model metadata
-
-  const recognizer = tmImage.load(modelURL, metadataURL).then((loaded_model) => {
-    window.imageModel = loaded_model;
-    window.birdbrain.ml.modelLoaded = true;
+  tmImage.load(ml.modelURL, ml.metadataURL).then((loaded_model) => {
+    ml.imageModel = loaded_model;
+    ml.modelLoaded = true;
     console.log("video model loaded")
   })
 
-  // Setup a webcam
-  const flip = true; // whether to flip the webcam
-  window.birdbrain.ml.webcam = new tmImage.Webcam(200, 200, flip); // width, height, flip
-  window.birdbrain.ml.webcam.setup().then(() => {
+  ml.setupWebcam()
+}
+window.birdbrain.ml.setupWebcam = function(URL) {
+  const ml = window.birdbrain.ml
+  // Setup a webcam (can also use tmPose.Webcam)
+  ml.webcam = new tmImage.Webcam(300, 300, true); // width, height, should flip the webcam
+  ml.webcam.setup().then(() => {
     console.log("webcam setup complete")
-    window.birdbrain.ml.webcam.play().then(() => {
+    ml.webcam.play().then(() => {
       console.log("webcam is running")
-      window.birdbrain.ml.webcamRunning = true;
+      ml.webcamRunning = true;
+
+      //Append elements to the DOM to see what the webcam is seeing
+      const section = document.createElement('section');
+      section.setAttribute("id", "webcamModal")
+      section.setAttribute("style", "display: block; position: fixed; top: 0; bottom: 0; left: 0; right: 0; z-index: 100; ")
+      //Make a container to hold everything
+      const container = document.createElement('div');
+      container.setAttribute("class", "container")
+      //container.setAttribute("style", "margin: 0 auto; height: auto; width: 95%; top: 50%; transform: translateY(-50%); background-color: rgba(0,0,0,0); border-radius: 10px; overflow: hidden; padding:0; position: relative; max-width: 800px;");
+      container.setAttribute("style", "margin: 0 auto; height: auto; width: auto; top: 50%; transform: translateY(-50%); background-color: rgba(0,0,0,0); padding:0; position: relative; max-width: 800px;");
+
+      container.appendChild(ml.webcam.canvas);
+      section.appendChild(container);
+      document.body.appendChild(section);
     })
   })
-
-  //TODO: append elements to the DOM somewhere to see what the webcam is seeing?
-  //document.body.appendChild(window.birdbrain.ml.webcam.canvas);
-
-  console.log("video model loaded")
 }
 window.birdbrain.ml.loadAudioModel = function(URL) {
-  const checkpointURL = URL + "model.json"; // model topology
-  const metadataURL = URL + "metadata.json"; // model metadata
+  const ml = window.birdbrain.ml
 
-  const recognizer = speechCommands.create("BROWSER_FFT", undefined, checkpointURL, metadataURL);
+  const recognizer = speechCommands.create(
+      "BROWSER_FFT", // fourier transform type, not useful to change
+      undefined, // speech commands vocabulary feature, not useful for your models
+      ml.modelURL,
+      ml.metadataURL);
 
   // check that model and metadata are loaded via HTTPS requests.
-  while (!recognizer.ensureModelLoaded()){}
-
-  // Set a global variable for the recognizer
-  window.recognizer = recognizer
-  window.birdbrain.ml.modelLoaded = true;
+  recognizer.ensureModelLoaded().then(() => {
+    // Set a global variable for the recognizer
+    ml.audioModel = recognizer
+    ml.modelLoaded = true;
+  })
 }
 window.birdbrain.ml.loadPoseModel = function(URL) {
-  window.birdbrain.ml.webcamRunning = false;
+  const ml = window.birdbrain.ml
+  ml.webcamRunning = false;
 
-  const when_loaded = (loaded_model) => {
-    console.log("loading model")
-    window.poseModel = loaded_model;
-    window.birdbrain.ml.modelLoaded = true;
-  };
+  tmPose.load(ml.modelURL, ml.metadataURL).then((loaded_model) => {
+    ml.poseModel = loaded_model;
+    ml.modelLoaded = true;
+    console.log("pose model loaded")
+  });
 
-  const modelURL = URL + "model.json"; // model topology
-  const metadataURL = URL + "metadata.json"; // model metadata
-
-  const recognizer = tmPose.load(modelURL, metadataURL).then(when_loaded);
-
-  // Setup a webcam
-  const flip = true; // whether to flip the webcam
-  window.birdbrain.ml.webcam = new tmPose.Webcam(200, 200, flip); // width, height, flip
-  window.birdbrain.ml.webcam.setup().then(() => {
-    console.log("webcam setup complete")
-    window.birdbrain.ml.webcam.play().then(() => {
-      console.log("webcam is running")
-      window.birdbrain.ml.webcamRunning = true;
-    })
-  })
-
-  //TODO: append elements to the DOM somewhere to see what the webcam is seeing?
-  //document.body.appendChild(window.birdbrain.ml.webcam.canvas);
-
-  console.log("pose model loaded")
+  ml.setupWebcam()
 }
 
 window.birdbrain.ml.startPredictions = function() {
+  window.birdbrain.ml.predictionsRunning = false;
+  console.log("starting predictions...")
   switch (window.birdbrain.ml.modelType) {
     case "audio":
       window.birdbrain.ml.startAudioPredictions()
@@ -546,122 +549,102 @@ window.birdbrain.ml.startPredictions = function() {
   return true;
 }
 window.birdbrain.ml.startVideoPredictions = function() {
-  console.log("starting predictions...")
-  window.birdbrain.ml.predictionsRunning = false;
+  const ml = window.birdbrain.ml
 
-  async function loop() {
-      window.birdbrain.ml.webcam.update(); // update the webcam frame
-      await predict();
-      window.requestAnimationFrame(loop);
-  }
+  function loop() {
+    if (ml.webcam == null) { return; }
+    ml.webcam.update(); // update the webcam frame
 
-  // run the webcam image through the image model
-  async function predict() {
-    let class_names = window.imageModel.getClassLabels();
+    // run the webcam image through the image model
     // predict can take in an image, video or canvas html element
-    const prediction = await window.imageModel.predict(window.birdbrain.ml.webcam.canvas);
-    let names_and_scores = prediction.map((score, index) => [class_names[index], score.probability]);
-    var predictionList = []
+    ml.imageModel.predict(ml.webcam.canvas).then((prediction) => {
+      ml.prediction = prediction;
+      ml.predictionsRunning = true;
+      console.log("predictions running")
+    });
 
-    for (var i = 0; i < names_and_scores.length; i++) {
-      if (names_and_scores[i].length > 1) {
-         predictionList.push([class_names[i],names_and_scores[i][1]])
-         //console.log([class_names[i], predictionList[i]])
-      }
-    }
-
-    window.prediction = predictionList
-    window.birdbrain.ml.predictionsRunning = true;
+    window.requestAnimationFrame(loop);
   }
 
-  if (window.birdbrain.ml.webcam == null || window.imageModel == null) {
+  if (ml.webcam == null || ml.imageModel == null) {
     console.error("Webcam and video model must be set up before beginning video predictions")
     return;
   }
 
   window.requestAnimationFrame(loop);
-  console.log("predictions running")
 }
 window.birdbrain.ml.startAudioPredictions = function() {
-  console.log("starting predictions...")
-  window.birdbrain.ml.predictionsRunning = false;
-
-  const report_predictions = (prediction) => {
-    let class_names = recognizer.wordLabels()
-    let names_and_scores = Array.prototype.slice.call(prediction.scores).map((score, index) => [class_names[index], score]);
-
-    //console.log(class_names)
-
-    var predictionList = []
-
-    // This loop is for outer array
-    for (var i = 0; i < names_and_scores.length; i++) {
-      if (names_and_scores[i].length > 1) {
-         predictionList.push([class_names[i],names_and_scores[i][1]])
-         //console.log([class_names[i], predictionList[i]])
-      }
-    }
-
-    window.prediction = predictionList
-    //console.log(predictionList)
-    window.birdbrain.ml.predictionsRunning = true;
- };
+  const ml = window.birdbrain.ml
 
   // listen() takes two arguments:
   // 1. A callback function that is invoked anytime a word is recognized.
   // 2. A configuration object with adjustable fields
-  window.recognizer.listen(report_predictions, {invokeCallbackOnNoiseAndUnknown: true});
+  ml.audioModel.listen(prediction => {
+    console.log(prediction)
+    let class_names = ml.audioModel.wordLabels()
 
+    let predictionList = []
+    for (let i = 0; i < class_names.length; i++) {
+      predictionList[i] = {}
+      predictionList[i].className = class_names[i]
+      predictionList[i].probability = prediction.scores[i]
+    }
+
+    ml.prediction = predictionList
+    ml.predictionsRunning = true;
+ }, {
+   invokeCallbackOnNoiseAndUnknown: true
+ });
 }
 window.birdbrain.ml.startPosePredictions = function() {
-  console.log("starting predictions...")
-  window.birdbrain.ml.predictionsRunning = false;
+  const ml = window.birdbrain.ml
 
-  async function loop() {
-      window.birdbrain.ml.webcam.update(); // update the webcam frame
-      await predict();
-      window.requestAnimationFrame(loop);
-  }
+  function loop() {
+    if (ml.webcam == null) { return; }
+    ml.webcam.update(); // update the webcam frame
 
-  // run the webcam image through the pose model
-  async function predict() {
+    // run the webcam image through the pose model
     // Have to estimate the pose and then run it through the teachable machine
-    window.poseModel.estimatePose(window.birdbrain.ml.webcam.canvas).then(make_pose_prediction);
+    ml.poseModel.estimatePose(ml.webcam.canvas).then((pose) => {
+      ml.poseModel.predict(pose.posenetOutput).then((prediction) => {
+        ml.prediction = prediction
+        ml.predictionsRunning = true;
+        console.log("predictions running")
+      });
+    });
+
+    window.requestAnimationFrame(loop);
   }
 
-  const report_predictions = (prediction) => {
-    let class_names = window.poseModel.getClassLabels();
-    let names_and_scores = prediction.map((score, index) => [class_names[index], score.probability]);
-
-    //console.log(prediction)
-
-    window.prediction = names_and_scores
-    window.birdbrain.ml.predictionsRunning = true;
-  };
-
-  const make_pose_prediction = (pose) => {
-     poseModel.predict(pose.posenetOutput).then(report_predictions);
-  }
-
-  if (window.birdbrain.ml.webcam == null || window.imageModel == null) {
+  if (window.birdbrain.ml.webcam == null || window.birdbrain.ml.poseModel == null) {
     console.error("Webcam and video model must be set up before beginning video predictions")
     return;
   }
 
   window.requestAnimationFrame(loop);
-  console.log("predictions running")
 }
 window.birdbrain.ml.stopPredictions = function() {
 
+  let modal = document.getElementById("webcamModal");
+  if (modal != null) {
+    modal.parentNode.removeChild(modal)
+  }
 
+  if (window.birdbrain.ml.webcam != null) {
+    window.birdbrain.ml.webcam.stop()
+    console.log("webcam has stopped")
+    window.birdbrain.ml.webcamRunning = false;
+    window.birdbrain.ml.webcam = null;
+  }
 
-
-
-
-
-
-
-
-
-
+  if (window.birdbrain.ml.imageModel != null) {
+    window.birdbrain.ml.imageModel = null;
+  }
+  if (window.birdbrain.ml.audioModel != null) {
+    window.birdbrain.ml.audioModel.stopListening();
+    window.birdbrain.ml.audioModel = null;
+  }
+  if (window.birdbrain.ml.poseModel != null) {
+    window.birdbrain.ml.poseModel = null;
+  }
 }
