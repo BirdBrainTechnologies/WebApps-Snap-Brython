@@ -403,6 +403,7 @@ window.birdbrain.savePythonProject = function(fileName, contents) {
 
 //*** Machine Learning ***
 // See also: https://github.com/googlecreativelab/teachablemachine-community/
+//  and https://teachablemachine.withgoogle.com/
 window.birdbrain.ml = {}
 window.birdbrain.ml.librariesLoaded = false;
 window.birdbrain.ml.librariesLoading = false;
@@ -410,7 +411,7 @@ window.birdbrain.ml.modelLoaded = false;
 window.birdbrain.ml.prediction = {};
 window.birdbrain.ml.predictionsRunning = false;
 window.birdbrain.ml.loadLibrary = function(url, onloadFn) {
-  console.log("loading " + url);
+  console.log("loading library: " + url);
   let script = document.createElement("script");
   script.type = "text/javascript";
   script.onload = onloadFn;
@@ -421,16 +422,12 @@ window.birdbrain.ml.loadLibraries = function() {
   if (window.birdbrain.ml.librariesLoading || window.birdbrain.ml.librariesLoaded) { return; }
   window.birdbrain.ml.librariesLoading = true;
 
-  console.log("loading tf")
   const tfUrl = "https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@1.3.1/dist/tf.min.js"
   window.birdbrain.ml.loadLibrary(tfUrl, function () {
-    console.log("loading image lib")
     const imageUrl = "https://cdn.jsdelivr.net/npm/@teachablemachine/image@0.8/dist/teachablemachine-image.min.js"
     window.birdbrain.ml.loadLibrary(imageUrl, function () {
-      console.log("loading audio lib")
       const audioUrl = "https://cdn.jsdelivr.net/npm/@tensorflow-models/speech-commands@0.4.0/dist/speech-commands.min.js"
       window.birdbrain.ml.loadLibrary(audioUrl, function () {
-        console.log("loading pose lib")
         const poseUrl = "https://cdn.jsdelivr.net/npm/@teachablemachine/pose@0.8/dist/teachablemachine-pose.min.js"
         window.birdbrain.ml.loadLibrary(poseUrl, function () {
           window.birdbrain.ml.librariesLoaded = true;
@@ -463,14 +460,13 @@ window.birdbrain.ml.loadModel = function(URL, type) {
   return true;
 }
 window.birdbrain.ml.loadVideoModel = function(URL) {
-  console.log("loading video model...")
   const ml = window.birdbrain.ml
-  ml.webcamRunning = false;
 
   tmImage.load(ml.modelURL, ml.metadataURL).then((loaded_model) => {
     ml.imageModel = loaded_model;
     ml.modelLoaded = true;
-    console.log("video model loaded")
+  }).catch(error => {
+    console.error("Problem loading image model: " + error.message)
   })
 
   ml.setupWebcam()
@@ -478,27 +474,35 @@ window.birdbrain.ml.loadVideoModel = function(URL) {
 window.birdbrain.ml.setupWebcam = function(URL) {
   const ml = window.birdbrain.ml
   // Setup a webcam (can also use tmPose.Webcam)
-  ml.webcam = new tmImage.Webcam(300, 300, true); // width, height, should flip the webcam
+  const size = 300
+  ml.webcam = new tmImage.Webcam(size, size, true); // width, height, should flip the webcam
   ml.webcam.setup().then(() => {
-    console.log("webcam setup complete")
     ml.webcam.play().then(() => {
-      console.log("webcam is running")
-      ml.webcamRunning = true;
 
       //Append elements to the DOM to see what the webcam is seeing
       const section = document.createElement('section');
       section.setAttribute("id", "webcamModal")
-      section.setAttribute("style", "display: block; position: fixed; top: 0; bottom: 0; left: 0; right: 0; z-index: 100; ")
-      //Make a container to hold everything
+      section.setAttribute("style", "display: block; position: fixed; top: 0; bottom: 0; left: 0; right: 0; z-index: 100; pointer-events: none;")
       const container = document.createElement('div');
       container.setAttribute("class", "container")
-      //container.setAttribute("style", "margin: 0 auto; height: auto; width: 95%; top: 50%; transform: translateY(-50%); background-color: rgba(0,0,0,0); border-radius: 10px; overflow: hidden; padding:0; position: relative; max-width: 800px;");
       container.setAttribute("style", "margin: 0 auto; height: auto; width: auto; top: 50%; transform: translateY(-50%); background-color: rgba(0,0,0,0); padding:0; position: relative; max-width: 800px;");
 
-      container.appendChild(ml.webcam.canvas);
+      if (ml.modelType == "pose") {
+        const canvas = document.createElement('canvas')
+        canvas.width = size
+        canvas.height = size
+        ml.poseCtx = canvas.getContext("2d")
+        container.appendChild(canvas)
+      } else {
+        container.appendChild(ml.webcam.canvas);
+      }
+
       section.appendChild(container);
       document.body.appendChild(section);
     })
+  }).catch(error => {
+    console.error("Problem setting up webcam: " + error.message)
+    ml.webcam = null
   })
 }
 window.birdbrain.ml.loadAudioModel = function(URL) {
@@ -512,20 +516,21 @@ window.birdbrain.ml.loadAudioModel = function(URL) {
 
   // check that model and metadata are loaded via HTTPS requests.
   recognizer.ensureModelLoaded().then(() => {
-    // Set a global variable for the recognizer
     ml.audioModel = recognizer
     ml.modelLoaded = true;
+  }).catch(error => {
+    console.error("Problem loading audio model: " + error.message)
   })
 }
 window.birdbrain.ml.loadPoseModel = function(URL) {
   const ml = window.birdbrain.ml
-  ml.webcamRunning = false;
 
   tmPose.load(ml.modelURL, ml.metadataURL).then((loaded_model) => {
     ml.poseModel = loaded_model;
     ml.modelLoaded = true;
-    console.log("pose model loaded")
-  });
+  }).catch(error => {
+    console.error("Problem loading pose model: " + error.message)
+  })
 
   ml.setupWebcam()
 }
@@ -550,9 +555,16 @@ window.birdbrain.ml.startPredictions = function() {
 }
 window.birdbrain.ml.startVideoPredictions = function() {
   const ml = window.birdbrain.ml
+  if (ml.webcam == null || ml.imageModel == null) {
+    console.error("Webcam and video model must be set up before beginning video predictions")
+    return;
+  }
 
   function loop() {
-    if (ml.webcam == null) { return; }
+    if (ml.webcam == null) {
+      ml.predictionsRunning = false;
+      return;
+    }
     ml.webcam.update(); // update the webcam frame
 
     // run the webcam image through the image model
@@ -560,21 +572,18 @@ window.birdbrain.ml.startVideoPredictions = function() {
     ml.imageModel.predict(ml.webcam.canvas).then((prediction) => {
       ml.prediction = prediction;
       ml.predictionsRunning = true;
-      console.log("predictions running")
+      window.requestAnimationFrame(loop);
     });
-
-    window.requestAnimationFrame(loop);
-  }
-
-  if (ml.webcam == null || ml.imageModel == null) {
-    console.error("Webcam and video model must be set up before beginning video predictions")
-    return;
   }
 
   window.requestAnimationFrame(loop);
 }
 window.birdbrain.ml.startAudioPredictions = function() {
   const ml = window.birdbrain.ml
+  if (ml.audioModel == null) {
+    console.error("Audio model must be set up before beginning audio predictions")
+    return;
+  }
 
   // listen() takes two arguments:
   // 1. A callback function that is invoked anytime a word is recognized.
@@ -598,9 +607,16 @@ window.birdbrain.ml.startAudioPredictions = function() {
 }
 window.birdbrain.ml.startPosePredictions = function() {
   const ml = window.birdbrain.ml
+  if (ml.webcam == null || ml.poseModel == null) {
+    console.error("Webcam and pose model must be set up before beginning pose predictions")
+    return;
+  }
 
   function loop() {
-    if (ml.webcam == null) { return; }
+    if (ml.webcam == null) {
+      ml.predictionsRunning = false;
+      return;
+    }
     ml.webcam.update(); // update the webcam frame
 
     // run the webcam image through the pose model
@@ -608,17 +624,20 @@ window.birdbrain.ml.startPosePredictions = function() {
     ml.poseModel.estimatePose(ml.webcam.canvas).then((pose) => {
       ml.poseModel.predict(pose.posenetOutput).then((prediction) => {
         ml.prediction = prediction
+
+        if (pose.pose && ml.webcam) {
+            // draw webcam image
+            ml.poseCtx.drawImage(ml.webcam.canvas, 0, 0)
+            // draw the keypoints and skeleton
+            const minPartConfidence = 0.5;
+            tmPose.drawKeypoints(pose.pose.keypoints, minPartConfidence, ml.poseCtx);
+            tmPose.drawSkeleton(pose.pose.keypoints, minPartConfidence, ml.poseCtx);
+        }
+
         ml.predictionsRunning = true;
-        console.log("predictions running")
+        window.requestAnimationFrame(loop);
       });
     });
-
-    window.requestAnimationFrame(loop);
-  }
-
-  if (window.birdbrain.ml.webcam == null || window.birdbrain.ml.poseModel == null) {
-    console.error("Webcam and video model must be set up before beginning video predictions")
-    return;
   }
 
   window.requestAnimationFrame(loop);
@@ -632,8 +651,6 @@ window.birdbrain.ml.stopPredictions = function() {
 
   if (window.birdbrain.ml.webcam != null) {
     window.birdbrain.ml.webcam.stop()
-    console.log("webcam has stopped")
-    window.birdbrain.ml.webcamRunning = false;
     window.birdbrain.ml.webcam = null;
   }
 

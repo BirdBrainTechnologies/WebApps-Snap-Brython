@@ -946,17 +946,19 @@ class Finch(Microbit):
 
         return window.birdbrain.sensorData[self.device_s_no][6] >> 2
 
+
     ######## END class Finch ########
 
+
 class MachineLearningModel:
-    """Machine Learning"""
+    """Machine Learning using Google's Teachable Machine
+    (https://teachablemachine.withgoogle.com/)"""
 
     @staticmethod
     async def load(url, type):
         import time
         startTime = time.time()
         timeout = False
-        #print(url + " " + type)
         window.birdbrain.ml.loadLibraries()
 
         while not window.birdbrain.ml.librariesLoaded and not timeout:
@@ -967,7 +969,7 @@ class MachineLearningModel:
 
         if not timeout and window.birdbrain.ml.loadModel(url, type):
             while not window.birdbrain.ml.modelLoaded and not timeout:
-                print("Waiting for model to load...")
+                print("Waiting for " + type + " model to load...")
                 await aio.sleep(1)
                 if time.time() > (startTime + 30):
                     timeout = True
@@ -998,9 +1000,13 @@ class MachineLearningModel:
         dict = {}
         for p in window.birdbrain.ml.prediction:
             dict[p.className] = p.probability
-            
+
         return dict
+
 
     @staticmethod
     def unload():
         window.birdbrain.ml.stopPredictions()
+
+
+    ######## END class MachineLearningModel ########
