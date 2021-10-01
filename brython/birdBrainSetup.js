@@ -446,38 +446,72 @@ window.birdbrain.ml.loadModel = function(URL, type) {
   window.birdbrain.ml.metadataURL = URL + "metadata.json"; // model metadata
   switch (type) {
     case "audio":
-      window.birdbrain.ml.loadAudioModel(URL)
+      window.birdbrain.ml.loadAudioModel()
       break;
     case "image":
-      window.birdbrain.ml.loadVideoModel(URL)
+      window.birdbrain.ml.loadVideoModel()
       break;
     case "pose":
-      window.birdbrain.ml.loadPoseModel(URL)
+      window.birdbrain.ml.loadPoseModel()
       break;
     default:
       return false;
   }
   return true;
 }
-window.birdbrain.ml.loadVideoModel = function(URL) {
+window.birdbrain.ml.loadVideoModel = function() {
   const ml = window.birdbrain.ml
 
   tmImage.load(ml.modelURL, ml.metadataURL).then((loaded_model) => {
     ml.imageModel = loaded_model;
-    ml.modelLoaded = true;
+    if (ml.webcam != null) { ml.modelLoaded = true; }
   }).catch(error => {
     console.error("Problem loading image model: " + error.message)
   })
 
-  ml.setupWebcam()
+  ml.requestWebcam()
 }
-window.birdbrain.ml.setupWebcam = function(URL) {
+window.birdbrain.ml.requestWebcam = function() {
+  navigator.permissions.query({name: 'camera'}).then( response => {
+    switch (response.state) {
+      case "granted":
+        window.birdbrain.ml.setupWebcam()
+      break;
+      case "denied":
+        console.error('The camera must be enabled to use this model.')
+      break;
+      case "prompt":
+        response.onchange = ((e)=>{
+          // detecting if the event is a change
+          if (e.type === 'change'){
+            // checking what the new permissionStatus state is
+            const newState = e.target.state
+            if (newState === 'denied') {
+              console.error('The camera must be enabled to use this model.')
+            } else if (newState === 'granted') {
+              window.birdbrain.ml.setupWebcam()
+            } else {
+              console.log('Unknown new state: ' + newState)
+            }
+          }
+        })
+        navigator.mediaDevices.getUserMedia({ video: true })
+      break;
+      default:
+        console.error("unknown permission status: " + response.status)
+    }
+  })
+}
+window.birdbrain.ml.setupWebcam = function() {
   const ml = window.birdbrain.ml
   // Setup a webcam (can also use tmPose.Webcam)
   const size = 300
-  ml.webcam = new tmImage.Webcam(size, size, true); // width, height, should flip the webcam
-  ml.webcam.setup().then(() => {
-    ml.webcam.play().then(() => {
+  const webCam = new tmImage.Webcam(size, size, true); // width, height, should flip the webcam
+  webCam.setup().then(() => {
+    webCam.play().then(() => {
+
+      ml.webcam = webCam
+      if (ml.imageModel != null || ml.poseModel != null) { ml.modelLoaded = true; }
 
       //Append elements to the DOM to see what the webcam is seeing
       const section = document.createElement('section');
@@ -505,7 +539,7 @@ window.birdbrain.ml.setupWebcam = function(URL) {
     ml.webcam = null
   })
 }
-window.birdbrain.ml.loadAudioModel = function(URL) {
+window.birdbrain.ml.loadAudioModel = function() {
   const ml = window.birdbrain.ml
 
   const recognizer = speechCommands.create(
@@ -522,17 +556,17 @@ window.birdbrain.ml.loadAudioModel = function(URL) {
     console.error("Problem loading audio model: " + error.message)
   })
 }
-window.birdbrain.ml.loadPoseModel = function(URL) {
+window.birdbrain.ml.loadPoseModel = function() {
   const ml = window.birdbrain.ml
 
   tmPose.load(ml.modelURL, ml.metadataURL).then((loaded_model) => {
     ml.poseModel = loaded_model;
-    ml.modelLoaded = true;
+    if (ml.webcam != null) { ml.modelLoaded = true; }
   }).catch(error => {
     console.error("Problem loading pose model: " + error.message)
   })
 
-  ml.setupWebcam()
+  ml.requestWebcam()
 }
 
 window.birdbrain.ml.startPredictions = function() {
