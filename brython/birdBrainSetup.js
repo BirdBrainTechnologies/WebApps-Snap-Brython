@@ -440,7 +440,9 @@ window.birdbrain.ml.loadLibraries = function() {
 }
 
 window.birdbrain.ml.loadModel = function(URL, type) {
-  window.birdbrain.ml.modelLoaded = false;
+  //Unload any model that is currently loaded.
+  window.birdbrain.ml.stopPredictions()
+
   window.birdbrain.ml.modelType = type
   window.birdbrain.ml.modelURL = URL + "model.json"; // model topology
   window.birdbrain.ml.metadataURL = URL + "metadata.json"; // model metadata
@@ -511,6 +513,7 @@ window.birdbrain.ml.setupWebcam = function() {
     webCam.play().then(() => {
 
       ml.webcam = webCam
+      ml.webcam.update();
       if (ml.imageModel != null || ml.poseModel != null) { ml.modelLoaded = true; }
 
       //Append elements to the DOM to see what the webcam is seeing
@@ -520,17 +523,27 @@ window.birdbrain.ml.setupWebcam = function() {
       const container = document.createElement('div');
       container.setAttribute("class", "container")
       container.setAttribute("style", "margin: 0 auto; height: auto; width: auto; top: 50%; transform: translateY(-50%); background-color: rgba(0,0,0,0); padding:0; position: relative; max-width: 800px;");
+      const animation = document.createElement('div');
+      animation.setAttribute("style", "height: " + size + "px; width: " + (size+25) + "px; ")
+      const closeBtn = document.createElement('button');
+      closeBtn.setAttribute("onclick", 'this.parentNode.parentNode.parentNode.removeChild(this.parentNode.parentNode); return false;');
+      closeBtn.setAttribute("style", "position: relative; float:right; display:inline-block; padding:2px 5px; pointer-events: auto;");
+      const icon = document.createElement('i');
+      icon.setAttribute("class", "fas fa-times");
+      closeBtn.appendChild(icon);
 
       if (ml.modelType == "pose") {
         const canvas = document.createElement('canvas')
         canvas.width = size
         canvas.height = size
         ml.poseCtx = canvas.getContext("2d")
-        container.appendChild(canvas)
+        animation.appendChild(canvas)
       } else {
-        container.appendChild(ml.webcam.canvas);
+        animation.appendChild(ml.webcam.canvas);
       }
 
+      animation.appendChild(closeBtn);
+      container.appendChild(animation);
       section.appendChild(container);
       document.body.appendChild(section);
     })
@@ -698,4 +711,6 @@ window.birdbrain.ml.stopPredictions = function() {
   if (window.birdbrain.ml.poseModel != null) {
     window.birdbrain.ml.poseModel = null;
   }
+
+  window.birdbrain.ml.modelLoaded = false;
 }
