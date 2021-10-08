@@ -946,4 +946,67 @@ class Finch(Microbit):
 
         return window.birdbrain.sensorData[self.device_s_no][6] >> 2
 
+
     ######## END class Finch ########
+
+
+class MachineLearningModel:
+    """Machine Learning using Google's Teachable Machine
+    (https://teachablemachine.withgoogle.com/)"""
+
+    @staticmethod
+    async def load(url, type):
+        import time
+        startTime = time.time()
+        timeout = False
+        window.birdbrain.ml.loadLibraries()
+
+        while not window.birdbrain.ml.librariesLoaded and not timeout:
+            print("Waiting for libraries to load...")
+            await aio.sleep(1)
+            if time.time() > (startTime + 30):
+                timeout = True
+
+        if not timeout and window.birdbrain.ml.loadModel(url, type):
+            while not window.birdbrain.ml.modelLoaded and not timeout:
+                print("Waiting for " + type + " model to load...")
+                await aio.sleep(1)
+                if time.time() > (startTime + 30):
+                    timeout = True
+        elif not timeout:
+            print("Predictions are not supported for model type '" + type + "'.")
+            return
+
+        if not timeout and not window.birdbrain.ml.startPredictions():
+            print("Predictions cannot be started for model type '" + type + "'.")
+            return
+
+        while not window.birdbrain.ml.predictionsRunning and not timeout:
+            print("Waiting for first prediction...")
+            await aio.sleep(1)
+            if time.time() > (startTime + 30):
+                timeout = True
+
+        if timeout:
+            print("Model loading timeout: " + url + " could not be loaded.")
+
+
+    @staticmethod
+    def getPrediction():
+        if not window.birdbrain.ml.modelLoaded or not window.birdbrain.ml.predictionsRunning:
+            print("Error: No model loaded. Please use MachineLearningModel.load(url, type) to load a model.")
+            return
+
+        dict = {}
+        for p in window.birdbrain.ml.prediction:
+            dict[p.className] = p.probability
+
+        return dict
+
+
+    @staticmethod
+    def unload():
+        window.birdbrain.ml.stopPredictions()
+
+
+    ######## END class MachineLearningModel ########
