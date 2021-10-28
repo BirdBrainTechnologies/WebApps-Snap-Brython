@@ -30,7 +30,7 @@
               <block s="doApplyExtension">
                 <l>src_load(url)</l>
                 <list>
-                  <l>http://localhost:8000/snap/snapProjects/bbtSnapExtension.js</l>
+                  <l>libraries/bbtSnapExtension.js</l>
                 </list>
               </block>
             </script>
@@ -62,7 +62,7 @@
                 <block s="doApplyExtension">
                   <l>src_load(url)</l>
                   <list>
-                    <l>http://localhost:8000/snap/snapProjects/bbtSnapExtension.js</l>
+                    <l>libraries/bbtSnapExtension.js</l>
                   </list>
                 </block>
                 <block s="doReport">
@@ -86,7 +86,7 @@
               <block s="doApplyExtension">
                 <l>src_load(url)</l>
                 <list>
-                  <l>http://localhost:8000/snap/snapProjects/bbtSnapExtension.js</l>
+                  <l>libraries/bbtSnapExtension.js</l>
                 </list>
               </block>
               <block s="doReport">
@@ -111,7 +111,7 @@
                 <block s="doApplyExtension">
                   <l>src_load(url)</l>
                   <list>
-                    <l>http://localhost:8000/snap/snapProjects/bbtSnapExtension.js</l>
+                    <l>libraries/bbtSnapExtension.js</l>
                   </list>
                 </block>
                 <block s="doReport">
@@ -136,7 +136,7 @@
               <block s="doApplyExtension">
                 <l>src_load(url)</l>
                 <list>
-                  <l>http://localhost:8000/snap/snapProjects/bbtSnapExtension.js</l>
+                  <l>libraries/bbtSnapExtension.js</l>
                 </list>
               </block>
               <block s="doReport">
@@ -159,7 +159,7 @@
                 <block s="doApplyExtension">
                   <l>src_load(url)</l>
                   <list>
-                    <l>http://localhost:8000/snap/snapProjects/bbtSnapExtension.js</l>
+                    <l>libraries/bbtSnapExtension.js</l>
                   </list>
                 </block>
                 <block s="doApplyExtension">
@@ -187,7 +187,7 @@
                 <block s="doApplyExtension">
                   <l>src_load(url)</l>
                   <list>
-                    <l>http://localhost:8000/snap/snapProjects/bbtSnapExtension.js</l>
+                    <l>libraries/bbtSnapExtension.js</l>
                   </list>
                 </block>
                 <block s="doIf">
@@ -257,7 +257,7 @@
                 <block s="doApplyExtension">
                   <l>src_load(url)</l>
                   <list>
-                    <l>http://localhost:8000/snap/snapProjects/bbtSnapExtension.js</l>
+                    <l>libraries/bbtSnapExtension.js</l>
                   </list>
                 </block>
                 <block s="doReport">
@@ -282,7 +282,7 @@
                 <block s="doApplyExtension">
                   <l>src_load(url)</l>
                   <list>
-                    <l>http://localhost:8000/snap/snapProjects/bbtSnapExtension.js</l>
+                    <l>libraries/bbtSnapExtension.js</l>
                   </list>
                 </block>
                 <block s="doReport">
@@ -308,7 +308,7 @@
                 <block s="doApplyExtension">
                   <l>src_load(url)</l>
                   <list>
-                    <l>http://localhost:8000/snap/snapProjects/bbtSnapExtension.js</l>
+                    <l>libraries/bbtSnapExtension.js</l>
                   </list>
                 </block>
                 <block s="doReport">
@@ -344,7 +344,7 @@
                 <block s="doApplyExtension">
                   <l>src_load(url)</l>
                   <list>
-                    <l>http://localhost:8000/snap/snapProjects/bbtSnapExtension.js</l>
+                    <l>libraries/bbtSnapExtension.js</l>
                   </list>
                 </block>
                 <block s="doReport">
@@ -368,7 +368,7 @@
                 <block s="doApplyExtension">
                   <l>src_load(url)</l>
                   <list>
-                    <l>http://localhost:8000/snap/snapProjects/bbtSnapExtension.js</l>
+                    <l>libraries/bbtSnapExtension.js</l>
                   </list>
                 </block>
                 <block s="doReport">
@@ -402,7 +402,7 @@
                 <block s="doApplyExtension">
                   <l>src_load(url)</l>
                   <list>
-                    <l>http://localhost:8000/snap/snapProjects/bbtSnapExtension.js</l>
+                    <l>libraries/bbtSnapExtension.js</l>
                   </list>
                 </block>
                 <block s="doApplyExtension">
@@ -427,7 +427,7 @@
                 <block s="doApplyExtension">
                   <l>src_load(url)</l>
                   <list>
-                    <l>http://localhost:8000/snap/snapProjects/bbtSnapExtension.js</l>
+                    <l>libraries/bbtSnapExtension.js</l>
                   </list>
                 </block>
                 <block s="doDeclareVariables">
@@ -509,7 +509,7 @@
                 <block s="doApplyExtension">
                   <l>src_load(url)</l>
                   <list>
-                    <l>http://localhost:8000/snap/snapProjects/bbtSnapExtension.js</l>
+                    <l>libraries/bbtSnapExtension.js</l>
                   </list>
                 </block>
                 <block s="doDeclareVariables">
@@ -589,7 +589,7 @@
                 <block s="doApplyExtension">
                   <l>src_load(url)</l>
                   <list>
-                    <l>http://localhost:8000/snap/snapProjects/bbtSnapExtension.js</l>
+                    <l>libraries/bbtSnapExtension.js</l>
                   </list>
                 </block>
                 <block s="doApplyExtension">
@@ -612,7 +612,7 @@
                 <block s="doApplyExtension">
                   <l>src_load(url)</l>
                   <list>
-                    <l>http://localhost:8000/snap/snapProjects/bbtSnapExtension.js</l>
+                    <l>libraries/bbtSnapExtension.js</l>
                   </list>
                 </block>
                 <block s="doApplyExtension">
@@ -637,7 +637,7 @@
                 <block s="doApplyExtension">
                   <l>src_load(url)</l>
                   <list>
-                    <l>http://localhost:8000/snap/snapProjects/bbtSnapExtension.js</l>
+                    <l>libraries/bbtSnapExtension.js</l>
                   </list>
                 </block>
                 <block s="doApplyExtension">
@@ -668,7 +668,7 @@
                 <block s="doApplyExtension">
                   <l>src_load(url)</l>
                   <list>
-                    <l>http://localhost:8000/snap/snapProjects/bbtSnapExtension.js</l>
+                    <l>libraries/bbtSnapExtension.js</l>
                   </list>
                 </block>
                 <block s="doIf">
@@ -710,7 +710,7 @@
                 <block s="doApplyExtension">
                   <l>src_load(url)</l>
                   <list>
-                    <l>http://localhost:8000/snap/snapProjects/bbtSnapExtension.js</l>
+                    <l>libraries/bbtSnapExtension.js</l>
                   </list>
                 </block>
                 <block s="doApplyExtension">
@@ -765,7 +765,7 @@
                 <block s="doApplyExtension">
                   <l>src_load(url)</l>
                   <list>
-                    <l>http://localhost:8000/snap/snapProjects/bbtSnapExtension.js</l>
+                    <l>libraries/bbtSnapExtension.js</l>
                   </list>
                 </block>
                 <block s="doDeclareVariables">
