@@ -571,7 +571,7 @@
         <code></code>
         <translations>ko:micro:bit _ 보이기 _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _&#xD;de:micro:bit _ LED Anzeige _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _&#xD;pt:micro:bit _ Visor _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _&#xD;fr:micro:bit _ Display _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _&#xD;nl:micro:bit _ Scherm _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _&#xD;zh_CN:micro:bit _ 显示 _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _&#xD;zh_TW:micro:bit _ 顯示 _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _&#xD;ar:micro:bit _ عرض _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _&#xD;dk:micro:bit _ Display _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _&#xD;he:micro:bit _ מסך _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _&#xD;es:micro:bit _ Monitor _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _&#xD;ca:micro:bit _ Pantalla _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _&#xD;fi:micro:bit _ Näytä _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _&#xD;sv:micro:bit _ Skärm _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _&#xD;</translations>
         <inputs>
-          <input type="%txt" readonly="true">A<options>A &#xD;B &#xD;C</options></input>
+          <input type="%txt" readonly="true">A<options>A&#xD;B&#xD;C</options></input>
           <input type="%b">false</input>
           <input type="%b">false</input>
           <input type="%b">false</input>
