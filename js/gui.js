@@ -259,24 +259,31 @@ function loadIDE(filename) {
         return
       }
     } else {
-      projectName = "PWAhummingbird"
+      //projectName = "PWAhummingbird"
+      projectName = "WEBhummingbird"
     }
   } else if (allRobotsAreGlowBoards()) {
-    projectName = "PWAGlowBoardMultiDevice";
+    //projectName = "PWAGlowBoardMultiDevice";
+    projectName = "WebGlowBoardMultiDevice";
   } else if (getConnectedRobotCount() == 1) {
     let r = getFirstConnectedRobot()
     if (r.isA(Robot.ofType.FINCH)) {
-      projectName = "PWAFinchSingleDevice";
+      //projectName = "PWAFinchSingleDevice";
+      projectName = "WebFinchSingleDevice";
     } else {
-      projectName = "PWAHummingbirdSingleDevice";
+      //projectName = "PWAHummingbirdSingleDevice";
+      projectName = "WebHummingbirdSingleDevice";
     }
   } else {
     if (allRobotsAreFinches()) {
-      projectName = "PWAFinchMultiDevice";
+      //projectName = "PWAFinchMultiDevice";
+      projectName = "WebFinchMultiDevice";
     } else if (noRobotsAreFinches()) {
-      projectName = "PWAHummingbirdMultiDevice";
+      //projectName = "PWAHummingbirdMultiDevice";
+      projectName = "WebHummingbirdMultiDevice";
     } else {
-      projectName = "PWAMixedMultiDevice";
+      //projectName = "PWAMixedMultiDevice";
+      projectName = "WebMixedMultiDevice";
     }
   }
 
@@ -322,11 +329,18 @@ function loadIDE(filename) {
 
     if (!useSnap) {
       iframe.src = "brython/editor.html"; //"brython/console.html";  //"http://brython.info/console.html"
-    /*} else if (internetIsConnected) {
+    } else if (internetIsConnected) {
       if (projectName) {
         iframe.src = "https://snap.berkeley.edu/snap/snap.html#present:Username=birdbraintech&ProjectName=" + projectName + "&editMode&lang=" + language;
       } else {
         iframe.src = "https://snap.berkeley.edu/snap/snap.html"
+      }
+      //To use the current dev version of snap...
+      //iframe.src = "https://snap.berkeley.edu/versions/dev/snap.html#"
+      /*if (projectName) {
+        iframe.src = "https://snap.berkeley.edu/versions/dev/snap.html#present:Username=birdbraintech&ProjectName=" + projectName + "&editMode&lang=" + language;
+      } else {
+        iframe.src = "https://snap.berkeley.edu/versions/dev/snap.html"
       }*/
     } else {
       if (projectName) {
@@ -522,7 +536,8 @@ function showLegacyFinchModal() {
     div.appendChild(btnContainer)
 
     const buttonText = ["Simple Blocks", "Blocks with Parameters", "Parameters and Time", "Regular Snap!"]
-    const levelFilenames = ["PWAfinch-level1", "PWAfinch-level2", "PWAfinch-level3", "PWAfinch"]
+    //const levelFilenames = ["PWAfinch-level1", "PWAfinch-level2", "PWAfinch-level3", "PWAfinch"]
+    const levelFilenames = ["WEBfinch-level1", "WEBfinch-level2", "WEBfinch-level3", "WEBfinch"]
     for (var i = 0; i < 4; i++) {
 
       const btnDiv = document.createElement('div')

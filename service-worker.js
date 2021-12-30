@@ -4,7 +4,7 @@
 'use strict';
 
 // Update cache names any time any of the cached files change.
-const CACHE_NAME = 'static-cache-v17';
+const CACHE_NAME = 'static-cache-v18';
 
 // CODELAB: Add list of files to cache here.
 const FILES_TO_CACHE_1 = [
@@ -1293,6 +1293,7 @@ const SNAP_FILES_TO_CACHE_4 = [
   'snap/help/reportCallCC.png',
   'snap/help/reportColorIsTouchingColor.png',
   'snap/help/reportCombine.png',
+  'snap/help/reportConcatenatedLists.png',
   'snap/help/reportDate.png',
   'snap/help/reportDifference.png',
   'snap/help/reportEquals.png',
@@ -1314,10 +1315,11 @@ const SNAP_FILES_TO_CACHE_4 = [
   'snap/help/reportKeyPressed.png',
   'snap/help/reportLessThan.png',
   'snap/help/reportLetter.png',
+  'snap/help/reportListAttribute.png',
   'snap/help/reportListContainsItem.png',
+  'snap/help/reportListIndex.png',
   'snap/help/reportListIsEmpty.png',
   'snap/help/reportListItem.png',
-  'snap/help/reportListLength.png',
   'snap/help/reportMap.png',
   'snap/help/reportModulus.png',
   'snap/help/reportMonadic.png',
@@ -1376,21 +1378,28 @@ const SNAP_FILES_TO_CACHE_4 = [
   'snap/libraries/apl.xml',
   'snap/libraries/audioComp_module.xml',
   'snap/libraries/bar-charts.xml',
+  'snap/libraries/bbtSnapExtension.js',
   'snap/libraries/biginteger.js',
   'snap/libraries/bignumbers.xml',
+  'snap/libraries/bignums.js',
   'snap/libraries/cases.xml',
   'snap/libraries/colors.xml',
+  'snap/libraries/crayons.xml',
   'snap/libraries/frequency_distribution_module.xml',
   'snap/libraries/httpBlocks.xml',
   'snap/libraries/HummingbirdBlocks.xml',
   'snap/libraries/iteration-composition.xml',
   'snap/libraries/leap-library.xml',
   'snap/libraries/list-utilities.xml',
+  'snap/libraries/localstorage_module.xml',
   'snap/libraries/make-variables.xml',
   'snap/libraries/maps_module.xml',
   'snap/libraries/parallel_module.xml',
   'snap/libraries/pixel_module.xml',
   'snap/libraries/schemeNumber.js',
+  'snap/libraries/serial_module.xml',
+  'snap/libraries/signada.js',
+  'snap/libraries/signada.xml',
   'snap/libraries/speech_module.xml',
   'snap/libraries/stream-tools.xml',
   'snap/libraries/strings.xml',
@@ -1415,6 +1424,7 @@ const SNAP_FILES_TO_CACHE_4 = [
   'snap/locale/lang-fr.js',
   'snap/locale/lang-gl.js',
   'snap/locale/lang-he.js',
+  'snap/locale/lang-hi.js',
   'snap/locale/lang-hr.js',
   'snap/locale/lang-hu.js',
   'snap/locale/lang-ia.js',
@@ -1447,6 +1457,7 @@ const SNAP_FILES_TO_CACHE_4 = [
   'snap/src/byob.js',
   'snap/src/click.wav',
   'snap/src/cloud.js',
+  'snap/src/extensions.js',
   'snap/src/favicon.ico',
   'snap/src/gui.js',
   'snap/src/lists.js',
@@ -1456,6 +1467,7 @@ const SNAP_FILES_TO_CACHE_4 = [
   'snap/src/morphic.txt',
   'snap/src/objects.js',
   'snap/src/paint.js',
+  'snap/src/scenes.js',
   'snap/src/sha512.js',
   'snap/src/sketch.js',
   'snap/src/snap_logo_sm.png',
@@ -1468,17 +1480,17 @@ const SNAP_FILES_TO_CACHE_4 = [
   'snap/src/xml.js',
   'snap/src/ypr.js',
   //snap projects
-  'snap/snapProjects/PWAfinch-level1.xml',
-  'snap/snapProjects/PWAfinch-level2.xml',
-  'snap/snapProjects/PWAfinch-level3.xml',
-  'snap/snapProjects/PWAfinch.xml',
-  'snap/snapProjects/PWAhummingbird.xml',
-  'snap/snapProjects/PWAGlowBoardMultiDevice.xml',
-  'snap/snapProjects/PWAFinchSingleDevice.xml',
-  'snap/snapProjects/PWAHummingbirdSingleDevice.xml',
-  'snap/snapProjects/PWAFinchMultiDevice.xml',
-  'snap/snapProjects/PWAHummingbirdMultiDevice.xml',
-  'snap/snapProjects/PWAMixedMultiDevice.xml'
+  'snap/snapProjects/WEBfinch-level1.xml',
+  'snap/snapProjects/WEBfinch-level2.xml',
+  'snap/snapProjects/WEBfinch-level3.xml',
+  'snap/snapProjects/WEBfinch.xml',
+  'snap/snapProjects/WEBhummingbird.xml',
+  'snap/snapProjects/WebGlowBoardMultiDevice.xml',
+  'snap/snapProjects/WebFinchSingleDevice.xml',
+  'snap/snapProjects/WebHummingbirdSingleDevice.xml',
+  'snap/snapProjects/WebFinchMultiDevice.xml',
+  'snap/snapProjects/WebHummingbirdMultiDevice.xml',
+  'snap/snapProjects/WebMixedMultiDevice.xml'
 ];
 
 const BRYTHON_FILES_TO_CACHE_1 = [
