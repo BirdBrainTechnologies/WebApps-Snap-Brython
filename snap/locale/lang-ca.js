@@ -185,7 +185,7 @@ SnapTranslator.dict.ca = {
     'translator_e-mail':
         'bernat@snap4arduino.rocks, jguille2@xtec.cat', // optional
     'last_changed':
-        '2020-08-02', // this, too, will appear in the Translators tab
+        '2021-12-09', // this, too, will appear in the Translators tab
 
     // GUI
     // control bar:
@@ -433,10 +433,10 @@ SnapTranslator.dict.ca = {
         'augmenta en %n el color del llapis',
     'set pen color to %n':
         'fixa el color del llapis a %n',
-    'change pen %hsva by %n':
-        'augmenta %hsva del llapis en %n',
-    'set pen %hsva to %n':
-        'fixa %hsva del llapis a %n',
+    'change pen %clrdim by %n':
+        'augmenta %clrdim del llapis en %n',
+    'set pen %clrdim to %n':
+        'fixa %clrdim del llapis a %n',
     'change pen shade by %n':
         'augmenta en %n la intensitat del llapis',
     'set pen shade to %n':
@@ -447,22 +447,26 @@ SnapTranslator.dict.ca = {
         'fixa la mida del llapis en %n',
     'set background color to %clr':
         'fixa el color del fons a %clr',
-    'change background %hsva by %n':
-        'augmenta %hsva del fons en %n',
-    'set background %hsva to %n':
-        'fixa %hsva del fons a %n',
+    'change background %clrdim by %n':
+        'augmenta %clrdim del fons en %n',
+    'set background %clrdim to %n':
+        'fixa %clrdim del fons a %n',
     'stamp':
         'estampa',
     'fill':
         'omple',
     'paste on %spr':
         'estampa sobre %spr',
+    'cut from %spr':
+        'retalla de %spr',
 
     // control:
     'when %greenflag clicked':
         'Quan la %greenflag es premi',
-    'when %keyHat key pressed':
-        'Quan la tecla %keyHat es premi',
+    'when %keyHat key pressed %keyName':
+        'Quan la tecla %keyHat es premi %keyName',
+    'key':
+        'tecla',
     'when I am %interaction':
         'Quan %interaction aquest personatge',
     'clicked':
@@ -477,12 +481,14 @@ SnapTranslator.dict.ca = {
         'el ratolí surti d\'',
     'when %b':
         'quan %b',
-    'when I receive %msgHat':
-        'Quan rebi %msgHat',
-    'broadcast %msg':
-        'Envia a tots %msg',
-    'broadcast %msg and wait':
-        'Envia a tots %msg i espera',
+    'when I receive %msgHat %message':
+        'Quan rebi %msgHat %message',
+    'broadcast %msg %receive':
+        'Envia %msg %receive',
+    'broadcast %msg %receive and wait':
+        'Envia %msg %receive i espera',
+    'to':
+        'a',
     'send %msg to %spr':
         'envia %msg a %spr',
     'Message name':
@@ -514,7 +520,7 @@ SnapTranslator.dict.ca = {
     'stop %stopChoices':
         'atura %stopChoices',
     'all':
-        'tot',
+        'tots',
     'this script':
         'aquest programa',
     'this block':
@@ -549,6 +555,14 @@ SnapTranslator.dict.ca = {
         'mi mateix',
     'delete this clone':
         'esborra aquest clon',
+    'switch to scene %scn %send':
+        'canvia a l\'escena %scn %send',
+    'and send':
+        'i envia',
+    'next':
+        'següent',
+    'previous':
+        'prèvia',
     'tell %spr to %cmdRing %inputs':
         'digues a %spr que faci %cmdRing %inputs',
     'ask %spr for %repRing %inputs':
@@ -621,6 +635,14 @@ SnapTranslator.dict.ca = {
         'objecte %self',
     'r-g-b-a':
         'color RGBA',
+    '%block of block %repRing':
+        '%block del bloc %repRing',
+    'definition':
+        'definició',
+    'custom?':
+        'personalitzat?',
+    'global?':
+        'global?',
 
     // operators:
     '%n mod %n':
@@ -702,8 +724,20 @@ SnapTranslator.dict.ca = {
         'element %idx de %l',
     'all but first of %l':
         '%l sense el primer element',
-    'length of %l':
-        'longitud de %l',
+    '%la of %l':
+        '%la de %l',
+    'rank':
+        'rang',
+    'dimensions':
+        'dimensions',
+    'flatten':
+        'aplanament',
+    'columns':
+        'columnes',
+    'reverse':
+        'revers',
+    'lines':
+        'línies',
     '%l contains %s':
         '%l conté %s',
     'thing':
@@ -738,6 +772,8 @@ SnapTranslator.dict.ca = {
         'element',
     'append %lists':
         'annexa %lists',
+   'reshape %l to %nums':
+        'redimensiona %l a %nums',
     'add %s to %l':
         'afegeix %s a %l',
     'delete %ida of %l':
@@ -786,6 +822,14 @@ SnapTranslator.dict.ca = {
             + '(en navegadors que ho suportin)',
     'Save As...':
         'Anomena i desa...',
+    'Restore unsaved project':
+        'Recupera el projecte no desat',
+    'Clear backup':
+        'Esborra la còpia de seguretat',
+    'Backup failed.\nThis cannot be undone, proceed anyway?':
+        'La còpia de seguretat ha fallat.\nNo es podran desfer els canvis, voleu continuar?',
+    'Unsaved Changes!':
+        'Hi ha canvis sense desar!',
     'Import...':
         'Importa...',
     'file menu import hint':
@@ -812,6 +856,18 @@ SnapTranslator.dict.ca = {
         'no hi ha cap bloc\npersonalitzat no utilitzat\nen aquest projecte',
     'unused block(s) removed':
         'bloc(s) personalitzats no utilitzats esborrats',
+    'Hide blocks...':
+        'Amaga blocs...',
+    'New category...':
+        'Nova categoria...',
+    'Remove a category...':
+        'Esborra una categoria...',
+    'Scenes...':
+        'Escenes...',
+    'New scene':
+        'Nova escena',
+    'Add scene...':
+        'Afegeix una escena...',
     'Export summary...':
         'Exporta el resum...',
     'save a summary\nof this project':
@@ -833,6 +889,12 @@ SnapTranslator.dict.ca = {
         'Llibreries...',
     'Import library':
         'Importa una llibreria',
+    'Undelete sprites...':
+        'Recupera objectes...',
+    'Bring back deleted sprites':
+        'Recupera objectes esborrats',
+    'trash is empty':
+        'la paperera està buida',
 
     // cloud menu
     'Login...':
@@ -895,14 +957,6 @@ SnapTranslator.dict.ca = {
         'marqueu per a mostrar sempre\nel diàleg de selecció de tipus\nen afegir paràmetres als blocs\npersonalitzats',
     'uncheck to use the input\ndialog in short form':
         'desmarqueu per a no mostrar\nautomàticament el diàleg de selecció\nde tipus en afegir paràmetres\nals blocs personalitzats',
-    'Virtual keyboard':
-        'Teclat virtual',
-    'uncheck to disable\nvirtual keyboard support\nfor mobile devices':
-        'desmarqueu per inhabilitar\nel suport per al teclat virtual\nen dispositius mòbils',
-
-    'check to enable\nvirtual keyboard support\nfor mobile devices':
-        'marqueu per habilitar\nel suport per al teclat virtual\nen dispositius mòbils',
-
     'Input sliders':
         'Lliscadors d\'entrada',
     'uncheck to disable\ninput sliders for\nentry fields':
@@ -945,12 +999,6 @@ SnapTranslator.dict.ca = {
         'desmarqueu per permetre\nla re-entrada als programes',
     'check to disallow\nscript reentrance':
         'marqueu per no permetre\nla re-entrada als programes',
-    'Prefer smooth animations':
-        'Suavitza les animacions',
-    'uncheck for greater speed\nat variable frame rates':
-        'desmarqueu per augmentar la velocitat de\nles animacions fins la màxima capacitat d\'aquesta màquina',
-    'check for smooth, predictable\nanimations across computers':
-        'marqueu per aconseguir unes animacions\nmés suaus i a velocitat previsible en màquines diferents',
     'Flat line ends':
         'Puntes de llapis planes',
     'check for flat ends of lines':
@@ -981,10 +1029,28 @@ SnapTranslator.dict.ca = {
     // palette:
     'find blocks':
         'Cerca blocs',
-    'hide primitives':
-        'amaga els blocs primitius',
-    'show primitives':
-        'mostra els blocs primitius',
+    'hide blocks...':
+        'amaga blocs...',
+    'Hide blocks in palette':
+        'Amaga blocs de la paleta',
+    'unused':
+        'no utilitzats',
+    'make a category...':
+        'crea una categoria...',
+    'New Category':
+        'Nova Categoria',
+    'Blocks category name:':
+        'Nom de la categoria de blocs:',
+    'Category color':
+        'Color de la categoria',
+    'red':
+        'vermell',
+    'green':
+        'verd',
+    'blue':
+        'blau',
+    'delete a category...':
+        'esborra una categoria...',
 
     // blocks:
     'help...':
@@ -1003,6 +1069,10 @@ SnapTranslator.dict.ca = {
         'crea una còpia\ni fes-la servir',
     'only duplicate this block':
         'duplica només aquest bloc',
+    'extract':
+        'extreu',
+    'only grab this block':
+        'i fes servir només aquest bloc',
     'delete':
         'esborra\'m',
     'script pic...':
@@ -1021,6 +1091,8 @@ SnapTranslator.dict.ca = {
         'activeu l\'opció per evitar que els continguts\nes desin',
     'new line':
         'nova línia',
+    'open a new window\nwith a picture of this script':
+        'obre una nova finestra\namb la imatge del programa',
 
     // custom blocks:
     'delete block definition...':
@@ -1029,6 +1101,10 @@ SnapTranslator.dict.ca = {
         'edita...',
     'duplicate block definition...':
         'duplica la definició d\'aquest bloc',
+    'export block definition...':
+        'exporta aquest bloc...',
+    'including dependencies':
+        'amb les seves dependències',
     'Same Named Blocks':
         'Blocs amb el mateix nom',
     'Another custom block with this name exists.\n':
@@ -1087,6 +1163,8 @@ SnapTranslator.dict.ca = {
         'desfés l\'últim moviment\nde blocs',
     'redrop':
         'refés',
+    'clear undrop queue':
+        'esborra la llista d\'accions desades', 
     'use the keyboard\nto enter blocks':
     	'utilitza el teclat\nper escriure els blocs',
     'scripts pic...':
@@ -1425,6 +1503,8 @@ SnapTranslator.dict.ca = {
         'saturació',
     'brightness':
         'brillantor',
+    'lightness':
+        'lluminositat',
     'ghost':
         'fantasma',
     'negative':
@@ -1437,6 +1517,8 @@ SnapTranslator.dict.ca = {
     // keys
     'space':
         'espai',
+    'enter':
+        'retorn',
     'any key':
         'qualsevol tecla',
     'up arrow':
@@ -1835,6 +1917,36 @@ SnapTranslator.dict.ca = {
         'Suport pel mapeig de codi',
     'check for block\nto text mapping features':
         'marqueu per habilitar les funcionalitats\nde mapeig de blocs en codi',
+    'Single palette':
+        'Paleta única',
+    'check to show all blocks in a single palette':
+        'marqueu per mostrar tots els blocs\nen una paleta única',
+    'uncheck to show only the selected category\'s blocks':
+        'demarqueu per mostrar només el blocs\nde la categoria seleccionada',
+    'Show categories':
+        'Mostra les categories',
+    'uncheck to hide\ncategory names\nin the palette':
+        'desmarqueu per amagar\nel nom de les categories\na la paleta',
+    'check to show\ncategory names\nin the palette':
+        'marqueu per mostrar\nel nom de les categories\na la paleta',
+    'Show buttons':
+        'Mostra els botons',
+    'uncheck to hide buttons\nin the palette':
+        'desmarqeu per amagar els botons\na la paleta',
+    'check to show buttons\nin the palette':
+        'marqueu per mostrar els botons\na la paleta',
+    'HSL pen color model':
+        'Model de color HSL',
+     'uncheck to switch pen colors\nand graphic effects to HSV':
+        'desmarqueu per canviar el model de color del llapis\ni dels efectes gràfics a HSV',
+    'check to switch pen colors\nand graphic effects to HSL':
+        'marqueu per canviar el model de color del llapis\ni dels efectes gràfics a HSL',
+    'Disable click-to-run':
+        'Deshabilita l\'execució directa',
+    'uncheck to enable\ndirectly running blocks\nby clicking on them':
+        'desmarqueu per habilitar\nl\'execució directa dels blocs\nen clicar-los',
+    'check to disable\ndirectly running blocks\nby clicking on them':
+        'marqueu per a deshabilitar\nl\'execució directa dels blocs\nen clicar-los',
     'saved.':
         'desat.',
     'options...':
@@ -2470,43 +2582,136 @@ SnapTranslator.dict.ca = {
 	'animation demo':
 		'exemple d\'animació',
 
-//future JS options
+//JS options
+    'JavaScript extensions':
+        'Extensions de Javascript',
 	'uncheck to disable support for\nnative JavaScript functions':
 		'desmarqueu per deshabilitar\nl\'execució de Javascript',
 	'check to support\nnative JavaScript functions':
 		'marqueu per habilitar\nl\'execució de Javascript',
-	'JavaScript is not enabled':
-		'l\'execució de Javascript està deshabilitada',
+	'JavaScript extensions for Snap!\nare turned off':
+		'Les extensions de JavaScript estan deshabilitades',
+    'Extension blocks':
+        'Blocs per Extensions',
+    'uncheck to hide extension\nprimitives in the palette':
+        'desmarqueu per amagar els blocs de primitives\nper a les extensions de la paleta',
+    'check to show extension\nprimitives in the palette':
+        'marqueu per mostrar els blocs de primitives\nper a les exensions a la paleta',
 
 //Libraries
 	'Loading':
 		'S\'està carregant',
 	'Imported':
 		'S\'ha importat',
+
 	'Iteration, composition':
 		'Iteracions i composició',
+    'Traditional loop constructs (while, until, etc.) plus the Lisp "named let" (a generalization of FOR) plus functional iteration (repeated invocation of a function) and function composition.':
+        'Construcció de bucles estàndard (while, until, etc.), construccions "named let" pròpies de Lisp (una generalització dels bucles "for"), iteració funcional (repeticions de crides a una funció) i composició de funcions.',
 	'List utilities':
 		'Utilitats per a llistes',
-	'Streams (lazy lists)':
-		'Streams (llistes presconstruides)',
+    'Some standard functions on lists (reverse, sort, etc.)':
+        'Funcions estàndard per a llistes (capgira, ordena, etc.)',
+    'Colors and Crayons':
+        'Colors i Paletes',
+    'Incorporates the former crayon and set RGB libraries.  Implements fair hues (more orange, less green, adds brown) and a linear color scale including grayscale and fair-hue-based shades.':
+        'Incorpora les llibreries inicials de Paletes de color i Colors RGB. Utilitza tonalitats més ajustades (més taronges, menys verds, afegeix marrons) i una escala de color lineal que inclou escala de grisos i més matisos de tonalitat.',
+    'Bignums, rationals, complex #s':
+        'Números sencers de precisió infinita, racionals exactes i complexos',
+    'The full Scheme numeric tower.  "USE BIGNUMS <True>" to enable.':
+        'Ens ofereix la implementació numèrica de Scheme. Cal habilitar els "Big Nums" (amb el bloc "USE BIGNUMS" a cert) per utilitzar-ho',
+	'Multi-branched conditional':
+		'Condicionals compostos',
+    'Like "switch" in C-like languages or "cond" in Lisp.  Thanks to Nathan Dinsmore for inventing the idea of a separate block for each branch!':
+        'La mateixa idea que la comanda "switch" en llenguatges tipus C o "cond" en Lisp. Gràcies a Nathan Dinsmore per inventar la idea de tenir un bloc separat per a cada branca!',
+	'Catch errors':
+		'Detecta errors',
+    'Run a script; if an error happens, instead of stopping the script with a red halo, run another script to handle the error. Also includes a block to cause an error with a message given as input. Also includes a block to create a script variable and give it a value.':
+        'Executa un programa i, si troba alguna errada, no atura el programa reportant un avís vermell sobre el bloc, sinó que permet definir un altre programa que pugui evitar aquesta errada. També inclou un bloc per enviar missatges d\'errades i també un altre per crear variables de programa i assignar el seu valor.',
+    'Parallelization':
+        'Processos en paral·lel',
+    'Run several scripts in parallel and wait until all are done.':
+        'Executa diversos scripts en paral·lel, i espera que hagin acabat tots els processos abans d\'aturar-se',
+    'Getters and setters':
+        'Llegir i establir paràmetres del sistema',
+    'Eisenberg\'s Law: Anything that can be done from the GUI should be doable from the programming language, and vice versa.':
+        'La llei de Eisenberg diu: Des de la programació s\'hauria de poder fer tot allò que es faci des de l\'entorn i les seves funcionalitats i configuració. I viceversa!',
 	'Variadic reporters':
 		'Càlculs multientrada',
-	'Web services access (https)':
-		'Accés a serveis Web (https)',
+    'Versions of +, x, AND, and OR that take more than two inputs.':
+        'Versions dels blocs +, x, AND i OR que tenen més de dues ranures',
+
+    'World Map':
+        'Mapa del món',
+    'Add interactive maps to projects':
+        'Afegeix mapes interactius als projectes.',
+    'Text Costumes':
+        'Text als vestits',
+    'Generate costumes from letters or words of text.':
+        'Genera vestits utilitzant lletres, paraules... o qualevol text.',
+    'Text to Speech':
+        'Lector de text',
+    'Output text using speech synthesis.':
+        'Utilitza la síntesi de veu per crear so des d\'un text',
+    'Animation':
+        'Animacions',
+    'Glide, grow and rotate using easing functions.':
+        'Fés lliscar, crèixer i girar els objectes utilitzant diferents formes i filtres a les animacions',
+    'Pixels':
+        'Píxels',
+    'Manipulate costumes pixel-wise.':
+        'Manipulem els píxels dels vestits',
+    'Audio Comp':
+        'Composició d\'audio',
+    'Analyze, manipulate and generate sound samples.':
+        'Analitza, manipula i genera mostres de so',
+    'Frequency Distribution Analysis':
+        'Anàlisi de la distribució de freqüències',
+    'Analyze data for frequency distribution':
+        'Analitza les dades de distribució de freqüències.',
+    'Database':
+        'Base de dades',
+    'Persistent key-value storage across Snap! sessions in the same browser':
+        'Desa al navegador dades (clau-valor) persistents entre sessions d\'Snap!',
+
 	'Words, sentences':
 		'Paraules i frases',
-	'Multi-branched conditional (switch)':
-		'Condicionals compostos (switch)',
+   'One of the big ideas in Logo that they left out of Scratch is thinking of text as structured into words and sentences, rather than just a string of characters.  This library brings back that idea.':
+        'Una de les idees importants en Logo que no va ser inclosa a Scratch era pensar en els textos com a una estructura de paraules i frases, més que no com una llista de caràcters. Aquesta llibreria torna a desenvolupar aquesta idea.',
+    'Strings, Multi-line input':
+        'Operadors de text i entrades multilínia',
+    'Extract substrings of a string in various ways. In general, text inputs allow only a single line.  The MULTILINE block accepts multi-line text input and can be used in text input slots of other blocks.':
+        'Extreu part de cadenes de text amb diversos criteris. El bloc "multilínia" permet afegir entrades de text multilínia en qualsevol entrada de blocs',
+    'APL primitives':
+        'Primitives APL',
+    'Adds features from the APL language supporting hyperblocks.':
+        'Afegeix funcionalitats del llenguatge APL als hiper-blocs.',
+	'Streams (lazy lists)':
+		'Streams (llistes presconstruides)',
+    'A variation on the list data type in which each list item isn\'t computed until it\'s needed, so you can construct million-item lists without really taking up all that time or memory, or even infinite-sized lists.  (A block that reports all the prime numbers is included as an example.)  See SICP 3.5 for a tutorial.':
+        'Variació del tipus de dades "llistes" on els elements de la llista no són avaluats fins que s\'utilitzen. D\'aquesta manera es poden construir llistes amb milions d\'elements sense un gran consum de memòria i fins i tot construir llistes de mida infinita. (S\'inclou un bloc d\'exemple que reporta tots els números primers.) Veieu el tutorial a SICP 3.5.',
+    'Bar charts':
+        'Gràfics de barres',
+    'Takes a table (typically from a CSV data set) as input and reports a summary of the table grouped by the field in the specified column number.  The remaining three inputs are used only if the field values are numbers, in which case they can be grouped into buckets (e.g., decades, centuries, etc.).  Those three inputs specify the smallest and largest values of interest and, most importantly, the width of a bucket (10 for decades, 100 for centuries).  If the field isn\'t numeric, leave these three inputs empty or set them to zero.  In that case, each string value of the field is its own bucket, and they appear sorted alphabetically.  The block reports a new table with three columns.  The first column contains the bucket name or smallest number.  The second column contains a nonnegative integer that says how many records in the input table fall into this bucket.  The third column is a subtable containing the actual records from the original table that fall into the bucket.  If your buckets aren\'t of constant width, or you want to group by some function of more than one field, load the "Frequency Distribution Analysis" library instead.':
+        'Agafa una taula (normalment obtinguda des d\'un fitxer CSV) com a entrada i obté un resum de la taula agrupant les dades pel camp especificat pel número de columna. Les altres tres entrades només s\'utilitzen si els valors d\'aquest camp són nombres, i llavors permet agrupar-los (per exemple en dècades, segles...). Aquestes tres entrades indiquen els valors més petits i més grans dels grups i, més important, la longitud de l\'agrupació (10 per dècades, 100 per segles). Si el camp no és numèric, cal deixar aquests tres camps buits o a zero. En aquest darrer cas, cada valor de text farà una agrupació (una dada a representar) i apareixerà en ordre alfabètic. El bloc retorna una nova taula amb tres columnes. La primera té el nom del grup. La segona el número de registres que té cada grup. I la tercera té una altra taula amb els registres originals que s\'han agrupat. Si les agrupacions no tenen una amplada constant o es vol agrupar per alguna funció o per més d\'un camp, cal utilitzar la llibreria "Anàlisi de la distribució de freqüències".',
+	'Web services access (https)':
+		'Accés a serveis Web (https)',
+    'An extended version of the URL block that allows POST, PUT, and DELETE as well as GET requests, allows using the secure HTTPS protocol, and gives control over headers, etc.  Also parses JSON data.':
+        'Una versió ampliada del bloc URL que permet treballar amb  crides "POST", "PUT", "DELETE" i "GET" i també triar el protocol "HTTP-HTTPS" i controlar les capçaleres. També permet treballar amb dades JSON.',
+    'Create variables':
+        'Crea variables',
+    'Create and manage global/sprite/script variables in a script':
+        'Crea i gestiona variables de tipus global/sprite/script dins els programes',
+
+    'Hummingbird robotics':
+        'Hummingbird robòtics',
+    'Control the Hummingbird robotics kit processor':
+        'Control per als kits Hummingbird.',
 	'LEAP Motion controller':
 		'Controladors per a LEAP Motion',
-	'Set RGB or HSV pen color':
-		'Acoloriment del llapis per RGB o HSV',
-	'Save and restore pictures drawn by pen':
-		'Gestió de les captures d\'imatges dibuixades',
-	'Catch errors in a script':
-		'Alternatives per les errades dels programes',
-	'Allow multi-line text input to a block':
-		'Entrades multilínia',
+    'Report hand positions from LEAP Motion controller (leapmotion.com).':
+        'Reporta la posició de les mans des de un controlador de moviment LEAP (leapmotion.com).',
+
 //
 	'(no matches)':
 		'(cap resultat)',
@@ -2524,6 +2729,8 @@ SnapTranslator.dict.ca = {
         '%rel a %dst',
     'distance':
         'distància',
+    'ray length':
+        'distància de xoc',
     'costume':
         'vestit',
     'sound':
@@ -2615,94 +2822,15 @@ SnapTranslator.dict.ca = {
 //
     'play %n Hz for %n secs':
         'toca %n Hz durant %n segons',
-//libreries
-    'Text Costumes':
-        'Text als vestits',
-    'Provide getters and setters for all GUI-controlled global settings':
-        'Getters i Setters pel paràmetres de configuració de la interfície',
-    'Infinite precision integers, exact rationals, complex':
-        'Números sencers de precisió infinita, racionals exactes i complexos',
-    'Provide 100 selected colors':
-        'Paleta de 100 colors',
-    'Text to speech':
-        'Lector de text',
-    'Animation':
-        'Animacions',
-    'Pixels':
-        'Píxels',
-    'Audio Comp':
-        'Composició d\'audio',
-    '"Bigger" Data':
-        'Treballant amb "Big Data"',
-    'Frequency Distribution Analysis':
-        'Anàlisi de la distribució de freqüències',
-    'World Map':
-        'Mapa del món',
-    'Create variables in program':
-        'Creant variables des del programa',
-    'Deal with JSON data':
-        'Tractament de dades JSON',
-    'Parallelization':
-        'Processos en paral·lel',
-    'String processing':
-        'Processant text',
-    'Standard library of powerful blocks (for, map, etc.)':
-        'Llibreria estàndard amb eines generals (for, map, etc.)',
-    'Traditional loop constructs (while, until, etc.) plus the Lisp "named let" (a generalization of FOR) plus functional iteration (repeated invocation of a function) and function composition.':
-        'Construcció de bucles estàndard (while, until, etc.), construccions "named let" pròpies de Lisp (una generalització dels bucles "for"), iteració funcional (repeticions de crides a una funció) i composició de funcions.',
-    'Some standard functions on lists (append, reverse, etc.)':
-        'Funcions estàndard per a llistes (append, reverse, etc.)',
-    'A variation on the list data type in which each list item aren\'t computed until it\'s needed, so you can construct million-item lists without really taking up all that time or memory, or even infinite-sized lists.  (A block that reports all the prime numbers is included as an example.)':
-        'Variació del tipus de dades "llistes" on els elements de la llista no són avaluats fins que s\'utilitzen. D\'aquesta manera es poden construir llistes amb milions d\'elements sense un gran consum de memòria i fins i tot construir llistes de mida infinita. (S\'inclou un bloc d\'exemple que reporta tots els números primers.)',
-    'Versions of +, x, AND, and OR that take more than two inputs.':
-        'Versions dels blocs +, x, AND i OR que tenen més de dues ranures',
-    'An extended version of the HTTP:// block that allows POST, PUT, and DELETE as well as GET requests, allows using the secure HTTPS protocol, and gives control over headers, etc.':
-        'Una versió ampliada del bloc "URL" que permet treballar amb  crides "POST", "PUT", "DELETE" i "GET" i també triar el protocol "HTTP-HTTPS" i controlar les capçaleres',
-    'One of the big ideas in Logo that they left out of Scratch is thinking of text as structured into words and sentences, rather than just a string of characters.  This library brings back that idea.':
-        'Una de les idees importants en Logo que no va ser inclosa a Scratch era pensar en els textos com a una estructura de paraules i frases, més que no com una llista de caràcters. Aquesta llibreria torna a desenvolupar aquesta idea.',
-    'Like "switch" in C-like languages or "cond" in Lisp.  Thanks to Nathan Dinsmore for inventing the idea of a separate block for each branch!':
-        'La mateixa idea que la comanda "switch" en llenguatges tipus C o "cond" en Lisp. Gràcies a Nathan Dinsmore per inventar la idea de tenir un bloc separat per a cada branca!',
-    'Report hand positions from LEAP Motion controller (leapmotion.com).':
-        'Reporta la posició de les mans des de un controlador de moviment LEAP (leapmotion.com).',
-    'Generate costumes from letters or words of text.':
-        'Genera vestits utilitzant lletres, paraules... o qualevol text.',
-    'Set or report pen color as RGB (red, green, blue) or HSV (hue, saturation, value).':
-        'Blocs per establir o reportar el color del llapis en RGB (vermell, verd i blau) o en HSV (tonalitat, saturació i valor).',
-    'Run a script; if an error happens, instead of stopping the script with a red halo, run another script to handle the error. Also includes a block to cause an error with a message given as input. Also includes a block to create a script variable and give it a value.':
-        'Executa un programa i, si troba alguna errada, no atura el programa reportant un avís vermell sobre el bloc, sinó que permet definir un altre programa que pugui evitar aquesta errada. També inclou un bloc per enviar missatges d\'errades i també un altre per crear variables de programa i assignar el seu valor.',
-    'In general, text inputs allow only a single line.  The MULTILINE block accepts multi-line text input and can be used in text input slots of other blocks.':
-        'De forma normal, les ranures només permeten escriure una línia de text. Aquesta llibreria ofereix un sol bloc "Multiline" que accepta múltiples línies de text. Aquest bloc es pot fer servir en altres entrades de text dels blocs per poder adquirir aquest caràcter multilínia',
-    'Eisenberg\'s Law: Anything that can be done from the GUI should be doable from the programming language, and vice versa.':
-        'La llei de Eisenberg diu: Des de la programació s\'hauria de poder fer tot allò que es faci des de l\'entorn i les seves funcionalitats i configuració. I viceversa!',
-    'The full Scheme numeric tower.  "USE BIGNUMS <True>" to enable.':
-        'Ens ofereix la implementació numèrica de Scheme. Cal habilitar els "Big Nums" (amb el bloc "USE BIGNUMS" a cert) per utilitzar-ho',
-    'to use instead of hue for better selection':
-        'Es pot utilitzar en comptes de la tonalitat del llapis per a una selecció més senzilla de colors',
-    'output text using speech synthesis.':
-        'Gràcies a la síntesi de veu per l\'ordinador podem obtenir audio automàticament llegint un text',
-    'glide, grow and rotate using easing functions.':
-        'Fés lliscar, crèixer i girar els objectes utilitzant diferents formes i filtres a les animacions',
-    'manipulate costumes pixel-wise.':
-        'Manipulem els píxels dels vestits',
-    'analyze, manipulate and generate sound samples.':
-        'Analitza, manipula i genera mostres de so',
-    '[EXPERIMENTAL] crunch large lists very fast':
-        '[EXPERIMENTAL] Processa llistes enormes molt ràpidament',
-    '[EXPERIMENTAL] analyze data for frequency distribution':
-        '[EXPERIMENTAL] Analitza dades per fer freqüències de distribució',
-    '[EXPERIMENTAL] add interactive maps to projects':
-        '[EXPERIMENTAL] Afegeix mapes cartogràfics interactius als teus projectes',
-    'Create and manage global/sprite/script variables in a script':
-        'Crea i gestiona variables de tipus global/sprite/script dins els programes',
-    'Turn JSON strings into lists with the listify block, then retrieve data out of them by using the value at key block.':
-        'Converteix les cadenes JSON en llistes utilitzant el bloc "listify". Utilitza els blocs de valors i claus per gestionar aquest tipus de llistes',
-    'Run several scripts in parallel and wait until all are done.':
-        'Executa diversos scripts en paral·lel, i espera que hagin acabat tots els processos abans d\'aturar-se',
-    'Extract substrings of a string in various ways':
-        'Extreu sub-cadenes de texts de diverses formes',
 //
     'translations...':
          'traduccions...',
+    'in palette':
+        'a la paleta',
+    'check to\nshow in palette':
+        'marqueu per mostrar-lo\na la paleta de blocs',
+    'uncheck to\nhide in palette':
+        'desmarqueu per ocultar-lo\na la paleta de blocs',
     'width':
         'amplada',
     'height':
@@ -2778,6 +2906,11 @@ SnapTranslator.dict.ca = {
     'uncheck to disable\nusing operators on lists and tables':
          'desmarqueu per deshabilitar\nla utilització dels operadors\nsobre llistes i taules',
     'check to enable\nusing operators on lists and tables':
-         'marqueu per habilitar\nla utilització dels operadors\nsobre llistes i taules'
+         'marqueu per habilitar\nla utilització dels operadors\nsobre llistes i taules',
+//
+    'senders...':
+        'emissors...',
+    'receivers...':
+        'receptors...'
 
 };
