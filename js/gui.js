@@ -289,11 +289,13 @@ function loadIDE(filename) {
 
   if (projectName != currentSnapProject) {
     $('#ideLoading').css("display", "block");
-    currentSnapProject = projectName;
 
     if (iframe != null) {
       iframe.remove();
+      iframe = null;
     }
+    
+    currentSnapProject = projectName;
     iframe = document.createElement("iframe");
     iframe.frameBorder = "0";
     if (useHID) {
