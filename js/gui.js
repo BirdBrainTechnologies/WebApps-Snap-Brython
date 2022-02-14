@@ -294,10 +294,11 @@ function loadIDE(filename) {
       iframe.remove();
       iframe = null;
     }
-    
+
     currentSnapProject = projectName;
     iframe = document.createElement("iframe");
     iframe.frameBorder = "0";
+    iframe.allow="microphone;camera;midi;encrypted-media;";
     if (useHID) {
       if(hidRobot != null && hidRobot.isFinch) {
         //iframe.setAttribute("style", "width: 100%; height: 80vh;")

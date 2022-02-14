@@ -4,7 +4,7 @@
 'use strict';
 
 // Update cache names any time any of the cached files change.
-const CACHE_NAME = 'static-cache-v19';
+const CACHE_NAME = 'static-cache-v20';
 
 // CODELAB: Add list of files to cache here.
 const FILES_TO_CACHE_1 = [
