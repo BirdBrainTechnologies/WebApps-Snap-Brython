@@ -22,6 +22,11 @@ window.birdbrain.robotType = {
   C: 4
 };
 
+//For the old style robots that connect over hid.
+window.bbtLegacy = {};
+window.bbtLegacy.sensorData = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
+window.bbtLegacy.isConnected = false;
+
 //console.log("setting up message channel")
 window.birdbrain.messageChannel = new MessageChannel();
 window.birdbrain.messageChannel.port1.onmessage = function(e) {
@@ -47,6 +52,12 @@ window.birdbrain.messageChannel.port1.onmessage = function(e) {
     if (e.data.connectionLost) {
       window.birdbrain.isConnected[robot] = false;
     }
+  }
+
+  if (e.data.hidSensorData != null ) {
+    window.bbtLegacy.sensorData = e.data.hidSensorData;
+    window.bbtLegacy.isFinch = e.data.isFinch;
+    window.bbtLegacy.isConnected = true;
   }
 }
 window.parent.postMessage("hello from snap", "*", [window.birdbrain.messageChannel.port2]);
@@ -311,8 +322,11 @@ window.birdbrain.wrapPython = function(src) {
   let replaced = stringsRemoved.replace(cr, commentText)
   //let replaced = stringsRemoved.replace(/#.*/g, "")
 
+  //remove any imports of sleep as brython does not support sleep
+  replaced = replaced.replace("from time import sleep", "")
+
   //Replace birdbrain function calls with async versions
-  replaced = replaced.replace(/([a-zA-Z_][a-zA-Z_0-9]*)\.(setMove|setTurn|setMotors|playNote|setTail|setBeak|setDisplay|print|setPoint|stopAll|setLED|setTriLED|setPositionServo|setRotationServo|stop|resetEncoders|getAcceleration|getCompass|getMagnetometer|getButton|isShaking|getOrientation|getLight|getSound|getDistance|getDial|getVoltage|getLine|getEncoder|getTemperature)/g, "await $1.$2")
+  replaced = replaced.replace(/([a-zA-Z_][a-zA-Z_0-9]*)\.(setMove|setTurn|setMotors|playNote|setTail|setBeak|setDisplay|print|setPoint|stopAll|setLED|setTriLED|setPositionServo|setRotationServo|stop|resetEncoders|getAcceleration|getCompass|getMagnetometer|getButton|isShaking|getOrientation|getLight|getSound|getDistance|getDial|getVoltage|getLine|getEncoder|getTemperature|buzzer_with_delay)/g, "await $1.$2")
   //Machine Learning
   replaced = replaced.replace(/MachineLearningModel\.load/g, "await MachineLearningModel.load")
   if (replaced.includes("MachineLearningModel")) {

@@ -1495,7 +1495,9 @@ const SNAP_FILES_TO_CACHE_4 = [
 
 const BRYTHON_FILES_TO_CACHE_1 = [
   'useBrython.html',
+  'LegacyBrython.html',
   'manifest-brython.json',
+  'manifest-legacybrython.json',
   'img/logo-brython.svg',
   'img/icon_brython_32x32.png',
   'img/icon_brython_128x128.png',
@@ -1506,6 +1508,7 @@ const BRYTHON_FILES_TO_CACHE_1 = [
   'fonts/Montserrat-Light.otf',
   //brython
   'brython/BirdBrain.py',
+  'brython/BirdBrainLegacy.py',
   'brython/birdBrainSetup.js',
   'brython/brython.css',
   'brython/console.css',

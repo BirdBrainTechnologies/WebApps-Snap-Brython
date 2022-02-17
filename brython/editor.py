@@ -44,6 +44,61 @@ defaultMicrobitScript = """from BirdBrain import Microbit
 myMicrobit = Microbit(\'A\')
 myMicrobit.print("hello")
 """
+defaultLegacyHummingbirdScript = """# Example LED program.
+# Plug in a single colored LED into port 1, a tri colored LED into tri-color
+# port 2, a motor into motor port 1, a sound sensor in port 4, and
+# a distance sensor into port 1.
+# Place the distance sensor so it will not detect anything within 80cm of itself.
+# To exit out of the program, move your hand in front of the distance sensor.
+from BirdBrainLegacy import Hummingbird
+from time import sleep
+
+humm = Hummingbird()
+distance = humm.get_distance(1)
+# Loop until object <20cm away detected
+while distance > 20:
+    # Get sound reading
+    sound = humm.get_raw_sensor_value(4)
+
+    # Set motor and leds
+    humm.set_motor(1,sound/255)
+    humm.set_single_led(1,sound)
+    humm.set_tricolor_led(2,sound, 255-sound, sound)
+
+    sleep(0.2)
+    distance = humm.get_distance(1)
+    print(distance)
+
+humm.close()
+"""
+defaultLegacyFinchScript = """# A simple program that randomly changes the LED when the Finch is tapped or shaken
+# Try it by setting the Finch on a table and tapping the top
+from BirdBrainLegacy import Finch
+from random import randint
+
+# Instantiate the Finch object and connect to Finch
+tweety = Finch()
+
+left, right = tweety.obstacle()
+
+# Do the following while no obstacles are detected by Finch
+while not left and not right:
+    # Get the accelerations
+    x, y, z, tap, shake = tweety.acceleration()
+
+    # Print the acceleration data
+    print("X is %.2f gees, Y is %.2f gees, Z is %.2f gees, tap is %r shake is %r" % (x, y, z, tap, shake));
+
+    # If a tap or shake has been detected recently, set the LED to a random color
+    if tap or shake:
+        tweety.led(randint(0,255), randint(0, 255), randint(0,255))
+
+    # Get obstacles to use to exit loop
+    left, right = tweety.obstacle()
+
+tweety.close()
+"""
+
 if (window.birdbrain.robotType.A == window.birdbrain.robotType.FINCH):
     defaultScript = defaultFinchScript
     currentScriptName = "FinchTest.py"
@@ -53,6 +108,13 @@ elif (window.birdbrain.robotType.A == window.birdbrain.robotType.HUMMINGBIRDBIT)
 elif (window.birdbrain.robotType.A == window.birdbrain.robotType.MICROBIT):
     defaultScript = defaultMicrobitScript
     currentScriptName = "MicrobitTest.py"
+elif (window.bbtLegacy.isConnected):
+    if (window.bbtLegacy.isFinch):
+        defaultScript = defaultLegacyFinchScript
+        currentScriptName = "LegacyFinchTest.py"
+    else:
+        defaultScript = defaultLegacyHummingbirdScript
+        currentScriptName = "LegacyHummingbirdTest.py"
 else:
     defaultScript = 'for i in range(10):\n\tprint(i)'
     currentScriptName = "Test.py"

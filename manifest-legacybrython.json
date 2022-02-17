@@ -1,0 +1,29 @@
+{
+  "name": "BirdBrain Legacy Brython",
+  "short_name": "BBT Legacy",
+  "icons": [{
+    "src": "img/icon_legacy_32x32.png",
+      "sizes": "32x32",
+      "type": "image/png"
+    }, {
+    "src": "img/icon_legacy_128x128.png",
+      "sizes": "128x128",
+      "type": "image/png"
+    }, {
+      "src": "img/icon_legacy_152x152.png",
+      "sizes": "152x152",
+      "type": "image/png"
+    }, {
+      "src": "img/icon_legacy_192x192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    }, {
+      "src": "img/icon_legacy_256x256.png",
+      "sizes": "256x256",
+      "type": "image/png"
+    }],
+  "start_url": "LegacyBrython.html",
+  "display": "fullscreen",
+  "background_color": "#881199",
+  "theme_color": "#089BAB"
+}

@@ -6,13 +6,22 @@
 # See included examples and documentation for how to use the API
 
 import time
-import hummingbirdconnection
+from browser import window, aio
+
+class RobotConnection:
+    def send(self, command):
+        window.birdbrain.sendCommand(command)
+
+    def receive(self):
+        return window.bbtLegacy.sensorData
+
+    def close(self):
+        pass #Do we need to close the connection?
 
 class Hummingbird():
 
     def __init__(self):
-        self.connection = hummingbirdconnection.ThreadedHummConnection()
-        self.connection.open()
+        self.connection = RobotConnection()
         self.get_all_sensors() # first sensor read sometimes provides incorrect results, so we do one immediately
 
     def set_tricolor_led(self, light, *args):
@@ -35,10 +44,17 @@ class Hummingbird():
         else:
             return
 
-        if (light == 1):
-            self.connection.send(b'O', [ord('0'), r, g, b]) # 0 is port 1, 1 is port 2 on Hummingbird
-        else:
-            self.connection.send(b'O', [ord('1'), r, g, b])
+        # if (light == 1):
+        #     self.connection.send(b'O', [ord('0'), r, g, b]) # 0 is port 1, 1 is port 2 on Hummingbird
+        # else:
+        #     self.connection.send(b'O', [ord('1'), r, g, b])
+        self.connection.send({
+            'message': ord('O'),
+            'port': ord(str(light-1)),
+            'red': r,
+            'green': g,
+            'blue': b
+        })
 
     def set_single_led(self, light, intensity):
         """Controls the single colored LED's
@@ -49,7 +65,12 @@ class Hummingbird():
         """
 
         corrected_light = (int(light) -1) % 4 + 48 # We're adding 48 as this is the unicode value of '0'
-        self.connection.send(b'L', [corrected_light, int(intensity)%256])
+        #self.connection.send(b'L', [corrected_light, int(intensity)%256])
+        self.connection.send({
+            'message': ord('L'),
+            'port': corrected_light,
+            'intensity': int(intensity)%256
+        })
 
     def set_motor(self, motor, speed):
         """Controls the two motors
@@ -61,7 +82,13 @@ class Hummingbird():
         corrected_motor = (int(motor) - 1)%2 + 48
         corrected_direction = int((speed)<0) + 48
         corrected_speed = min(abs(int(speed*255)),255)
-        self.connection.send(b'M', [corrected_motor, corrected_direction, corrected_speed])
+        #self.connection.send(b'M', [corrected_motor, corrected_direction, corrected_speed])
+        self.connection.send({
+            'message': ord('M'),
+            'port': corrected_motor,
+            'direction': corrected_direction,
+            'velocity': corrected_speed
+        })
 
     def set_all_motors(self,speedone, speedtwo):
         """Controls both motors at the same time
@@ -83,7 +110,12 @@ class Hummingbird():
         """
         corrected_motor = (int(motor) - 1)%2 + 48
         corrected_intensity = (int(intensity) %256)
-        self.connection.send(b'V', [corrected_motor, corrected_intensity])
+        #self.connection.send(b'V', [corrected_motor, corrected_intensity])
+        self.connection.send({
+            'message': ord('V'),
+            'port': corrected_motor,
+            'intensity': corrected_intensity
+        })
 
     def set_servo(self, port, angle):
         """Controls the angle of the servos
@@ -93,7 +125,12 @@ class Hummingbird():
         """
         corrected_port = (int(port) - 1)%4 + 48
         corrected_angle = (int(angle*230/180))%231
-        self.connection.send(b'S', [corrected_port, corrected_angle])
+        #self.connection.send(b'S', [corrected_port, corrected_angle])
+        self.connection.send({
+            'message': ord('S'),
+            'port': corrected_port,
+            'angle': corrected_angle
+        })
 
     def get_raw_sensor_value(self, port):
         """Gets the reading of the specified port.
@@ -102,11 +139,13 @@ class Hummingbird():
           -returns: a float between 0 - 255, 0 corresponds to 0V, 255 corresponds
           to 5V, increases linearly.
         """
-        corrected_port = (int(port) - 1)%4 + 48
-        self.connection.send(b's', [corrected_port])
+        #corrected_port = (int(port) - 1)%4 + 48
+        corrected_port = (int(port) - 1)%4
+        #self.connection.send(b's', [corrected_port])
         data = self.connection.receive()
-        if data is not None:
-            return data[0]
+        #if data is not None:
+        #    return data[0]
+        return data[corrected_port]
 
     def get_light_sensor(self,port):
         """See get_raw_sensor_value"""
@@ -156,7 +195,7 @@ class Hummingbird():
           -returns: four floats between 0 - 255, 0 corresponds to 0V, 255 corresponds
           to 5V, increases linearly.
         """
-        self.connection.send(b'G', [51]) # 51 is the unicode value of ascii 3
+        #self.connection.send(b'G', [51]) # 51 is the unicode value of ascii 3
         data = self.connection.receive()
         if data is not None:
             one = data[0]
@@ -170,7 +209,7 @@ class Hummingbird():
 
           -returns: true if they're plugged in, false otherwise
         """
-        self.connection.send(b'G', [51]) # 51 is the unicode value of ascii 3
+        #self.connection.send(b'G', [51]) # 51 is the unicode value of ascii 3
         data = self.connection.receive()
         if data is not None:
             if data[4] == 1:
@@ -180,9 +219,14 @@ class Hummingbird():
 
     def halt(self):
         """ Set all motors and LEDs to off. """
-        self.connection.send(b'X', [0])
+        #self.connection.send(b'X', [0])
+        self.connection.send({
+            'message': ord('X'),
+            'value': 0
+        })
 
     def close(self):
+        self.halt()
         self.connection.close()
 
 
@@ -194,14 +238,10 @@ class Hummingbird():
 # http://www.finchrobot.com
 # See included examples and documentation for how to use the API
 
-import time
-import finchconnection
-
 class Finch():
 
     def __init__(self):
-        self.connection = finchconnection.ThreadedFinchConnection()
-        self.connection.open()
+        self.connection = RobotConnection()
 
     def led(self, *args):
         """Control three LEDs (orbs).
@@ -219,7 +259,13 @@ class Finch():
                 b = int(color[5:7], 16)
         else:
             return
-        self.connection.send(b'O', [r, g, b])
+        #self.connection.send(b'O', [r, g, b])
+        self.connection.send({
+            'message': ord('O'),
+            'red': r,
+            'green': g,
+            'blue': b
+        })
 
     def buzzer(self, duration, frequency):
         """ Outputs sound. Does not wait until a note is done beeping.
@@ -228,28 +274,43 @@ class Finch():
         frequency - integer frequency, in hertz (HZ).
         """
         millisec = int(duration * 1000)
-        self.connection.send(b'B',
-                [(millisec & 0xff00) >> 8, millisec & 0x00ff,
-                 (frequency & 0xff00) >> 8, frequency & 0x00ff])
+        #self.connection.send(b'B',
+        #        [(millisec & 0xff00) >> 8, millisec & 0x00ff,
+        #         (frequency & 0xff00) >> 8, frequency & 0x00ff])
+        self.connection.send({
+            'message': ord('B'),
+            'timeHigh': (millisec & 0xff00) >> 8,
+            'timeLow': millisec & 0x00ff,
+            'freqHigh': (frequency & 0xff00) >> 8,
+            'freqLow': requency & 0x00ff
+        })
 
-    def buzzer_with_delay(self, duration, frequency):
+    async def buzzer_with_delay(self, duration, frequency):
         """ Outputs sound. Waits until a note is done beeping.
 
         duration - duration to beep, in seconds (s).
         frequency - integer frequency, in hertz (HZ).
         """
         millisec = int(duration * 1000)
-        self.connection.send(b'B',
-                [(millisec & 0xff00) >> 8, millisec & 0x00ff,
-                 (frequency & 0xff00) >> 8, frequency & 0x00ff])
-        time.sleep(duration*1.05)
+        #self.connection.send(b'B',
+        #        [(millisec & 0xff00) >> 8, millisec & 0x00ff,
+        #         (frequency & 0xff00) >> 8, frequency & 0x00ff])
+        self.connection.send({
+            'message': ord('B'),
+            'timeHigh': (millisec & 0xff00) >> 8,
+            'timeLow': millisec & 0x00ff,
+            'freqHigh': (frequency & 0xff00) >> 8,
+            'freqLow': requency & 0x00ff
+        })
+        #time.sleep(duration*1.05)
+        await aio.sleep(duration*1.05)
 
     def light(self):
         """ Get light sensor readings. The values ranges from 0.0 to 1.0.
 
             returns - a tuple(left, right) of two real values
          """
-        self.connection.send(b'L')
+        #self.connection.send(b'L')
         data = self.connection.receive()
         if data is not None:
             left = data[0] / 255.0
@@ -261,20 +322,23 @@ class Finch():
 
         returns - a tuple(left,right) of two boolean values
         """
-        self.connection.send(b'I')
+        #self.connection.send(b'I')
         data = self.connection.receive()
         if data is not None:
-            left = data[0] != 0
-            right = data[1] != 0
+            #left = data[0] != 0
+            #right = data[1] != 0
+            left = data[5] != 0
+            right = data[6] != 0
             return left, right
 
     def temperature(self):
         """ Returns temperature in degrees Celcius. """
 
-        self.connection.send(b'T')
+        #self.connection.send(b'T')
         data = self.connection.receive()
         if data is not None:
-            return (data[0] - 127) / 2.4 + 25;
+            #return (data[0] - 127) / 2.4 + 25;
+            return data[7]
 
     def convert_raw_accel(self, a):
         """Converts the raw acceleration obtained from the hardware into G's"""
@@ -299,9 +363,13 @@ class Finch():
         self.connection.send(b'A')
         data = self.connection.receive()
         if data is not None:
-            x = self.convert_raw_accel(data[1])
-            y = self.convert_raw_accel(data[2])
-            z = self.convert_raw_accel(data[3])
+            #x = self.convert_raw_accel(data[1])
+            #y = self.convert_raw_accel(data[2])
+            #z = self.convert_raw_accel(data[3])
+            x = self.convert_raw_accel(data[2])
+            y = self.convert_raw_accel(data[3])
+            z = self.convert_raw_accel(data[4])
+            # TODO: not sure where I can get tap and shake now
             tap = (data[4] & 0x20) != 0
             shake = (data[4] & 0x80) != 0
             return (x, y, z, tap, shake)
@@ -318,11 +386,23 @@ class Finch():
         dir_right = int(right < 0)
         left = min(abs(int(left * 255)), 255)
         right = min(abs(int(right * 255)), 255)
-        self.connection.send(b'M', [dir_left, left, dir_right, right])
+        #self.connection.send(b'M', [dir_left, left, dir_right, right])
+        self.connection.send({
+            'message': ord('M'),
+            'leftDirection': dir_left,
+            'leftSpeed': left,
+            'rightDirection': dir_right,
+            'rightSpeed': right
+        })
 
     def halt(self):
         """ Set all motors and LEDs to off. """
-        self.connection.send(b'X', [0])
+        #self.connection.send(b'X', [0])
+        self.connection.send({
+            'message': ord('X'),
+            'value': 0
+        })
 
     def close(self):
+        self.halt()
         self.connection.close()

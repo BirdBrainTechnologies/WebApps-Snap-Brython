@@ -131,7 +131,8 @@ HidRobot.prototype.handleInputReport = function(e) {
   }
   //console.log(this.currentSensorData)
   sendMessage({
-    hidSensorData: this.currentSensorData
+    hidSensorData: this.currentSensorData,
+    isFinch: this.isFinch
   });
 }
 /**

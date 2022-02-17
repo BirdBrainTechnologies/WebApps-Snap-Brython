@@ -250,6 +250,8 @@ function loadIDE(filename) {
   if (useHID) {
     if (hidRobot == null) {
       console.error("Opening snap with no robot connected?")
+    } else if (!useSnap) {
+      console.log("Using Legacy Brython")
     } else if (hidRobot.isFinch) {
       //The project name will be selected in by the modal
       if (filename) {

@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8" />
+
+		<!-- iOS meta tags and icons -->
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+		<meta name="apple-mobile-web-app-title" content="BirdBrain PWA">
+		<link rel="apple-touch-icon" href="img/icon_legacy_152x152.png">
+
+		<!-- PWA manifest -->
+		<link rel="manifest" href="manifest-legacybrython.json">
+		<!-- PWA info -->
+		<meta name="theme-color" content="#089BAB" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>BirdBrain Legacy Brython</title>
+		<meta name="description" content="A Web App from BirdBrain Technologies. Use Brython to program your Finch Robot or Hummingbird Robotics Kit.">
+
+
+		<script src="js/jquery.js" ></script>
+		<link href="fontawesome/css/all.min.css" rel="stylesheet" type="text/css">
+		<link href="css/bootstrap.min.css" rel="stylesheet" type="text/css">
+		<link href="css/fonts.css" rel="stylesheet" type="text/css">
+		<link href="css/custom.css" rel="stylesheet" type="text/css">
+	<!--	<link href="css/chromebook.css" rel="stylesheet" type="text/css"> -->
+		<link rel="icon"  type="image/png" href="img/icon_legacy_32x32.png">
+
+	</head>
+	<body>
+		<header id="main-header">
+			<div class="row">
+				<div id=programmingLang>
+
+
+				</div>
+				<div class="col-xs-12">
+					<div class="col-xs-4 text-right">
+						<img id="hummingbird-logo" class="logo-legacy" src="img/hummingbirdDuo.png" alt="hummingbird" />
+					</div>
+					<div class="col-xs-4">
+						<img id="bbt-logo" class="logo-legacy" src="img/birdbrain-logo-h.png" alt="BirdBrain Technologies LLC" />
+					</div>
+					<div class="col-xs-4 text-left">
+						<img id="finch-logo" class="logo-legacy" src="img/originalFinch.png" alt="finch" />
+					</div>
+				</div>
+				<div id="indicators">
+					<div id="indicator-wifi" class="fa-stack /*indicator-on*/">
+						<i class="icon fas fa-fw fa-wifi fa-stack-2x"></i>
+						<i class="dot fas fa-circle fa-stack-1x"></i>
+					</div>
+					<div id="butInstall" class="fa-stack" aria-label="Install" hidden>
+						<a id="btn-install" class="btn btn-orange">
+							<i class="fas fa-download fa-lg"></i>
+						</a>
+					</div>
+				</div>
+			</div>
+		</header>
+
+		<section id="finder" style="display: block;">
+			<div class="container">
+				<div class="row">
+					<div class="col-xs-12 text-center">
+						<a id="find-button" class="btn btn-orange btn-lg" href="#">
+							<!-- <i class="fas fa-sync-alt /*fa-spin*/"></i> -->
+							<span id="findBtnText"> Find Robots</span>
+						</a>
+					</div>
+					<!-- for now, we must use the default popup. When the scanning api is ready we can use this again: https://github.com/WebBluetoothCG/web-bluetooth/blob/master/implementation-status.md
+					<div class="col-xs-12">
+						<div id="robots-found" class="robot-list">
+
+						</div>
+					</div>-->
+				</div>
+			</div>
+		</section>
+
+		<section id="connected">
+			<div class="container">
+
+			</div>
+		</section>
+
+		<section id="connected-expanded" style="visibility:hidden">
+			<div class="container">
+				<div class="row">
+					<!--<div class="col-xs-12 text-center">
+						<div id="btn-change-level" style="display: none; margin-bottom: 15px;"><a class="btn btn-lg btn-orange" ><b>Change Level</b></a></div>
+					</div>-->
+				</div>
+				<div class="row">
+					<div class="col-xs-12" id="snap-div">
+						<i id="ideLoading" class="dot dot-spin fas fa-sync-alt fa-spin fa-stack-2x"></i>
+						<!-- snap iframe will be added here -->
+					</div>
+				</div>
+			</div>
+		</section>
+
+		<!-- Include main code -->
+		<script>const useSnap=false;</script>
+		<script>var useHID=true;</script>
+		<script src="js/install.js"></script>
+		<script src="js/translations.js"></script>
+		<script src="js/messages.js"></script>
+		<script src="js/gui.js"></script>
+		<script src="js/hidRobot.js"></script>
+		<script src="js/hid.js"></script>
+
+		<script>
+	    // Register service worker.
+	    if ('serviceWorker' in navigator) {
+	      window.addEventListener('load', () => {
+	        navigator.serviceWorker.register('service-worker-legacybrython.js', {
+    				updateViaCache: 'none'
+  				}).then((reg) => {
+	            console.log('Service worker registered.', reg);
+	          }).catch(error => {
+				      console.error("Error registering service worker: " + error.message);
+				    });
+					onLoad();
+	      });
+	    }
+  	</script>
+
+	</body>
+</html>
