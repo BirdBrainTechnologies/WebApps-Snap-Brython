@@ -6,7 +6,7 @@
 function HidRobot(device) {
   this.device = device
   this.isFinch = (device.productId == 0x1111) //0x2222 for HB?
-  this.currentSensorData = [0,0,0,0,0,0,0,0]
+  this.currentSensorData = [0,0,0,0,0,0,0,0,0]
   this.pollingTimer = null
 
   //finch only
@@ -141,7 +141,7 @@ HidRobot.prototype.handleInputReport = function(e) {
  * NOTE: calculations are already made to convert the raw sensor data into
  * usable information. Temperature is in Celcius.
  *
- * currentSensorData - LL | RL | AX | AY | AZ | LO | RO | T
+ * currentSensorData - LL | RL | AX | AY | AZ | LO | RO | T | TS
  *
  * @param  {type} data incomming sensor data
  */
@@ -156,6 +156,7 @@ HidRobot.prototype.sortFinchMessages = function(data) {
         this.currentSensorData[5] = data_array[0]
         this.currentSensorData[6] = data_array[1]
     } else if (data_array[0] === 153) {
+        this.currentSensorData[8] = data_array[4] // tap/shake
         var newdata = Array(3);
         for (var i = 1; i < 4; i++) {
             let value

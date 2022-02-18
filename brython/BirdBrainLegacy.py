@@ -8,11 +8,15 @@
 import time
 from browser import window, aio
 
+#Time to wait to make sure the value read from the sensor is recent
+WAIT_BEFORE_SENSOR_READ = 0.05
+
 class RobotConnection:
     def send(self, command):
         window.birdbrain.sendCommand(command)
 
-    def receive(self):
+    async def receive(self):
+        await aio.sleep(WAIT_BEFORE_SENSOR_READ)
         return window.bbtLegacy.sensorData
 
     def close(self):
@@ -44,10 +48,6 @@ class Hummingbird():
         else:
             return
 
-        # if (light == 1):
-        #     self.connection.send(b'O', [ord('0'), r, g, b]) # 0 is port 1, 1 is port 2 on Hummingbird
-        # else:
-        #     self.connection.send(b'O', [ord('1'), r, g, b])
         self.connection.send({
             'message': ord('O'),
             'port': ord(str(light-1)),
@@ -65,7 +65,6 @@ class Hummingbird():
         """
 
         corrected_light = (int(light) -1) % 4 + 48 # We're adding 48 as this is the unicode value of '0'
-        #self.connection.send(b'L', [corrected_light, int(intensity)%256])
         self.connection.send({
             'message': ord('L'),
             'port': corrected_light,
@@ -82,7 +81,6 @@ class Hummingbird():
         corrected_motor = (int(motor) - 1)%2 + 48
         corrected_direction = int((speed)<0) + 48
         corrected_speed = min(abs(int(speed*255)),255)
-        #self.connection.send(b'M', [corrected_motor, corrected_direction, corrected_speed])
         self.connection.send({
             'message': ord('M'),
             'port': corrected_motor,
@@ -110,7 +108,6 @@ class Hummingbird():
         """
         corrected_motor = (int(motor) - 1)%2 + 48
         corrected_intensity = (int(intensity) %256)
-        #self.connection.send(b'V', [corrected_motor, corrected_intensity])
         self.connection.send({
             'message': ord('V'),
             'port': corrected_motor,
@@ -125,58 +122,53 @@ class Hummingbird():
         """
         corrected_port = (int(port) - 1)%4 + 48
         corrected_angle = (int(angle*230/180))%231
-        #self.connection.send(b'S', [corrected_port, corrected_angle])
         self.connection.send({
             'message': ord('S'),
             'port': corrected_port,
             'angle': corrected_angle
         })
 
-    def get_raw_sensor_value(self, port):
+    async def get_raw_sensor_value(self, port):
         """Gets the reading of the specified port.
 
           -port: 1 for port 1, 2 for port 2, 3 for port 3, 4 for port 4
           -returns: a float between 0 - 255, 0 corresponds to 0V, 255 corresponds
           to 5V, increases linearly.
         """
-        #corrected_port = (int(port) - 1)%4 + 48
         corrected_port = (int(port) - 1)%4
-        #self.connection.send(b's', [corrected_port])
-        data = self.connection.receive()
-        #if data is not None:
-        #    return data[0]
+        data = await self.connection.receive()
         return data[corrected_port]
 
-    def get_light_sensor(self,port):
+    async def get_light_sensor(self,port):
         """See get_raw_sensor_value"""
-        return self.get_raw_sensor_value(port)
+        return await self.get_raw_sensor_value(port)
 
-    def get_knob_value(self,port):
+    async def get_knob_value(self,port):
         """See get_raw_sensor_value"""
-        return self.get_raw_sensor_value(port)
+        return await self.get_raw_sensor_value(port)
 
-    def get_sound_sensor(self,port):
+    async def get_sound_sensor(self,port):
         """See get_raw_sensor_value"""
-        return self.get_raw_sensor_value(port)
+        return await self.get_raw_sensor_value(port)
 
-    def get_temperature(self, port):
+    async def get_temperature(self, port):
         """Gets the temperature (C) of the specified port.
 
           -REQUIRES: Given port has temperature sensor plugged in.
           -port: 1 for port 1, 2 for port 2, 3 for port 3, 4 for port 4
           -returns: A temperature in C.
         """
-        raw_temp = self.get_raw_sensor_value(port)
+        raw_temp = await self.get_raw_sensor_value(port)
         return int((raw_temp - 127)/2.4+25)
 
-    def get_distance(self,port):
+    async def get_distance(self,port):
         """Gets the distance (cm) of the specified port.
 
           -REQUIRES: Given port has distance sensor plugged in.
           -port: 1 for port 1, 2 for port 2, 3 for port 3, 4 for port 4
           -returns: A distance in cm.
         """
-        raw_distance = self.get_raw_sensor_value(port)
+        raw_distance = await self.get_raw_sensor_value(port)
         if raw_distance < 23:
             return 80
         else:
@@ -189,14 +181,13 @@ class Hummingbird():
                 temp = 8
             return int(temp)
 
-    def get_all_sensors(self):
+    async def get_all_sensors(self):
         """Gets the reading of all four Hummingbird sensor ports
 
           -returns: four floats between 0 - 255, 0 corresponds to 0V, 255 corresponds
           to 5V, increases linearly.
         """
-        #self.connection.send(b'G', [51]) # 51 is the unicode value of ascii 3
-        data = self.connection.receive()
+        data = await self.connection.receive()
         if data is not None:
             one = data[0]
             two = data[1]
@@ -204,13 +195,12 @@ class Hummingbird():
             four = data[3]
             return one, two, three, four
 
-    def are_motors_powered(self):
+    async def are_motors_powered(self):
         """Detects if motor power is plugged in
 
           -returns: true if they're plugged in, false otherwise
         """
-        #self.connection.send(b'G', [51]) # 51 is the unicode value of ascii 3
-        data = self.connection.receive()
+        data = await self.connection.receive()
         if data is not None:
             if data[4] == 1:
                 return True
@@ -219,7 +209,6 @@ class Hummingbird():
 
     def halt(self):
         """ Set all motors and LEDs to off. """
-        #self.connection.send(b'X', [0])
         self.connection.send({
             'message': ord('X'),
             'value': 0
@@ -259,7 +248,6 @@ class Finch():
                 b = int(color[5:7], 16)
         else:
             return
-        #self.connection.send(b'O', [r, g, b])
         self.connection.send({
             'message': ord('O'),
             'red': r,
@@ -274,9 +262,6 @@ class Finch():
         frequency - integer frequency, in hertz (HZ).
         """
         millisec = int(duration * 1000)
-        #self.connection.send(b'B',
-        #        [(millisec & 0xff00) >> 8, millisec & 0x00ff,
-        #         (frequency & 0xff00) >> 8, frequency & 0x00ff])
         self.connection.send({
             'message': ord('B'),
             'timeHigh': (millisec & 0xff00) >> 8,
@@ -292,62 +277,45 @@ class Finch():
         frequency - integer frequency, in hertz (HZ).
         """
         millisec = int(duration * 1000)
-        #self.connection.send(b'B',
-        #        [(millisec & 0xff00) >> 8, millisec & 0x00ff,
-        #         (frequency & 0xff00) >> 8, frequency & 0x00ff])
         self.connection.send({
             'message': ord('B'),
             'timeHigh': (millisec & 0xff00) >> 8,
             'timeLow': millisec & 0x00ff,
             'freqHigh': (frequency & 0xff00) >> 8,
-            'freqLow': requency & 0x00ff
+            'freqLow': frequency & 0x00ff
         })
-        #time.sleep(duration*1.05)
         await aio.sleep(duration*1.05)
 
-    def light(self):
+    async def light(self):
         """ Get light sensor readings. The values ranges from 0.0 to 1.0.
 
             returns - a tuple(left, right) of two real values
          """
-        #self.connection.send(b'L')
-        data = self.connection.receive()
+        data = await self.connection.receive()
         if data is not None:
-            left = data[0] / 255.0
-            right = data[1] / 255.0
+            # web app data is scaled but in range of 0 to 100
+            left = data[0] / 100.0
+            right = data[1] / 100.0
             return left, right
 
-    def obstacle(self):
+    async def obstacle(self):
         """Get obstacle sensor readings.
 
         returns - a tuple(left,right) of two boolean values
         """
-        #self.connection.send(b'I')
-        data = self.connection.receive()
+        data = await self.connection.receive()
         if data is not None:
-            #left = data[0] != 0
-            #right = data[1] != 0
             left = data[5] != 0
             right = data[6] != 0
             return left, right
 
-    def temperature(self):
+    async def temperature(self):
         """ Returns temperature in degrees Celcius. """
-
-        #self.connection.send(b'T')
-        data = self.connection.receive()
+        data = await self.connection.receive()
         if data is not None:
-            #return (data[0] - 127) / 2.4 + 25;
-            return data[7]
+            return data[7] #scaling done in web app
 
-    def convert_raw_accel(self, a):
-        """Converts the raw acceleration obtained from the hardware into G's"""
-
-        if a > 31:
-            a -= 64
-        return a * 1.6 / 32.0
-
-    def acceleration(self):
+    async def acceleration(self):
         """ Returns the (x, y, z, tap, shake).  x, y, and z, are
             the acceleration readings in units of G's, and range
             from -1.5 to 1.5.
@@ -360,21 +328,16 @@ class Finch():
             happened.
         """
 
-        self.connection.send(b'A')
-        data = self.connection.receive()
+        data = await self.connection.receive()
         if data is not None:
-            #x = self.convert_raw_accel(data[1])
-            #y = self.convert_raw_accel(data[2])
-            #z = self.convert_raw_accel(data[3])
-            x = self.convert_raw_accel(data[2])
-            y = self.convert_raw_accel(data[3])
-            z = self.convert_raw_accel(data[4])
-            # TODO: not sure where I can get tap and shake now
-            tap = (data[4] & 0x20) != 0
-            shake = (data[4] & 0x80) != 0
+            x = data[2] #scaling done in web app
+            y = data[3] #scaling done in web app
+            z = data[4] #scaling done in web app
+            tap = (data[8] & 0x20) != 0
+            shake = (data[8] & 0x80) != 0
             return (x, y, z, tap, shake)
 
-    def wheels(self, left, right):
+    async def wheels(self, left, right):
         """ Controls the left and right wheels.
 
         Values must range from -1.0 (full throttle reverse) to
@@ -386,7 +349,6 @@ class Finch():
         dir_right = int(right < 0)
         left = min(abs(int(left * 255)), 255)
         right = min(abs(int(right * 255)), 255)
-        #self.connection.send(b'M', [dir_left, left, dir_right, right])
         self.connection.send({
             'message': ord('M'),
             'leftDirection': dir_left,
@@ -394,10 +356,10 @@ class Finch():
             'rightDirection': dir_right,
             'rightSpeed': right
         })
+        await aio.sleep(0.1)
 
     def halt(self):
         """ Set all motors and LEDs to off. """
-        #self.connection.send(b'X', [0])
         self.connection.send({
             'message': ord('X'),
             'value': 0

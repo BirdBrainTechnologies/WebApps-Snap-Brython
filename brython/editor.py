@@ -87,7 +87,7 @@ while not left and not right:
     x, y, z, tap, shake = tweety.acceleration()
 
     # Print the acceleration data
-    print("X is %.2f gees, Y is %.2f gees, Z is %.2f gees, tap is %r shake is %r" % (x, y, z, tap, shake));
+    print("X is %.1f gees, Y is %.1f gees, Z is %.1f gees, tap is %r shake is %r" % (x, y, z, tap, shake));
 
     # If a tap or shake has been detected recently, set the LED to a random color
     if tap or shake:
