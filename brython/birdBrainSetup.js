@@ -55,6 +55,13 @@ window.birdbrain.messageChannel.port1.onmessage = function(e) {
   }
 
   if (e.data.hidSensorData != null ) {
+    if (window.bbtLegacy.isConnected == false) {
+      //This robot has just connected, or we are just loading. Get a fresh start:
+      window.birdbrain.sendCommand({
+              'message': "X".charCodeAt(0),
+              'value': 0
+      })
+    }
     window.bbtLegacy.sensorData = e.data.hidSensorData;
     window.bbtLegacy.isFinch = e.data.isFinch;
     window.bbtLegacy.isConnected = true;
@@ -327,7 +334,7 @@ window.birdbrain.wrapPython = function(src) {
 
   //Replace birdbrain function calls with async versions
   // replaced = replaced.replace(/([a-zA-Z_][a-zA-Z_0-9]*)\.(setMove|setTurn|setMotors|playNote|setTail|setBeak|setDisplay|print|setPoint|stopAll|setLED|setTriLED|setPositionServo|setRotationServo|stop|resetEncoders|getAcceleration|getCompass|getMagnetometer|getButton|isShaking|getOrientation|getLight|getSound|getDistance|getDial|getVoltage|getLine|getEncoder|getTemperature|buzzer_with_delay)/g, "await $1.$2")
-  let fnr = new RegExp("([a-zA-Z_][a-zA-Z_0-9]*)\." +
+  let fnr = new RegExp("([a-zA-Z_][a-zA-Z_0-9]*)\\." +
     "(setMove|setTurn|setMotors|playNote|setTail|setBeak|setDisplay|print" +
     "|setPoint|stopAll|setLED|setTriLED|setPositionServo|setRotationServo" +
     "|stop|resetEncoders|getAcceleration|getCompass|getMagnetometer|getButton" +
@@ -335,7 +342,9 @@ window.birdbrain.wrapPython = function(src) {
     "|getVoltage|getLine|getEncoder|getTemperature|buzzer_with_delay" +
     "|get_raw_sensor_value|get_light_sensor|get_knob_value|get_sound_sensor" +
     "|get_temperature|get_distance|get_all_sensors|are_motors_powered|light" +
-    "|obstacle|temperature|acceleration|wheels)", "g")
+    "|obstacle|temperature|acceleration|wheels|set_tricolor_led|set_single_led" +
+    "|set_motor|set_all_motors|set_vibration_motor|set_servo|halt|close|led" +
+    "|buzzer)", "g")
   replaced = replaced.replace(fnr, "await $1.$2")
   //Machine Learning
   replaced = replaced.replace(/MachineLearningModel\.load/g, "await MachineLearningModel.load")

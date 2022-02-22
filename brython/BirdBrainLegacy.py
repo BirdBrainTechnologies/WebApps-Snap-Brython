@@ -12,8 +12,9 @@ from browser import window, aio
 WAIT_BEFORE_SENSOR_READ = 0.05
 
 class RobotConnection:
-    def send(self, command):
+    async def send(self, command):
         window.birdbrain.sendCommand(command)
+        await aio.sleep(0.01)
 
     async def receive(self):
         await aio.sleep(WAIT_BEFORE_SENSOR_READ)
@@ -28,7 +29,7 @@ class Hummingbird():
         self.connection = RobotConnection()
         self.get_all_sensors() # first sensor read sometimes provides incorrect results, so we do one immediately
 
-    def set_tricolor_led(self, light, *args):
+    async def set_tricolor_led(self, light, *args):
         """Control the two tricolored LEDs (orbs).
         First argument is which port, second is the color.
 
@@ -48,7 +49,7 @@ class Hummingbird():
         else:
             return
 
-        self.connection.send({
+        await self.connection.send({
             'message': ord('O'),
             'port': ord(str(light-1)),
             'red': r,
@@ -56,7 +57,7 @@ class Hummingbird():
             'blue': b
         })
 
-    def set_single_led(self, light, intensity):
+    async def set_single_led(self, light, intensity):
         """Controls the single colored LED's
         First argument is which port, second is intensity.
 
@@ -65,13 +66,13 @@ class Hummingbird():
         """
 
         corrected_light = (int(light) -1) % 4 + 48 # We're adding 48 as this is the unicode value of '0'
-        self.connection.send({
+        await self.connection.send({
             'message': ord('L'),
             'port': corrected_light,
             'intensity': int(intensity)%256
         })
 
-    def set_motor(self, motor, speed):
+    async def set_motor(self, motor, speed):
         """Controls the two motors
 
           -motor: 1 for motor 1, 2 for motor 2
@@ -81,14 +82,14 @@ class Hummingbird():
         corrected_motor = (int(motor) - 1)%2 + 48
         corrected_direction = int((speed)<0) + 48
         corrected_speed = min(abs(int(speed*255)),255)
-        self.connection.send({
+        await self.connection.send({
             'message': ord('M'),
             'port': corrected_motor,
             'direction': corrected_direction,
             'velocity': corrected_speed
         })
 
-    def set_all_motors(self,speedone, speedtwo):
+    async def set_all_motors(self,speedone, speedtwo):
         """Controls both motors at the same time
 
           -speedone: Speed for motor one, values must range from -1.0 (full throttle reverse) to
@@ -96,10 +97,10 @@ class Hummingbird():
           -speedtwo: Speed for motor two, values must range from -1.0 (full throttle reverse) to
           1.0 (full throttle forward).
         """
-        self.set_motor(1,speedone)
-        self.set_motor(2,speedtwo)
+        await self.set_motor(1,speedone)
+        await self.set_motor(2,speedtwo)
 
-    def set_vibration_motor(self, motor, intensity):
+    async def set_vibration_motor(self, motor, intensity):
         """Controls the vibration of the two motors
         First argument is which port, second is intensity.
 
@@ -108,13 +109,13 @@ class Hummingbird():
         """
         corrected_motor = (int(motor) - 1)%2 + 48
         corrected_intensity = (int(intensity) %256)
-        self.connection.send({
+        await self.connection.send({
             'message': ord('V'),
             'port': corrected_motor,
             'intensity': corrected_intensity
         })
 
-    def set_servo(self, port, angle):
+    async def set_servo(self, port, angle):
         """Controls the angle of the servos
 
           -port: 1 for port 1, 2 for port 2, 3 for port 3, 4 for port 4
@@ -122,7 +123,7 @@ class Hummingbird():
         """
         corrected_port = (int(port) - 1)%4 + 48
         corrected_angle = (int(angle*230/180))%231
-        self.connection.send({
+        await self.connection.send({
             'message': ord('S'),
             'port': corrected_port,
             'angle': corrected_angle
@@ -207,15 +208,15 @@ class Hummingbird():
             else:
                return False
 
-    def halt(self):
+    async def halt(self):
         """ Set all motors and LEDs to off. """
-        self.connection.send({
+        await self.connection.send({
             'message': ord('X'),
             'value': 0
         })
 
-    def close(self):
-        self.halt()
+    async def close(self):
+        await self.halt()
         self.connection.close()
 
 
@@ -232,7 +233,7 @@ class Finch():
     def __init__(self):
         self.connection = RobotConnection()
 
-    def led(self, *args):
+    async def led(self, *args):
         """Control three LEDs (orbs).
 
           - hex triplet string: led('#00FF8B') or
@@ -248,26 +249,26 @@ class Finch():
                 b = int(color[5:7], 16)
         else:
             return
-        self.connection.send({
+        await self.connection.send({
             'message': ord('O'),
             'red': r,
             'green': g,
             'blue': b
         })
 
-    def buzzer(self, duration, frequency):
+    async def buzzer(self, duration, frequency):
         """ Outputs sound. Does not wait until a note is done beeping.
 
         duration - duration to beep, in seconds (s).
         frequency - integer frequency, in hertz (HZ).
         """
         millisec = int(duration * 1000)
-        self.connection.send({
+        await self.connection.send({
             'message': ord('B'),
             'timeHigh': (millisec & 0xff00) >> 8,
             'timeLow': millisec & 0x00ff,
             'freqHigh': (frequency & 0xff00) >> 8,
-            'freqLow': requency & 0x00ff
+            'freqLow': frequency & 0x00ff
         })
 
     async def buzzer_with_delay(self, duration, frequency):
@@ -277,7 +278,7 @@ class Finch():
         frequency - integer frequency, in hertz (HZ).
         """
         millisec = int(duration * 1000)
-        self.connection.send({
+        await self.connection.send({
             'message': ord('B'),
             'timeHigh': (millisec & 0xff00) >> 8,
             'timeLow': millisec & 0x00ff,
@@ -349,7 +350,7 @@ class Finch():
         dir_right = int(right < 0)
         left = min(abs(int(left * 255)), 255)
         right = min(abs(int(right * 255)), 255)
-        self.connection.send({
+        await self.connection.send({
             'message': ord('M'),
             'leftDirection': dir_left,
             'leftSpeed': left,
@@ -358,13 +359,13 @@ class Finch():
         })
         await aio.sleep(0.1)
 
-    def halt(self):
+    async def halt(self):
         """ Set all motors and LEDs to off. """
-        self.connection.send({
+        await self.connection.send({
             'message': ord('X'),
             'value': 0
         })
 
-    def close(self):
-        self.halt()
+    async def close(self):
+        await self.halt()
         self.connection.close()
