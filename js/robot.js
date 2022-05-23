@@ -38,6 +38,7 @@ function Robot(device) {
   this.userDisconnected = false;
   //this.isReconnecting = false; //uncomment for autoreconnect
   this.currentSensorData = [];
+  this.hasStartedInitialization = false;
   this.isInitialized = false;
   this.hasV2Microbit = false;
 }
@@ -185,6 +186,12 @@ Robot.initialSetAllFor = function(type) {
 
 Robot.prototype.initialize = function() {
 
+  if (this.hasStartedInitialization) {
+    console.log(this.fancyName + " initialization in progress or complete.")
+    return;
+  }
+  this.hasStartedInitialization = true;
+
   if ("writeValueWithoutResponse" in this.TX) { //Available in Chrome 85+
     this.writeMethod = this.TX.writeValueWithoutResponse
     console.log("Using writeValueWithoutResponse")
@@ -198,7 +205,6 @@ Robot.prototype.initialize = function() {
   this.isConnected = true;
   this.userDisconnected = false;
   //this.isReconnecting = false; //uncomment for autoreconnect
-  this.isInitialized = false;
 
   if (Robot.propertiesFor[this.type].getFirmwareCommand != null) {
     //Read the current robot's firmware version to determine if it includes a V2 micro:bit
@@ -275,6 +281,8 @@ Robot.prototype.isA = function(type) {
 
 Robot.prototype.setDisconnected = function() {
   this.isConnected = false;
+  this.hasStartedInitialization = false;
+  this.isInitialized = false;
   this.devLetter = "X"
   this.RX = null
   this.TX = null
@@ -880,6 +888,7 @@ Robot.prototype.startCalibration = function() {
 Robot.prototype.receiveSensorData = function(data) {
   if (!this.isInitialized) {
     //This data is the response to the get firmware version command.
+    console.log(this.fancyName + " firmware: [" + (data.length == 1 ? data[0] : Array.apply([], data).join(",")) + "]")
     this.hasV2Microbit = data[3] == 0x22
 
     //Start polling sensors
