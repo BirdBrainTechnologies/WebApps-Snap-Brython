@@ -39,6 +39,23 @@
           </list>
         </block>
       </script>
+      <script x="10" y="13">
+          <block s="receiveInteraction">
+              <l>
+                  <option>stopped</option>
+              </l>
+          </block>
+          <custom-block s="Stop Finch"></custom-block>
+          <custom-block s="Finch LED R: %n G: %n B: %n">
+            <l>0</l>
+            <l>0</l>
+            <l>0</l>
+          </custom-block>
+          <custom-block s="Finch Buzzer %n Hz %n ms">
+            <l>0</l>
+            <l>0</l>
+          </custom-block>
+      </script>
     </scripts>
     <sprites>
       <sprite name="Sprite" idx="1" x="15.686274509804207" y="50.00000000000003" heading="195" scale="1" volume="100" pan="0" rotation="1" draggable="true" costume="1" color="80,80,80,1" pen="tip" id="8">

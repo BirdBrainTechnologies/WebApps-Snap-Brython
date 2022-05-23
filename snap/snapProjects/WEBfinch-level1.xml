@@ -39,6 +39,23 @@
           </list>
         </block>
       </script>
+      <script x="10" y="13">
+          <block s="receiveInteraction">
+              <l>
+                  <option>stopped</option>
+              </l>
+          </block>
+          <custom-block s="Stop Finch"></custom-block>
+          <custom-block s="Finch LED R: %n G: %n B: %n">
+            <l>0</l>
+            <l>0</l>
+            <l>0</l>
+          </custom-block>
+          <custom-block s="Finch Buzzer %n Hz %n ms">
+            <l>0</l>
+            <l>0</l>
+          </custom-block>
+      </script>
     </scripts>
     <sprites>
       <sprite name="Sprite" idx="1" x="15.686274509804207" y="50" heading="195" scale="1" volume="100" pan="0" rotation="1" draggable="true" costume="1" color="80,80,80,1" pen="tip" id="8">
@@ -146,8 +163,8 @@
       </inputs>
       <script>
         <custom-block s="Finch Buzzer %n Hz %n ms">
-          <l>440</l>
-          <l>500</l>
+          <block var="frequency"/>
+          <block var="duration"/>
         </custom-block>
         <block s="doWait">
           <block s="reportQuotient"><block var="duration"/>
@@ -170,6 +187,8 @@
           <l>1</l>
         </block>
         <custom-block s="Stop Finch"></custom-block>
+        <custom-block s="Stop Finch"></custom-block>
+        <custom-block s="Stop Finch"></custom-block>
       </script>
     </block-definition>
     <block-definition s="$arrowDown-4-255-255-255" type="command" category="motion">
@@ -185,6 +204,8 @@
         <block s="doWait">
           <l>1</l>
         </block>
+        <custom-block s="Stop Finch"></custom-block>
+        <custom-block s="Stop Finch"></custom-block>
         <custom-block s="Stop Finch"></custom-block>
       </script>
     </block-definition>
@@ -202,6 +223,8 @@
           <l>0.4</l>
         </block>
         <custom-block s="Stop Finch"></custom-block>
+        <custom-block s="Stop Finch"></custom-block>
+        <custom-block s="Stop Finch"></custom-block>
       </script>
     </block-definition>
     <block-definition s="$arrowRight-4-255-255-255" type="command" category="motion">
@@ -217,6 +240,8 @@
         <block s="doWait">
           <l>0.4</l>
         </block>
+        <custom-block s="Stop Finch"></custom-block>
+        <custom-block s="Stop Finch"></custom-block>
         <custom-block s="Stop Finch"></custom-block>
       </script>
     </block-definition>

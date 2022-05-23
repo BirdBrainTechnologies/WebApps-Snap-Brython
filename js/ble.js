@@ -101,7 +101,11 @@ function findAndConnect() {
 
 function connectToRobot(robot) {
 
-  robot.devLetter = getNextDevLetter();
+  if (robot.devLetter == "X") {
+    robot.devLetter = getNextDevLetter();
+  } else {
+    console.log(robot.device.name + " is already at position " + robot.devLetter + ".")
+  }
   let device = robot.device
 
   //Get a notification if this device disconnects.

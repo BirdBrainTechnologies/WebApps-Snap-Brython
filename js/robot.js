@@ -4,7 +4,7 @@
  * (finch, hummingbird, or micro:bit).
  */
 
-const MIN_SET_ALL_INTERVAL = 30;
+const MIN_SET_ALL_INTERVAL = 10;  // OLOT, Tom changed this from 30
 const MAX_LED_PRINT_WORD_LEN = 10;
 const INITIAL_LED_DISPLAY_ARRAY = Array(MAX_LED_PRINT_WORD_LEN + 2).fill(0);
 
@@ -252,6 +252,17 @@ Robot.prototype.increaseSetAllInterval = function() {
 }
 
 /**
+ * Robot.prototype.decreaseSetAllInterval - Decreases the interval in which
+ * data is sent to the robot and restart the timer. OLOT - this was added to the code
+ * because otherwise set all interval only increases with time. We may add this
+ * into the regular webapp codebase to improve the BLE communication speed
+ */
+Robot.prototype.decreaseSetAllInterval = function() {
+  this.setAllTimeToAdd -= 5;
+  this.startSetAll();
+}
+
+/**
  * Robot.prototype.isA - Return true if this Robot is of the type specified.
  *
  * @param  {Robot.ofType} type Robot type to compare this to
@@ -315,13 +326,13 @@ Robot.prototype.write = function(data) {
   }
 
   if (this.writeInProgress) {
-    console.log("Write already in progress. data = " + data)
+    //console.log("Write already in progress. data = " + data)
     if (data != null) {
       //console.log(data);
       this.dataQueue.push(data);
     }
     setTimeout(function() {
-      console.log("Timeout. data queue length = " + this.dataQueue.length);
+      //console.log("Timeout. data queue length = " + this.dataQueue.length);
       this.write()
     }.bind(this), MIN_SET_ALL_INTERVAL);
     return;
@@ -339,10 +350,17 @@ Robot.prototype.write = function(data) {
       this.increaseSetAllInterval();
     }
   }
+  // OLOT change - this was added to decrease connection interval
+  if((this.dataQueue.length < 7) && (this.setAllTimeToAdd > 0)) {
+    //console.log("Less than 7 writes queued (" + this.dataQueue.length + "). Decreasing interval between setAll attempts...")
+    this.decreaseSetAllInterval();
+  }
 
   this.writeMethod.call(this.TX, data).then(_ => {
-      console.log('Wrote to ' + this.fancyName + ":");
-      console.log(data);
+      //console.log('Wrote to ' + this.fancyName + ":");
+      //console.log(data);
+      console.log('Wrote to ' + this.fancyName + ": [" + (data.length == 1 ? data[0] : Array.apply([], data).join(",")) + "]")
+      //console.log('Time added to interval ' + this.setAllTimeToAdd)
       this.writeInProgress = false;
     }).catch(error => {
       console.error("Error writing to " + this.fancyName + ": " + error);
