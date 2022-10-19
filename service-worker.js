@@ -4,9 +4,9 @@
 'use strict';
 
 // Update cache names any time any of the cached files change.
-const CACHE_NAME = 'static-cache-v23';
+const CACHE_NAME = 'static-cache-v25';
 
-// CODELAB: Add list of files to cache here.
+// List of files to cache
 const FILES_TO_CACHE_1 = [
   //'index.html',
   //'manifest.json',
@@ -16,8 +16,8 @@ const FILES_TO_CACHE_1 = [
   'css/fonts.css',
   //fontawesome files
   'fontawesome/css/all.min.css',
-  'fontawesome/webfonts/fa-brands-400.eot', //todo: some of these may be unnecessary
-  'fontawesome/webfonts/fa-brands-400.svg',
+  'fontawesome/webfonts/fa-brands-400.eot',
+  //'fontawesome/webfonts/fa-brands-400.svg',
   'fontawesome/webfonts/fa-brands-400.ttf',
   'fontawesome/webfonts/fa-brands-400.woff',
   'fontawesome/webfonts/fa-brands-400.woff2',

@@ -717,7 +717,12 @@
                   <l>bbt_print(robot, string)</l>
                   <list>
                       <l>A</l>
-                      <block var="string"/>
+                      <block s="reportJoinWords">
+                        <list>
+                          <block var="string"/>
+                          <l></l>
+                        </list>
+                      </block>
                   </list>
                 </block>
                 <block s="doWait">
