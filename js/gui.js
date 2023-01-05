@@ -10,6 +10,8 @@
 //If the finchblox frontend hasn't been loaded, then this isn't finchblox.
 if (FinchBlox === undefined) { var FinchBlox = false }
 if (useHID === undefined) { var useHID = false }
+if (Hatchling === undefined) { var Hatchling = false }
+if (Hatchling) { FinchBlox = true } //the hatchling app using most of the finchblox settings
 //console.log("FinchBlox == " + FinchBlox)
 
 const header = document.getElementById('main-header');

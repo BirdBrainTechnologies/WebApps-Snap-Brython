@@ -149,6 +149,26 @@ function parseMessage(message) {
       robot.setGBPoint(message.xPos, message.yPos, message.color, message.brightness)
 
       break;
+    case "hlSetOutput":
+      robot.setHatchlingPort(message.port, message.value)
+
+      break;
+    case "hlSetServo":
+      robot.setHatchlingServo(message.port, message.value)
+
+      break;
+    case "hlSetAllPorts":
+      robot.setAllHatchlingPorts(message.values)
+
+      break;
+    case "hlSetAllBoardLeds":
+      robot.setAllHatchlingBoardLeds(message.values)
+
+      break;
+    case "hlSetNeopixelStrip":
+      robot.setHatchlingNeopixelStrip(message.port, message.values)
+
+      break;
     default:
       console.error("Command not implemented: " + message.cmd);
   }

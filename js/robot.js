@@ -51,6 +51,7 @@ Robot.ofType = {
   HUMMINGBIRDBIT: 2,
   MICROBIT: 3,
   GLOWBOARD: 4,
+  HATCHLING: 5,
 }
 
 /**
@@ -124,6 +125,24 @@ Robot.propertiesFor = {
     greenThreshold: 223,
     yellowThreshold: 210,
     getFirmwareCommand: null
+  },
+  //Hatchling
+  5: {
+    setAllLetter: 0x90,
+    setAllLength: 20,
+    triLedCount: 6,
+    buzzerIndex: 1,
+    buzzerBytes: 5,
+    stopCommand: new Uint8Array([0xDF]),
+    calibrationCommand: new Uint8Array([0xCE, 0xFF, 0xFF, 0xFF]),
+    calibrationIndex: 7,
+    batteryIndex: 2,
+    batteryFactor: null,
+    batteryConstant: null,
+    greenThreshold: null,
+    yellowThreshold: null,
+    getFirmwareCommand: new Uint8Array([0xCF]),
+    pinModeIndex: null
   }
 }
 
@@ -152,6 +171,8 @@ Robot.getTypeFromName = function(name) {
     return Robot.ofType.MICROBIT
   } else if (name.startsWith("GB")) {
     return Robot.ofType.GLOWBOARD
+  } else if (name.startsWith("HL")) {
+    return Robot.ofType.HATCHLING
   } else return null;
 }
 
@@ -204,6 +225,7 @@ Robot.prototype.initialize = function() {
   this.initializeDataArrays();
   this.isConnected = true;
   this.userDisconnected = false;
+  this.isInitialized = false;
   //this.isReconnecting = false; //uncomment for autoreconnect
 
   if (Robot.propertiesFor[this.type].getFirmwareCommand != null) {
@@ -227,6 +249,11 @@ Robot.prototype.initializeDataArrays = function() {
   this.ledDisplayData = new RobotData(INITIAL_LED_DISPLAY_ARRAY);
   if (this.isA(Robot.ofType.FINCH)) {
     this.motorsData = new RobotData(FINCH_INITIAL_MOTOR_ARRAY);
+  }
+  if (this.isA(Robot.ofType.HATCHLING)) {
+    this.boardLedData = new RobotData(Array(18).fill(0))
+    this.portsData = new RobotData(Array(18).fill(0))
+    this.neopixelData = new RobotData(Array(72).fill(0))
   }
 }
 
@@ -486,6 +513,48 @@ Robot.prototype.sendSetAll = function() {
         this.write(data);
       }
     }
+
+    if (this.isA(Robot.ofType.HATCHLING)) {
+      /*
+      Set on-board LEDs (there are 6):
+      0xE0 followed by 18 bytes, R,G,B for ports A-F
+
+      Set Port output value:
+      0xE2 followed by 18 bytes - 3 bytes per port output. The bytes are used as follows:
+      If a port is a servo, first two bytes are ignored and last byte maps to servo value
+      If a port is a digital out, first two bytes are ignored and last byte sets high or low or possibly 8-bit PWM
+      If a port is a single neopixel, bytes map to R, G, B intensities
+      If a port is a neopixel strip, bytes map to R, G, B intensities, but bit 0 of the Blue value indicates if we are setting the strip at all or should ignore (1 = use, 0 = ignore) - so Blue intensity only has 7 bits instead of 8. This allows us to treat a Neopixel strip as a single LED
+
+      Set a Neopixel strip attached to a single port:
+      0xE3 followed by 13 bytes: which port (0-5) + RGB 4 times
+      */
+      if (this.boardLedData.isNew) {
+        const boardLedData = this.boardLedData.getSendable()
+        const data = new Uint8Array([0xE0, ...boardLedData]);
+        this.write(data);
+      }
+      if (this.portsData.isNew) {
+        const portData = this.portsData.getSendable()
+        const data = new Uint8Array([0xE2, ...portData]);
+        this.write(data);
+      }
+      if (this.neopixelData.isNew) {
+        const currentSet = this.neopixelData.oldValues
+        const newSet = this.neopixelData.getSendable()
+        for (let i = 0; i < 6; i++) {
+          let cs = currentSet.slice(i*12, (i+1)*12)
+          let ns = newSet.slice(i*12, (i+1)*12)
+          let changed = false
+          cs.forEach((item, i) => { if (item != ns[i]) { changed = true } });
+          if (changed) {
+            const data = new Uint8Array([0xE3, i, ...ns])
+            this.write(data)
+          }
+        }
+      }
+    }
+
   }.bind(this), MIN_SET_ALL_INTERVAL/2)
 }
 
@@ -559,12 +628,19 @@ Robot.prototype.setTriLED = function(port, red, green, blue) {
       case Robot.ofType.FINCH:
         index = 1 + portAdjust;
         break;
+      case Robot.ofType.HATCHLING:
+        index = portAdjust;
+        break;
       default:
         console.error("setTriLED invalid robot type: " + this.type);
         return;
     }
 
-    this.setAllData.update(index, [red, green, blue]);
+    if (this.isA(Robot.ofType.HATCHLING)) {
+      this.portsData.update(index, [red, green, blue])
+    } else {
+      this.setAllData.update(index, [red, green, blue]);
+    }
   }
 }
 
@@ -816,6 +892,58 @@ Robot.prototype.setGBPoint = function(xPos, yPos, color, brightness) {
   this.setAllData.update(0, fullArray);
 }
 
+Robot.prototype.setHatchlingPort = function(port, value) {
+  console.log("set hatchling port " + port + " to " + value)
+  /*if (!this.isA(Robot.ofType.HATCHLING)) {
+    console.error("cannot set hatchling port for this robot type")
+    return
+  }*/
+  // Set as though the port is a digital out: first two bytes are ignored and
+  // last byte sets high or low or possibly 8-bit PWM
+  let index = port*3 + 2
+  this.portsData.update(index, [value])
+}
+
+Robot.prototype.setHatchlingServo = function(port, value) {
+  console.log("set hatchling servo at port " + port + " to " + value)
+  /*if (!this.isA(Robot.ofType.HATCHLING)) {
+    console.error("cannot set hatchling servo for this robot type")
+    return
+  }*/
+  let index = port*3 + 2
+  this.portsData.update(index, [value])
+}
+
+Robot.prototype.setAllHatchlingPorts = function(values) {
+  console.log("set hatchling ports to " + values)
+  /*if (!this.isA(Robot.ofType.HATCHLING)) {
+    console.error("cannot set hatchling port for this robot type")
+    return
+  }*/
+  let valueArray = values.split(",").map(Number)
+  this.portsData.update(0, valueArray)
+}
+
+Robot.prototype.setAllHatchlingBoardLeds = function(values) {
+  console.log("set hatchling board leds to " + values)
+  /*if (!this.isA(Robot.ofType.HATCHLING)) {
+    console.error("cannot set hatchling leds for this robot type")
+    return
+  }*/
+  let valueArray = values.split(",").map(Number)
+  this.boardLedData.update(0, valueArray)
+}
+
+Robot.prototype.setHatchlingNeopixelStrip = function(port, values) {
+  console.log("set hatchling neopixel strip at port " + port + " to " + values)
+  /*if (!this.isA(Robot.ofType.HATCHLING)) {
+    console.error("cannot set hatchling leds for this robot type")
+    return
+  }*/
+  let valueArray = values.split(",").map(Number)
+  this.neopixelData.update(port*12, valueArray)
+}
+
 /**
  * Robot.prototype.setPrint - Print out a string on the led display
  *
@@ -917,6 +1045,8 @@ Robot.prototype.receiveSensorData = function(data) {
 
   this.currentSensorData = data
   //console.log(data)
+  if (Hatchling) { fbFrontend.CallbackManager.robot.setHLState(data) }
+
   sendMessage({
     robot: this.devLetter,
     robotType: this.type,
@@ -932,7 +1062,7 @@ Robot.prototype.receiveSensorData = function(data) {
 
   if (batteryIndex != null) { //null for micro:bit which does not have battery monitoring
     var newLevel = Robot.batteryLevel.UNKNOWN
-    if (this.hasV2Microbit && this.isA(Robot.ofType.FINCH)) {
+    if ( (this.hasV2Microbit && this.isA(Robot.ofType.FINCH)) || this.isA(Robot.ofType.HATCHLING)) {
       newLevel = data[batteryIndex] & 0x3
       //Battery level 3 represents a complete charge and is not currently handled.
       if (newLevel == 3) { newLevel = Robot.batteryLevel.HIGH }

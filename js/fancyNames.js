@@ -687,7 +687,7 @@ const blacklistArray = ['ANL',
  * @return {string}         Fancy name derived from advertised name.
  */
 function getDeviceFancyName(devName) {
-  if ((devName.startsWith("MB")) || (devName.startsWith("BB")) || (devName.startsWith("FN")) || (devName.startsWith("GB"))) {
+  //if ((devName.startsWith("MB")) || (devName.startsWith("BB")) || (devName.startsWith("FN")) || (devName.startsWith("GB"))) {
     //console.log("Code: " + devName.substr(devName.length - 5));
 
     var numberInDec = parseInt(devName.substr(devName.length - 5), 16);
@@ -723,7 +723,7 @@ function getDeviceFancyName(devName) {
     fancyName += " (" + initials + ")";
     //console.log("Fancy Name assigned to device: " + fancyName);
     return fancyName;
-  } else {
+  /*} else {
     return "Unknown device"
-  }
+  }*/
 }

@@ -408,6 +408,16 @@ function handleFinchBloxRobotOutput(path) {
       msg.cmd = "symbol"
       msg.symbolString = params[2].split("=")[1]
       break;
+    case "rotationServo":
+      msg.cmd = "hlSetServo"
+      msg.port = params[2].split("=")[1]
+      msg.value = params[3].split("=")[1]
+      break;
+    case "positionServo":
+      msg.cmd = "hlSetServo"
+      msg.port = params[2].split("=")[1]
+      msg.value = params[3].split("=")[1]
+      break;
     default:
       console.error("Unhandled robot out: " + fullCommand[0])
   }
@@ -487,10 +497,14 @@ function getFinchBloxRobotInput(path, robot) {
  * @param  {Object} device ble device connecting
  */
 function finchBloxNotifyDiscovered(device) {
-  //console.log("Discovered " + device.name);
+  console.log("Discovered " + device.name);
   let fancyName = getDeviceFancyName(device.name)
   fancyName = fancyName.slice(0, -6)
-  fbFrontend.CallbackManager.robot.discovered('[{"id":"' + device.name + '", "device":"Finch", "name":"' + fancyName + '", "RSSI":0}]')
+  if (Hatchling) {
+    fbFrontend.CallbackManager.robot.discovered('[{"id":"' + device.name + '", "device":"Hatch", "name":"' + fancyName + '", "RSSI":0}]')
+  } else {
+    fbFrontend.CallbackManager.robot.discovered('[{"id":"' + device.name + '", "device":"Finch", "name":"' + fancyName + '", "RSSI":0}]')
+  }
 }
 
 /**
