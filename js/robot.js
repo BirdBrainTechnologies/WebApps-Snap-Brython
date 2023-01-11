@@ -600,6 +600,7 @@ Robot.prototype.setLED = function(port, intensity) {
  * @param  {number} blue  Blue intensity (0-255)
  */
 Robot.prototype.setTriLED = function(port, red, green, blue) {
+  console.log("set led at " + port)
   //microbits do not have any trileds
   if (this.isA(Robot.ofType.MICROBIT)) {
     //console.log("setTriLED called on a robot of type microbit");
@@ -615,10 +616,15 @@ Robot.prototype.setTriLED = function(port, red, green, blue) {
       red, green, blue, red, green, blue, red, green, blue]);
 
   } else {
-    if (port < 1 || port > Robot.propertiesFor[this.type].triLedCount){
-      //console.log("setTriLED invalid port: " + port);
-      return;
+    if (Hatchling) {
+      if (port < 0 || port > 5) { return
+      } else { port = port + 1 }
+    } else {
+      if (port < 1 || port > Robot.propertiesFor[this.type].triLedCount){
+        return;
+      }
     }
+
     var index;
     const portAdjust = (port - 1) * 3;
     switch(this.type) {
@@ -726,7 +732,7 @@ Robot.prototype.setBuzzer = function(note, duration) {
   //TODO: check if period is in range?
 
   let buzzerArray = [period >> 8, period & 0x00ff, duration >> 8, duration & 0x00ff]
-  if (this.isA(Robot.ofType.MICROBIT)) {
+  if (this.isA(Robot.ofType.MICROBIT) || this.isA(Robot.ofType.HATCHLING)) {
     buzzerArray.splice(3, 0, 0x20)
   }
 

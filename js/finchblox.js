@@ -418,6 +418,19 @@ function handleFinchBloxRobotOutput(path) {
       msg.port = params[2].split("=")[1]
       msg.value = params[3].split("=")[1]
       break;
+    case "singleNeopix":
+      msg.cmd = "triled"
+      msg.port = params[2].split("=")[1]
+      let values = params[3].split("=")[1].split(":")
+      msg.red = values[0]
+      msg.green = values[1]
+      msg.blue = values[2]
+      break;
+    case "neopixStrip":
+      msg.cmd = "hlSetNeopixelStrip"
+      msg.port = params[2].split("=")[1]
+      msg.values = params[3].split("=")[1]
+      break;
     default:
       console.error("Unhandled robot out: " + fullCommand[0])
   }
@@ -433,7 +446,6 @@ function handleFinchBloxRobotOutput(path) {
  * @return {string}       sensor value
  */
 function getFinchBloxRobotInput(path, robot) {
-
   let params = path[1].split("?")[1].split("&")
   let sensor = params[2].split("=")[1]
   let response = ""
@@ -442,31 +454,45 @@ function getFinchBloxRobotInput(path, robot) {
   }
 
   switch (sensor) {
-    case "light":
-      const port = params[3].split("=")[1]
-      const R = currentFinchBloxBeak[0] * 100 / 255;
-      const G = currentFinchBloxBeak[1] * 100 / 255;
-      const B = currentFinchBloxBeak[2] * 100 / 255;
-      var raw = 0;
-      var correction = 0;
-      switch (port) {
-        case 'right':
-          raw = robot.currentSensorData[3];
-          correction = 6.40473070e-03 * R + 1.41015162e-02 * G + 5.05547817e-02 * B + 3.98301391e-04 * R * G + 4.41091223e-04 * R * B + 6.40756862e-04 * G * B + -4.76971242e-06 * R * G * B;
-          break;
-        case 'left':
-          raw = robot.currentSensorData[2];
-          correction = 1.06871493e-02 * R + 1.94526614e-02 * G + 6.12409825e-02 * B + 4.01343475e-04 * R * G + 4.25761981e-04 * R * B + 6.46091068e-04 * G * B + -4.41056971e-06 * R * G * B;
-          break;
-        default:
-          console.error("unknown light port " + port);
-          return "0";
+    case "shake":
+      if (Hatchling) {
+        let shake = robot.currentSensorData[6];
+        response = ((shake & 0x01) > 0).toString()
       }
+    case "light":
+      if (Hatchling) {
+        response = (robot.currentSensorData[1]).toString();
+      } else {
+        const port = params[3].split("=")[1]
+        const R = currentFinchBloxBeak[0] * 100 / 255;
+        const G = currentFinchBloxBeak[1] * 100 / 255;
+        const B = currentFinchBloxBeak[2] * 100 / 255;
+        var raw = 0;
+        var correction = 0;
+        switch (port) {
+          case 'right':
+            raw = robot.currentSensorData[3];
+            correction = 6.40473070e-03 * R + 1.41015162e-02 * G + 5.05547817e-02 * B + 3.98301391e-04 * R * G + 4.41091223e-04 * R * B + 6.40756862e-04 * G * B + -4.76971242e-06 * R * G * B;
+            break;
+          case 'left':
+            raw = robot.currentSensorData[2];
+            correction = 1.06871493e-02 * R + 1.94526614e-02 * G + 6.12409825e-02 * B + 4.01343475e-04 * R * G + 4.25761981e-04 * R * B + 6.46091068e-04 * G * B + -4.41056971e-06 * R * G * B;
+            break;
+          default:
+            console.error("unknown light port " + port);
+            return "0";
+        }
 
-      response = Math.round(Math.max(0, Math.min(100, (raw - correction)))).toString();
+        response = Math.round(Math.max(0, Math.min(100, (raw - correction)))).toString();
+      }
       break;
     case "distance":
-      if (robot.hasV2Microbit) {
+      if (Hatchling) {
+        const port = parseInt(params[3].split("=")[1])
+        if (port >=0 && port < 6) {
+          response = (robot.currentSensorData[14 + port]).toString()
+        }
+      } else if (robot.hasV2Microbit) {
         response = (robot.currentSensorData[1]).toString()
       } else {
         let msb = robot.currentSensorData[0]
@@ -480,6 +506,7 @@ function getFinchBloxRobotInput(path, robot) {
     case "V2sound":
       //because of the when clap block, this request may come while the robot is still setting up
       let sound = robot.currentSensorData[0]
+      if (Hatchling && sound == 255) { sound = 0; }
       response = sound ? sound.toString() : "0"
       break;
     default:
