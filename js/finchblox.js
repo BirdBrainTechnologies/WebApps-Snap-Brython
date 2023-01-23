@@ -528,7 +528,7 @@ function finchBloxNotifyDiscovered(device) {
   let fancyName = getDeviceFancyName(device.name)
   fancyName = fancyName.slice(0, -6)
   if (Hatchling) {
-    fbFrontend.CallbackManager.robot.discovered('[{"id":"' + device.name + '", "device":"Hatch", "name":"' + fancyName + '", "RSSI":0}]')
+    fbFrontend.CallbackManager.robot.discovered('[{"id":"' + device.name + '", "device":"Hatch", "name":"' + fancyName + '", "RSSI":0, "advertisedName":"' + device.name + '"}]')
   } else {
     fbFrontend.CallbackManager.robot.discovered('[{"id":"' + device.name + '", "device":"Finch", "name":"' + fancyName + '", "RSSI":0}]')
   }

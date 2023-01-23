@@ -616,6 +616,7 @@ Robot.prototype.setTriLED = function(port, red, green, blue) {
       red, green, blue, red, green, blue, red, green, blue]);
 
   } else {
+    port = parseInt(port)
     if (Hatchling) {
       if (port < 0 || port > 5) { return
       } else { port = port + 1 }
@@ -643,6 +644,7 @@ Robot.prototype.setTriLED = function(port, red, green, blue) {
     }
 
     if (this.isA(Robot.ofType.HATCHLING)) {
+      console.log("" + index + " " + portAdjust + " " + port)
       this.portsData.update(index, [red, green, blue])
     } else {
       this.setAllData.update(index, [red, green, blue]);
