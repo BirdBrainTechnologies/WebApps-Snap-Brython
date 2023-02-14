@@ -13,6 +13,7 @@ function HidRobot(device) {
   this.finchRightSpeed = 0
   this.finchLeftSpeed = 0
   this.maxSpeedChange = 10//20//30
+  this.speedGoal = null
 
   device.addEventListener("inputreport", this.handleInputReport.bind(this));
   this.pollSensors()
@@ -61,8 +62,7 @@ HidRobot.prototype.sendBytes = function(bytes, messageQueue) {
     let deltaLeft = Math.abs(this.finchLeftSpeed - newLeftSpeed)
     let deltaRight = Math.abs(this.finchRightSpeed - newRightSpeed)
     if (Math.max(deltaLeft, deltaRight) > this.maxSpeedChange) {
-      if (messageQueue == null) { messageQueue = [] }
-      messageQueue.unshift(bytes.slice())
+      this.speedGoal = bytes.slice()
       if (deltaLeft > this.maxSpeedChange) {
         let fl = this.finchLeftSpeed
         let setLeft = (fl < newLeftSpeed) ? fl + this.maxSpeedChange : fl - this.maxSpeedChange
@@ -80,8 +80,9 @@ HidRobot.prototype.sendBytes = function(bytes, messageQueue) {
     } else {
       this.finchLeftSpeed = newLeftSpeed
       this.finchRightSpeed = newRightSpeed
+      this.speedGoal = null
     }
-    console.log("Finch motor ramp actually sending " + bytes);
+    console.log("Finch motor ramp actually sending " + bytes + ". Goal: " + this.speedGoal);
   }
 
   this.device.sendReport(0, bytes).then(() => {
@@ -90,7 +91,14 @@ HidRobot.prototype.sendBytes = function(bytes, messageQueue) {
       let nextMessage = messageQueue.shift()
       setTimeout(function() {
         this.sendBytes(nextMessage, messageQueue)
-      }.bind(this), 10)//TODO: is this enough time? Do we need to wait at all?
+      }.bind(this), 10)
+    }
+    //When trying to set the speed of a finch...
+    if (this.isFinch && bytes[0] == 77 && this.speedGoal != null) {
+      setTimeout(function() {
+        //The goal may have been overwritten in the meantime
+        if (this.speedGoal != null) { this.sendBytes(this.speedGoal) }
+      }.bind(this), 10)
     }
   }).catch(error => {
     console.error("ERROR sending [" + bytes + "]: " + error.message)
