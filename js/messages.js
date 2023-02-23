@@ -169,6 +169,10 @@ function parseMessage(message) {
       robot.setHatchlingNeopixelStrip(message.port, message.values)
 
       break;
+    case "hlFairyLights":
+      robot.setHatchlingPort(message.port, message.value)
+
+      break;
     default:
       console.error("Command not implemented: " + message.cmd);
   }

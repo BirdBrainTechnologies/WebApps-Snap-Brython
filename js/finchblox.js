@@ -431,6 +431,11 @@ function handleFinchBloxRobotOutput(path) {
       msg.port = params[2].split("=")[1]
       msg.values = params[3].split("=")[1]
       break;
+    case "fairyLights":
+      msg.cmd = "hlFairyLights"
+      msg.port = params[2].split("=")[1]
+      msg.value = params[3].split("=")[1]
+      break;
     default:
       console.error("Unhandled robot out: " + fullCommand[0])
   }

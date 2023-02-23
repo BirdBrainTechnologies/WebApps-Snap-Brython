@@ -988,6 +988,7 @@ Robot.prototype.setPrint = function(printChars) {
 Robot.prototype.stopAll = function() {
   if (this.printTimer !== null) { clearTimeout(this.printTimer); }
   this.write(Robot.propertiesFor[this.type].stopCommand);
+  //if (Hatchling) { return; } //TODO: don't want to send 0's, but need to be able to resend values?
   this.initializeDataArrays();
 }
 
