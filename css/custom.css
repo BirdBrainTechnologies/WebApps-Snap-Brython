@@ -30,7 +30,7 @@ input:checked + .slider:before { -webkit-transform: translateX(26px); -ms-transf
 .bounce { display: inline-block; position: relative; -moz-animation: bounce 1s infinite linear; -o-animation: bounce 1s infinite linear; -webkit-animation: bounce 1s infinite linear; animation: bounce 1s infinite linear; }
 
 /* !core */
-body { image-rendering: -webkit-optimize-contrast; background-color: #881199; color: #535353; font-family: 'Nunito', Helvetica, Arial, sans-serif; font-size: 16px; overflow: hidden; }
+body { image-rendering: -webkit-optimize-contrast; background-color: #881199; color: #535353; font-family: 'Nunito', Helvetica, Arial, sans-serif; font-size: 16px; overflow: hidden; overscroll-behavior-x: none; }
 h1 { font-family: 'Raleway', Helvetica, Arial, sans-serif; font-size: 28px; text-transform: uppercase; margin-top: 0; padding-top: 0; }
 
 /* !header */
