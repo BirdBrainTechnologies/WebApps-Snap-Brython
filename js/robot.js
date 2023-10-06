@@ -133,7 +133,7 @@ Robot.propertiesFor = {
     triLedCount: 6,
     buzzerIndex: 1,
     buzzerBytes: 5,
-    stopCommand: new Uint8Array([0xDF]),
+    stopCommand: new Uint8Array([0xFA,6,0]),//new Uint8Array([0xDF]),
     calibrationCommand: new Uint8Array([0xCE, 0xFF, 0xFF, 0xFF]),
     calibrationIndex: 7,
     batteryIndex: 2,
@@ -171,7 +171,7 @@ Robot.getTypeFromName = function(name) {
     return Robot.ofType.MICROBIT
   } else if (name.startsWith("GB")) {
     return Robot.ofType.GLOWBOARD
-  } else if (name.startsWith("HL")) {
+  } else if (name.startsWith("HL") || name.startsWith("Arduino")) {//Temp name in testing
     return Robot.ofType.HATCHLING
   } else return null;
 }
@@ -1104,5 +1104,14 @@ Robot.prototype.receiveSensorData = function(data) {
         this.isCalibrating = false;
         updateCalibrationStatus(false);
     }
+  }
+}
+
+/**
+ * @param {Uint8Array} data 
+ */
+Robot.prototype.sendMicroBlocksData = function(data) {
+  for (let i = 0; i < Math.ceil(data.length/20); i++ ) {
+    this.write(data.subarray(i*20, (i+1)*20))
   }
 }

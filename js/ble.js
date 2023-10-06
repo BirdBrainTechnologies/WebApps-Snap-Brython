@@ -65,10 +65,11 @@ function findAndConnect() {
   }
   if (Hatchling) {
     bleFilters = [
-      { namePrefix: "HL", services: ["6e400001-b5a3-f393-e0a9-e50e24dcca9e"] }
+      //{ namePrefix: "HL", services: ["6e400001-b5a3-f393-e0a9-e50e24dcca9e"] }
+      {  services: ["6e400001-b5a3-f393-e0a9-e50e24dcca9e"]  }
     ]
   }
-  console.log(bleFilters)
+  //console.log(bleFilters)
 
   navigator.bluetooth.requestDevice({ filters: bleFilters }).then(device => {
 

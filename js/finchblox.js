@@ -377,6 +377,10 @@ function handleFinchBloxRobotOutput(path) {
   }
 
   switch (fullCommand[0]) {
+    case "microblocks":
+      msg.cmd = "microblocks"
+      msg.data = params[2].split("=")[1].split(",")
+      break;
     case "beak":
       msg.cmd = "triled"
       msg.port = 1

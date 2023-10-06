@@ -25,9 +25,12 @@ function onMessage(e) {
   } else if (useHID) {
     //This is a legacy robot command
     parseLegacyMessage(e.data)
-  } else {
+  } else if (e.data.cmd != null) {
     //This message is a micro:bit robot command
     parseMessage(e.data);
+  } else {
+    console.error("Message not recognized!")
+    console.error(e.data)
   }
 }
 
@@ -70,6 +73,15 @@ function parseMessage(message) {
   }
 
   switch(message.cmd) {
+    case "microblocks":
+      console.log("Found microblocks data. Sending:")
+      console.log(message.data)
+      let data = new Uint8Array(message.data)
+      console.log(data)
+      //robot.write(data)
+      robot.sendMicroBlocksData(data)
+
+      break;
     case "triled":
       robot.setTriLED(message.port, message.red, message.green, message.blue);
 
