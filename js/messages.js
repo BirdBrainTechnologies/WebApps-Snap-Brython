@@ -29,8 +29,8 @@ function onMessage(e) {
     //This message is a micro:bit robot command
     parseMessage(e.data);
   } else {
-    console.error("Message not recognized!")
-    console.error(e.data)
+    //console.error("Message not recognized!")
+    //console.error(e.data)
   }
 }
 
@@ -74,10 +74,10 @@ function parseMessage(message) {
 
   switch(message.cmd) {
     case "microblocks":
-      console.log("Found microblocks data. Sending:")
-      console.log(message.data)
+      //console.log("Found microblocks data. Sending:")
+      //console.log(message.data)
       let data = new Uint8Array(message.data)
-      console.log(data)
+      //console.log(data)
       //robot.write(data)
       robot.sendMicroBlocksData(data)
 
@@ -182,6 +182,7 @@ function parseMessage(message) {
 
       break;
     case "hlFairyLights":
+    case "hlPortOff":
       robot.setHatchlingPort(message.port, message.value)
 
       break;

@@ -66,7 +66,7 @@ function findAndConnect() {
   if (Hatchling) {
     bleFilters = [
       //{ namePrefix: "HL", services: ["6e400001-b5a3-f393-e0a9-e50e24dcca9e"] }
-      {  services: ["6e400001-b5a3-f393-e0a9-e50e24dcca9e"]  }
+      {  services: ["bc4c31b0-647f-11ee-8c99-0242ac120002"]  }
     ]
   }
   //console.log(bleFilters)
@@ -121,14 +121,17 @@ function connectToRobot(robot) {
   device.gatt.connect().then(server => {
       // Get the Service
       //console.log("getting service")
+      if (Hatchling) { return server.getPrimaryService("bc4c31b0-647f-11ee-8c99-0242ac120002") }
       return server.getPrimaryService("6e400001-b5a3-f393-e0a9-e50e24dcca9e");
     })
     .then(service => {
       //console.log("getting characteristic from ")
       //console.log(service)
+      let txuuid = Hatchling ? "bc4c31b1-647f-11ee-8c99-0242ac120002" : "6e400002-b5a3-f393-e0a9-e50e24dcca9e"
+      let rxuuid = Hatchling ? "bc4c31b2-647f-11ee-8c99-0242ac120002" : "6e400003-b5a3-f393-e0a9-e50e24dcca9e"
 
       // Get receiving Characteristic
-      service.getCharacteristic("6e400003-b5a3-f393-e0a9-e50e24dcca9e")
+      service.getCharacteristic(rxuuid)
         .then(characteristic => characteristic.startNotifications())
         .then(characteristic => {
           characteristic.addEventListener('characteristicvaluechanged',
@@ -144,7 +147,7 @@ function connectToRobot(robot) {
         });
 
       // Get sending Characteristic
-      service.getCharacteristic("6e400002-b5a3-f393-e0a9-e50e24dcca9e")
+      service.getCharacteristic(txuuid)
         .then(characteristic => {
           robot.TX = characteristic;
           if (robot.RX != null) {

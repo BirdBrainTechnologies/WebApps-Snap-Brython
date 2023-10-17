@@ -440,6 +440,11 @@ function handleFinchBloxRobotOutput(path) {
       msg.port = params[2].split("=")[1]
       msg.value = params[3].split("=")[1]
       break;
+    case "portOff":
+      msg.cmd = "hlPortOff"
+      msg.port = params[2].split("=")[1]
+      msg.value = params[3].split("=")[1]
+      break;
     default:
       console.error("Unhandled robot out: " + fullCommand[0])
   }
@@ -458,7 +463,7 @@ function getFinchBloxRobotInput(path, robot) {
   let params = path[1].split("?")[1].split("&")
   let sensor = params[2].split("=")[1]
   let response = ""
-  if (robot == null) {
+  if (robot == null || robot.currentSensorData.length == 0) {
     return response;
   }
 

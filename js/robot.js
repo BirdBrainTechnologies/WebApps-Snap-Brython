@@ -173,6 +173,8 @@ Robot.getTypeFromName = function(name) {
     return Robot.ofType.GLOWBOARD
   } else if (name.startsWith("HL") || name.startsWith("Arduino")) {//Temp name in testing
     return Robot.ofType.HATCHLING
+  } else if (Hatchling) { //Maybe for hatchling, name will not determine type. Just uuid.
+    return Robot.ofType.HATCHLING
   } else return null;
 }
 
@@ -235,6 +237,11 @@ Robot.prototype.initialize = function() {
     this.write(Uint8Array.of(0x62, 0x67));
     this.startSetAll();
     this.isInitialized = true;
+  }
+
+  if (Hatchling) {
+    //this.write(Uint8Array.of(0xFA, 0x1A, 0)) //Ping
+    this.isInitialized = true //avoid any initialization for now
   }
 }
 
