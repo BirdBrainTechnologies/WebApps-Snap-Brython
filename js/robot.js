@@ -141,7 +141,7 @@ Robot.propertiesFor = {
     batteryConstant: null,
     greenThreshold: null,
     yellowThreshold: null,
-    getFirmwareCommand: new Uint8Array([0xCF]),
+    getFirmwareCommand: null, //new Uint8Array([0xCF]),
     pinModeIndex: null
   }
 }
@@ -233,16 +233,14 @@ Robot.prototype.initialize = function() {
   if (Robot.propertiesFor[this.type].getFirmwareCommand != null) {
     //Read the current robot's firmware version to determine if it includes a V2 micro:bit
     this.write(Robot.propertiesFor[this.type].getFirmwareCommand)
+  } else if (Hatchling) {
+    this.isInitialized = true //avoid any initialization for now
   } else {
     this.write(Uint8Array.of(0x62, 0x67));
     this.startSetAll();
     this.isInitialized = true;
   }
 
-  if (Hatchling) {
-    //this.write(Uint8Array.of(0xFA, 0x1A, 0)) //Ping
-    this.isInitialized = true //avoid any initialization for now
-  }
 }
 
 /**
