@@ -19,6 +19,8 @@ defaultFinchScript = """from BirdBrain import Finch
 
 myFinch = Finch(\'A\')
 
+myFinch.playNote(60,0.5)
+
 for i in range(0,10):
     myFinch.setBeak(100, 100, 100)
     time.sleep(1)
@@ -30,6 +32,8 @@ myFinch.stopAll()
 defaultHummingbirdScript = """from BirdBrain import Hummingbird
 
 myBird = Hummingbird(\'A\')
+
+myBird.playNote(60,0.5)
 
 for i in range(0,10):
 	myBird.setLED(1,100)
