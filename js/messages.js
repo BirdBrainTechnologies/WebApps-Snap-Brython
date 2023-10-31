@@ -12,6 +12,10 @@ var messagePort;
  */
 function onMessage(e) {
   //console.log(e.data);
+  if(e.data.source == "react-devtools-content-script") {
+    //console.log("ignoring react devtools")
+    return
+  }
 
   if (e.ports[0] != undefined) {
     //This message sets up the message port so that the app can send updates.
@@ -25,9 +29,12 @@ function onMessage(e) {
   } else if (useHID) {
     //This is a legacy robot command
     parseLegacyMessage(e.data)
-  } else {
+  } else if (e.data.cmd != null) {
     //This message is a micro:bit robot command
     parseMessage(e.data);
+  } else {
+    console.error("Message not recognized!")
+    console.error(e.data)
   }
 }
 

@@ -146,16 +146,22 @@ function run_js(){
     <td></td>
     <td></td>
   </tr>
-  <tr>
-    <td>
-      <table width="100%">
-        <tr style="text-align:right">
+  <tr style="padding:0px;">
+    <td style="padding:0px;">
+      <table width="100%" style="padding:0px;">
+        <tr style="text-align:left; padding:0px;">
+          <td width="90px" style="padding:0px; margin:0px;">
+            <button id="uploadFile" onclick="performClick('chooseFile');" aria-label="Upload File" style="width:30px; margin: 5px 5px 5px 0px;">
+                <i class="fas fa-file-upload"></i>
+            </button>
+            <button id="downloadFile" onclick="" aria-label="Download File" style="width:30px; margin:5px;">
+                <i class="fas fa-file-download"></i>
+            </button>
+          </td>
           <td><div id="fileName" contenteditable="true">test</div></td>
-          <td width="110px">
-            <button id="uploadFile" onclick="performClick('chooseFile');"><i class="fas fa-file-upload"></i></button>
-            <button id="downloadFile" onclick=""><i class="fas fa-file-download"></i></button>
-            <button id="run"><i class="fas fa-play"></i></button>
-            <button id="stop"><i class="fas fa-stop"></i></button>
+          <td width="80px" style="padding:0px; margin:0px;">
+            <button id="run" aria-label="Run" style="width:30px; margin:5px;"><i class="fas fa-play"></i></button>
+            <button id="stop" aria-label="Stop" style="width:30px; margin: 5px 0px 5px 5px;"><i class="fas fa-stop"></i></button>
           </td>
         </tr>
       </table>
