@@ -516,6 +516,17 @@ function getFinchBloxRobotInput(path, robot) {
       break;
     case "isMoving":
       response = (robot.currentSensorData[4] > 127) ? "1" : "0"
+      if (robot.circling != null && robot.circling.started) {
+        let encoderL = robot.currentSensorData[7] << 16 | robot.currentSensorData[8] << 8 | robot.currentSensorData[9]
+        let encoderR = robot.currentSensorData[10] << 16 | robot.currentSensorData[11] << 8 | robot.currentSensorData[12]
+
+        if (encoderL >= robot.circling.ticksL && encoderR >= robot.circling.ticksR) {
+          robot.setMotors(0, 0, 0, 0)
+          robot.circling = null 
+        } else {
+          response = "1"
+        }
+      }
       break;
     case "V2sound":
       //because of the when clap block, this request may come while the robot is still setting up

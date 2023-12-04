@@ -713,6 +713,24 @@ Robot.prototype.setMotors = function(speedL, ticksL, speedR, ticksR) {
     }
   }
 
+  //Make a circle with finchblox
+  if (speedL != speedR && speedL != -speedR && (ticksL != 0 || ticksR != 0)) {
+    this.resetEncoders()
+    this.circling = {}
+    this.circling.ticksL = ticksL
+    this.circling.ticksR = ticksR
+    this.circling.started = false
+    this.circling.starter = setInterval (function () {
+      let sd = this.currentSensorData
+      if (sd[7] + sd[8] + sd[9] + sd[10] + sd[11] + sd[12] == 0) {
+        this.setMotors(speedL, 0, speedR, 0)
+        clearInterval(this.circling.starter)
+        this.circling.started = true
+      }
+    }.bind(this), 50);
+    return
+  }
+
   this.motorsData.update(0, [
     scaledVelocity(speedL), ((ticksL & 0x00ff0000) >> 16),
     ((ticksL & 0x0000ff00) >> 8), (ticksL & 0x000000ff),
