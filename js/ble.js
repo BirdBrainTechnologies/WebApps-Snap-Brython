@@ -7,6 +7,8 @@
   *  Global variables/constants
   */
 var robots = [] //Robot array representing all currently known robots
+const BBT_SERVICE_UUID = "6e400001-b5a3-f393-e0a9-e50e24dcca9e"
+const HATCHLING_SERVICE_UUID = "bb37a001-b922-4018-8e74-e14824b3a638"
 
 /*
 About getting the ble state... Cannot really determine whether ble is turned on
@@ -51,22 +53,22 @@ function findAndConnect() {
   //let bleFilters = [{ services: ["6e400001-b5a3-f393-e0a9-e50e24dcca9e"] }]
   //let bleFilters = [{ acceptAllDevices: true }]
   let bleFilters = [
-    { namePrefix: "FN", services: ["6e400001-b5a3-f393-e0a9-e50e24dcca9e"] },
-    { namePrefix: "BB", services: ["6e400001-b5a3-f393-e0a9-e50e24dcca9e"] },
-    { namePrefix: "MB", services: ["6e400001-b5a3-f393-e0a9-e50e24dcca9e"] }
+    { namePrefix: "FN", services: [BBT_SERVICE_UUID] },
+    { namePrefix: "BB", services: [BBT_SERVICE_UUID] },
+    { namePrefix: "MB", services: [BBT_SERVICE_UUID] }
   ]
   if (useSnap) {
-    bleFilters.push({ namePrefix: "GB", services: ["6e400001-b5a3-f393-e0a9-e50e24dcca9e"] })
+    bleFilters.push({ namePrefix: "GB", services: [BBT_SERVICE_UUID] })
   }
   if (FinchBlox) {
     bleFilters = [
-      { namePrefix: "FN", services: ["6e400001-b5a3-f393-e0a9-e50e24dcca9e"] }
+      { namePrefix: "FN", services: [BBT_SERVICE_UUID] }
     ]
   }
   if (Hatchling) {
     bleFilters = [
-      //{ namePrefix: "HL", services: ["6e400001-b5a3-f393-e0a9-e50e24dcca9e"] }
-      {  services: ["bc4c31b0-647f-11ee-8c99-0242ac120002"]  }
+      //{ namePrefix: "HL", services: ["6e400001-b5a3-f393-e0a9-e50e24dcca9e"] },
+      {  services: [HATCHLING_SERVICE_UUID] } //"bc4c31b0-647f-11ee-8c99-0242ac120002"]  }
     ]
   }
   //console.log(bleFilters)
@@ -121,14 +123,19 @@ function connectToRobot(robot) {
   device.gatt.connect().then(server => {
       // Get the Service
       //console.log("getting service")
-      if (Hatchling) { return server.getPrimaryService("bc4c31b0-647f-11ee-8c99-0242ac120002") }
-      return server.getPrimaryService("6e400001-b5a3-f393-e0a9-e50e24dcca9e");
+
+      if (Hatchling) { return server.getPrimaryService(HATCHLING_SERVICE_UUID) }
+      return server.getPrimaryService(BBT_SERVICE_UUID);
     })
     .then(service => {
       //console.log("getting characteristic from ")
       //console.log(service)
-      let txuuid = Hatchling ? "bc4c31b1-647f-11ee-8c99-0242ac120002" : "6e400002-b5a3-f393-e0a9-e50e24dcca9e"
-      let rxuuid = Hatchling ? "bc4c31b2-647f-11ee-8c99-0242ac120002" : "6e400003-b5a3-f393-e0a9-e50e24dcca9e"
+      let txuuid = Hatchling ? "bb37a002-b922-4018-8e74-e14824b3a638" : "6e400002-b5a3-f393-e0a9-e50e24dcca9e" //"bc4c31b1-647f-11ee-8c99-0242ac120002" : "6e400002-b5a3-f393-e0a9-e50e24dcca9e"
+      let rxuuid = Hatchling ? "bb37a003-b922-4018-8e74-e14824b3a638" : "6e400003-b5a3-f393-e0a9-e50e24dcca9e" //"bc4c31b2-647f-11ee-8c99-0242ac120002" : "6e400003-b5a3-f393-e0a9-e50e24dcca9e"
+      //let txuuid = "6e400002-b5a3-f393-e0a9-e50e24dcca9e"
+      //let rxuuid = "6e400003-b5a3-f393-e0a9-e50e24dcca9e"
+
+
 
       // Get receiving Characteristic
       service.getCharacteristic(rxuuid)

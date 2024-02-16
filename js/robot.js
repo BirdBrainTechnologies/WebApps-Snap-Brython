@@ -51,7 +51,8 @@ Robot.ofType = {
   HUMMINGBIRDBIT: 2,
   MICROBIT: 3,
   GLOWBOARD: 4,
-  HATCHLING: 5,
+  PROTOHATCH: 5, //Hatchling prototype
+  HATCHLING: 6, //Hatchling with microblocks
 }
 
 /**
@@ -126,8 +127,26 @@ Robot.propertiesFor = {
     yellowThreshold: 210,
     getFirmwareCommand: null
   },
-  //Hatchling
+  //Hatchling prototype
   5: {
+    setAllLetter: 0x90,
+    setAllLength: 20,
+    triLedCount: 6,
+    buzzerIndex: 1,
+    buzzerBytes: 5,
+    stopCommand: new Uint8Array([0xDF]),
+    calibrationCommand: new Uint8Array([0xCE, 0xFF, 0xFF, 0xFF]),
+    calibrationIndex: 7,
+    batteryIndex: 2,
+    batteryFactor: null,
+    batteryConstant: null,
+    greenThreshold: null,
+    yellowThreshold: null,
+    getFirmwareCommand: new Uint8Array([0xCF]),
+    pinModeIndex: null
+  },
+  //Hatchling with microblocks
+  6: {
     setAllLetter: 0x90,
     setAllLength: 20,
     triLedCount: 6,
@@ -172,7 +191,7 @@ Robot.getTypeFromName = function(name) {
   } else if (name.startsWith("GB")) {
     return Robot.ofType.GLOWBOARD
   } else if (name.startsWith("HL") || name.startsWith("Arduino")) {//Temp name in testing
-    return Robot.ofType.HATCHLING
+    return Robot.ofType.PROTOHATCH
   } else if (Hatchling) { //Maybe for hatchling, name will not determine type. Just uuid.
     return Robot.ofType.HATCHLING
   } else return null;
@@ -255,7 +274,7 @@ Robot.prototype.initializeDataArrays = function() {
   if (this.isA(Robot.ofType.FINCH)) {
     this.motorsData = new RobotData(FINCH_INITIAL_MOTOR_ARRAY);
   }
-  if (this.isA(Robot.ofType.HATCHLING)) {
+  if (this.isA(Robot.ofType.HATCHLING) || this.isA(Robot.ofType.PROTOHATCH)) {
     this.boardLedData = new RobotData(Array(18).fill(0))
     this.portsData = new RobotData(Array(18).fill(0))
     this.neopixelData = new RobotData(Array(72).fill(0))
@@ -519,7 +538,7 @@ Robot.prototype.sendSetAll = function() {
       }
     }
 
-    if (this.isA(Robot.ofType.HATCHLING)) {
+    if (this.isA(Robot.ofType.PROTOHATCH)) {
       /*
       Set on-board LEDs (there are 6):
       0xE0 followed by 18 bytes, R,G,B for ports A-F
@@ -640,7 +659,7 @@ Robot.prototype.setTriLED = function(port, red, green, blue) {
       case Robot.ofType.FINCH:
         index = 1 + portAdjust;
         break;
-      case Robot.ofType.HATCHLING:
+      case Robot.ofType.PROTOHATCH:
         index = portAdjust;
         break;
       default:
@@ -648,7 +667,7 @@ Robot.prototype.setTriLED = function(port, red, green, blue) {
         return;
     }
 
-    if (this.isA(Robot.ofType.HATCHLING)) {
+    if (this.isA(Robot.ofType.PROTOHATCH)) {
       console.log("" + index + " " + portAdjust + " " + port)
       this.portsData.update(index, [red, green, blue])
     } else {
@@ -757,7 +776,7 @@ Robot.prototype.setBuzzer = function(note, duration) {
   //TODO: check if period is in range?
 
   let buzzerArray = [period >> 8, period & 0x00ff, duration >> 8, duration & 0x00ff]
-  if (this.isA(Robot.ofType.MICROBIT) || this.isA(Robot.ofType.HATCHLING)) {
+  if (this.isA(Robot.ofType.MICROBIT) || this.isA(Robot.ofType.PROTOHATCH)) {
     buzzerArray.splice(3, 0, 0x20)
   }
 
@@ -1094,7 +1113,7 @@ Robot.prototype.receiveSensorData = function(data) {
 
   if (batteryIndex != null) { //null for micro:bit which does not have battery monitoring
     var newLevel = Robot.batteryLevel.UNKNOWN
-    if ( (this.hasV2Microbit && this.isA(Robot.ofType.FINCH)) || this.isA(Robot.ofType.HATCHLING)) {
+    if ( (this.hasV2Microbit && this.isA(Robot.ofType.FINCH)) || this.isA(Robot.ofType.PROTOHATCH)) {
       newLevel = data[batteryIndex] & 0x3
       //Battery level 3 represents a complete charge and is not currently handled.
       if (newLevel == 3) { newLevel = Robot.batteryLevel.HIGH }

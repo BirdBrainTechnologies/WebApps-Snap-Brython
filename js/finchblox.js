@@ -550,8 +550,14 @@ function getFinchBloxRobotInput(path, robot) {
  */
 function finchBloxNotifyDiscovered(device) {
   console.log("Discovered " + device.name);
-  let fancyName = getDeviceFancyName(device.name)
-  fancyName = fancyName.slice(0, -6)
+  let fancyName = null
+  if (Hatchling) {
+    fancyName = device.name
+  } else {
+    fancyName = getDeviceFancyName(device.name)
+    fancyName = fancyName.slice(0, -6)
+  }
+
   if (Hatchling) {
     fbFrontend.CallbackManager.robot.discovered('[{"id":"' + device.name + '", "device":"Hatch", "name":"' + fancyName + '", "RSSI":0, "advertisedName":"' + device.name + '"}]')
   } else {
