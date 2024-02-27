@@ -232,6 +232,8 @@ def save_script(evt):
     window.birdbrain.savePythonProject(currentScriptName, src)
 
 def reload_editor(evt):
+    src = editor.getValue()
+    update_storage(src)
     window.location.reload(False)
 
 def update_script_name(evt):
