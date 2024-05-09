@@ -1960,6 +1960,18 @@ const FINCHBLOX_FILES_TO_CACHE = [
   'img/fb_icon_512x512.png'
 ];
 
+const HATCHLING_FILES_TO_CACHE = [
+  'Hatchling.html',
+  'manifest-hatchling.json',
+  'finchblox/Images/Color_circle_(RGB).svg',
+  'img/hl_icon_32x32.png',
+  'img/hl_icon_128x128.png',
+  'img/hl_icon_152x152.png',
+  'img/hl_icon_192x192.png',
+  'img/hl_icon_256x256.png',
+  'img/hl_icon_512x512.png'
+];
+
 
 function bypassBrowserCache(urls) {
   return urls.map((url) => new Request(url, {
@@ -1967,7 +1979,7 @@ function bypassBrowserCache(urls) {
   }))
 }
 
-function addEventListeners(usingSnap, usingFinchBlox) {
+function addEventListeners(usingSnap, usingFinchBlox, usingHatchling) {
   //The install event is called once per service worker.
   //Changes to the service worker script count as a new service worker
   self.addEventListener('install', (evt) => {
@@ -1991,7 +2003,15 @@ function addEventListeners(usingSnap, usingFinchBlox) {
                     })
           } else if (usingFinchBlox) {
             console.log("[ServiceWorker] About to cache " + FINCHBLOX_FILES_TO_CACHE.length + " FinchBlox files")
-            return cache.addAll(bypassBrowserCache(FINCHBLOX_FILES_TO_CACHE)).catch(error => {
+            return cache.addAll(bypassBrowserCache(FINCHBLOX_FILES_TO_CACHE)).then(() => {
+                        if (usingHatchling) {
+                          console.log("[ServiceWorker] About to cache " + HATCHLING_FILES_TO_CACHE.length + " Hatchling files")
+                          return cache.addAll(bypassBrowserCache(HATCHLING_FILES_TO_CACHE)).catch(error => {
+                            console.error("Error caching Hatchling files: " + error.message);
+                            throw error;
+                          })
+                        }
+                      }).catch(error => {
                       console.error("Error caching FinchBlox files: " + error.message);
                       throw error;
                     })

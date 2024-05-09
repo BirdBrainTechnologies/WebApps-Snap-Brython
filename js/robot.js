@@ -147,17 +147,17 @@ Robot.propertiesFor = {
   },
   //Hatchling with microblocks
   6: {
-    setAllLetter: 0x90,
-    setAllLength: 20,
-    triLedCount: 6,
-    buzzerIndex: 1,
-    buzzerBytes: 5,
+    //setAllLetter: 0x90,
+    //setAllLength: 20,
+    //triLedCount: 6,
+    //buzzerIndex: 1,
+    //buzzerBytes: 5,
     stopCommand: new Uint8Array([0xFA,6,0]),//new Uint8Array([0xDF]),
     calibrationCommand: new Uint8Array([0xCE, 0xFF, 0xFF, 0xFF]),
-    calibrationIndex: 7,
-    batteryIndex: 2,
-    batteryFactor: null,
-    batteryConstant: null,
+    //calibrationIndex: 7,
+    //batteryIndex: 2,
+    //batteryFactor: null,
+    //batteryConstant: null,
     greenThreshold: null,
     yellowThreshold: null,
     getFirmwareCommand: null, //new Uint8Array([0xCF]),
@@ -269,12 +269,14 @@ Robot.prototype.initialize = function() {
  * should be modified using updateData.
  */
 Robot.prototype.initializeDataArrays = function() {
+  //Hatchling runs all its code in the vm, so we do not need to maintain a state here.
+  if (this.isA(Robot.ofType.HATCHLING)) { return } 
   this.setAllData = new RobotData(Robot.initialSetAllFor(this.type));
   this.ledDisplayData = new RobotData(INITIAL_LED_DISPLAY_ARRAY);
   if (this.isA(Robot.ofType.FINCH)) {
     this.motorsData = new RobotData(FINCH_INITIAL_MOTOR_ARRAY);
   }
-  if (this.isA(Robot.ofType.HATCHLING) || this.isA(Robot.ofType.PROTOHATCH)) {
+  if (this.isA(Robot.ofType.PROTOHATCH)) {
     this.boardLedData = new RobotData(Array(18).fill(0))
     this.portsData = new RobotData(Array(18).fill(0))
     this.neopixelData = new RobotData(Array(72).fill(0))
@@ -286,6 +288,9 @@ Robot.prototype.initializeDataArrays = function() {
  * to the robot. Stops the current timer if one is running.
  */
 Robot.prototype.startSetAll = function() {
+  //no setAll commands for hatchling
+  if (this.isA(Robot.ofType.HATCHLING)) { return }
+  
   //console.log("Starting setAll. interval=" + (MIN_SET_ALL_INTERVAL + this.setAllTimeToAdd));
   if (this.setAllInterval != null) {
     clearInterval(this.setAllInterval)
@@ -434,6 +439,9 @@ Robot.prototype.write = function(data) {
  * a setInterval set up in the initializer (setAllInterval).
  */
 Robot.prototype.sendSetAll = function() {
+  //no setAll commands for hatchling
+  if (this.isA(Robot.ofType.HATCHLING)) { return }
+
   if (this.isA(Robot.ofType.GLOWBOARD)) {
     console.log("setall")
     if (this.setAllData.isNew) {
@@ -1153,7 +1161,10 @@ Robot.prototype.receiveSensorData = function(data) {
  * @param {Uint8Array} data 
  */
 Robot.prototype.sendMicroBlocksData = function(data) {
-  for (let i = 0; i < Math.ceil(data.length/20); i++ ) {
+  /*for (let i = 0; i < Math.ceil(data.length/20); i++ ) {
     this.write(data.subarray(i*20, (i+1)*20))
-  }
+  }*/
+  console.log("*** MICROBLOCKS DATA")
+  console.log(data)
+  this.write(data)
 }
