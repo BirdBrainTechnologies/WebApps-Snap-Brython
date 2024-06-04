@@ -1104,7 +1104,11 @@ Robot.prototype.receiveSensorData = function(data) {
 
   this.currentSensorData = data
   //console.log(data)
-  if (Hatchling) { fbFrontend.CallbackManager.robot.setHLState(data) }
+  if (Hatchling) { 
+    //The frontend will update the battery status if necessary.
+    fbFrontend.CallbackManager.robot.setHLState(data) 
+    return
+  }
 
   sendMessage({
     robot: this.devLetter,

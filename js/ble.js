@@ -221,9 +221,11 @@ function onDisconnected(event) {
         robot: robots[i].devLetter,
         connectionLost: true
       });
-      let cf = " " + thisLocaleTable["Connection_Failure"];
-      let msg = robots[i].fancyName + cf;
-      showErrorModal(cf, msg, true)
+      if (!Hatchling) {
+        let cf = " " + thisLocaleTable["Connection_Failure"];
+        let msg = robots[i].fancyName + cf;
+        showErrorModal(cf, msg, true)
+      }
       robots[i].externalDisconnect();
     }
   }

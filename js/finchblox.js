@@ -20,6 +20,7 @@ function FB_Files() {}
  * @param  {string} contents the xml file contents
  */
 FB_Files.newFile = function(filename, contents) {
+  console.log("*** newFile " + filename + ": " + contents)
   //check if the filename already exists
   if (Object.keys(localStorage).includes(filename)) {
     console.error("filename " + filename + " already exists.")
@@ -27,12 +28,19 @@ FB_Files.newFile = function(filename, contents) {
   }
 
   let allFileNames = []
-  if (localStorage.finchBloxFileNames) {
-    allFileNames = localStorage.finchBloxFileNames.split(",")
+  if (Hatchling) {
+    if (localStorage.hatchlingFileNames) {
+      allFileNames = localStorage.hatchlingFileNames.split(",")
+    }
+    allFileNames.push(filename)
+    localStorage.hatchlingFileNames = allFileNames.toString()
+  } else {
+    if (localStorage.finchBloxFileNames) {
+      allFileNames = localStorage.finchBloxFileNames.split(",")
+    }
+    allFileNames.push(filename)
+    localStorage.finchBloxFileNames = allFileNames.toString()
   }
-  allFileNames.push(filename)
-  localStorage.finchBloxFileNames = allFileNames.toString()
-
   localStorage[filename] = contents
 }
 /**
@@ -42,7 +50,11 @@ FB_Files.newFile = function(filename, contents) {
  * @return {string}  JSON file name list
  */
 FB_Files.getFileNames = function() {
-  if (localStorage.finchBloxFileNames) {
+  if (Hatchling && localStorage.hatchlingFileNames) {
+    let filenames = localStorage.hatchlingFileNames.replace(/,/g, '","')
+    let filesString = '{"files":["' + filenames + '"]}'
+    return filesString
+  } else if (!Hatchling && localStorage.finchBloxFileNames) {
     let filenames = localStorage.finchBloxFileNames.replace(/,/g, '","')
     let filesString = '{"files":["' + filenames + '"]}'
     return filesString
@@ -57,9 +69,16 @@ FB_Files.getFileNames = function() {
  * @param  {string} filename name of the file to open
  */
 FB_Files.openFile = function(filename) {
+  console.log("*** openFile " + filename + " " + noFilesLoadedYet)
+  console.log(localStorage)
+
   if (noFilesLoadedYet) {
     noFilesLoadedYet = false;
-    if (localStorage.currentFbFile != null) {
+    if (Hatchling) {
+      if (localStorage.currentHlFile != null) {
+        filename = localStorage.currentHlFile
+      }
+    } else if (localStorage.currentFbFile != null) {
       filename = localStorage.currentFbFile
     }
   }
@@ -68,7 +87,11 @@ FB_Files.openFile = function(filename) {
 
   if (projectContent) {
     //console.log("Opening file " + filename + " with contents: " + projectContent);
-    localStorage.currentFbFile = filename
+    if (Hatchling) {
+      localStorage.currentHlFile = filename
+    } else {
+      localStorage.currentFbFile = filename
+    }
     fbFrontend.CallbackManager.data.open(filename, projectContent);
   } else {
     console.error("No contents found for file named " + filename)
@@ -80,7 +103,10 @@ FB_Files.openFile = function(filename) {
  * @param  {string} projectContent xml contents of the file
  */
 FB_Files.autoSave = function(projectContent) {
-  localStorage[localStorage.currentFbFile] = projectContent
+  const filename = Hatchling ? localStorage.currentHlFile : localStorage.currentFbFile
+  console.log("*** autoSave " + filename)
+  console.log(projectContent)
+  localStorage[filename] = projectContent
 }
 /**
  * FB_Files.getAvailableName - Checks the requested file name for availability.
@@ -93,7 +119,7 @@ FB_Files.getAvailableName = function(nameRequested) {
   let alreadySanitized = true; //false triggers popup to remove invalid characters
   let alreadyAvailable = true; //false triggers popup to choose another name
   if (Object.keys(localStorage).includes(nameRequested)) {
-    let parts = nameRequested.split("_")
+    let parts = Hatchling ? nameRequested.split("-") : nameRequested.split("_")
 
     let numParts = parts[parts.length - 2].split("(")
     let currentNum = parseInt(numParts[numParts.length - 1])
@@ -106,7 +132,7 @@ FB_Files.getAvailableName = function(nameRequested) {
     }
     parts[parts.length - 2] = numParts.join("(")
 
-    let nameToCheck = parts.join("_")
+    let nameToCheck = Hatchling ? parts.join("-") : parts.join("_")
     //console.log("The name " + nameRequested + " is already taken. Checking " + nameToCheck)
     return this.getAvailableName(nameToCheck)
   } else {
@@ -125,6 +151,8 @@ FB_Files.rename = function(request) {
     console.error("A file named " + newName + " already exists.")
     return;
   }
+  console.log("*** rename " + oldName + " to " + newName)
+  console.log(localStorage)
   this.newFile(newName, localStorage[oldName])
   this.deleteFile(oldName)
   this.openFile(newName)
@@ -135,11 +163,17 @@ FB_Files.rename = function(request) {
  * @param  {string} filename Name of the file to delete
  */
 FB_Files.deleteFile = function(filename) {
-  let fn = localStorage.finchBloxFileNames.split(",")
+  console.log("*** deleteFile " + filename)
+  let names = Hatchling ? localStorage.hatchlingFileNames : localStorage.finchBloxFileNames
+  let fn = names.split(",")
   let remainingFileNames = fn.filter(value => {
     return value != filename
   })
-  localStorage.finchBloxFileNames = remainingFileNames.toString()
+  if (Hatchling) {
+    localStorage.hatchlingFileNames = remainingFileNames.toString()  
+  } else {
+    localStorage.finchBloxFileNames = remainingFileNames.toString()
+  }
   delete localStorage[filename]
 }
 
@@ -297,11 +331,16 @@ function parseFinchBloxRequest(request) {
           break;
         case "delete":
           filename = query[1].split("&")[0].split("=").pop();
-          let deletingCurrentFile = (filename == localStorage.currentFbFile)
+          const currentFile = Hatchling ? localStorage.currentHlFile : localStorage.currentFbFile
+          let deletingCurrentFile = (filename == currentFile) 
           FB_Files.deleteFile(filename)
           if (deletingCurrentFile) {
             fbFrontend.CallbackManager.data.close()
           }
+          break;
+        case "markAsNamed":
+          //TODO: anything here?
+          console.log("*** markAsNamed")
           break;
         default:
           console.error("got data request for " + path[1]);
