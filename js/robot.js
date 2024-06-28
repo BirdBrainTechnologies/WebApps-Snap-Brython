@@ -423,7 +423,7 @@ Robot.prototype.write = function(data) {
   this.writeMethod.call(this.TX, data).then(_ => {
       //console.log('Wrote to ' + this.fancyName + ":");
       //console.log(data);
-      console.log('Wrote to ' + this.fancyName + ": [" + (data.length == 1 ? data[0] : Array.apply([], data).join(",")) + "]")
+      console.log('Wrote to ' + this.device.name + ": [" + (data.length == 1 ? data[0] : Array.apply([], data).join(",")) + "]")
       //console.log('Time added to interval ' + this.setAllTimeToAdd)
       this.writeInProgress = false;
     }).catch(error => {
@@ -1168,7 +1168,7 @@ Robot.prototype.sendMicroBlocksData = function(data) {
   /*for (let i = 0; i < Math.ceil(data.length/20); i++ ) {
     this.write(data.subarray(i*20, (i+1)*20))
   }*/
-  console.log("*** MICROBLOCKS DATA")
-  console.log(data)
+  //console.log("*** MICROBLOCKS DATA")
+  //console.log(data)
   this.write(data)
 }

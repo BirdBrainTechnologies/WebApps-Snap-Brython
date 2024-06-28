@@ -20,7 +20,7 @@ function FB_Files() {}
  * @param  {string} contents the xml file contents
  */
 FB_Files.newFile = function(filename, contents) {
-  console.log("*** newFile " + filename + ": " + contents)
+  //console.log("*** newFile " + filename + ": " + contents)
   //check if the filename already exists
   if (Object.keys(localStorage).includes(filename)) {
     console.error("filename " + filename + " already exists.")
@@ -69,7 +69,7 @@ FB_Files.getFileNames = function() {
  * @param  {string} filename name of the file to open
  */
 FB_Files.openFile = function(filename) {
-  console.log("*** openFile " + filename + " " + noFilesLoadedYet)
+  //console.log("*** openFile " + filename + " " + noFilesLoadedYet)
   console.log(localStorage)
 
   if (noFilesLoadedYet) {
@@ -104,8 +104,8 @@ FB_Files.openFile = function(filename) {
  */
 FB_Files.autoSave = function(projectContent) {
   const filename = Hatchling ? localStorage.currentHlFile : localStorage.currentFbFile
-  console.log("*** autoSave " + filename)
-  console.log(projectContent)
+  //console.log("*** autoSave " + filename)
+  //console.log(projectContent)
   localStorage[filename] = projectContent
 }
 /**
@@ -151,7 +151,7 @@ FB_Files.rename = function(request) {
     console.error("A file named " + newName + " already exists.")
     return;
   }
-  console.log("*** rename " + oldName + " to " + newName)
+  //console.log("*** rename " + oldName + " to " + newName)
   console.log(localStorage)
   this.newFile(newName, localStorage[oldName])
   this.deleteFile(oldName)
@@ -163,7 +163,7 @@ FB_Files.rename = function(request) {
  * @param  {string} filename Name of the file to delete
  */
 FB_Files.deleteFile = function(filename) {
-  console.log("*** deleteFile " + filename)
+  //console.log("*** deleteFile " + filename)
   let names = Hatchling ? localStorage.hatchlingFileNames : localStorage.finchBloxFileNames
   let fn = names.split(",")
   let remainingFileNames = fn.filter(value => {
@@ -340,7 +340,7 @@ function parseFinchBloxRequest(request) {
           break;
         case "markAsNamed":
           //TODO: anything here?
-          console.log("*** markAsNamed")
+          //console.log("*** markAsNamed")
           break;
         default:
           console.error("got data request for " + path[1]);
