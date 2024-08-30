@@ -192,7 +192,7 @@ Robot.getTypeFromName = function(name) {
     return Robot.ofType.GLOWBOARD
   } else if (name.startsWith("HL") || name.startsWith("Arduino")) {//Temp name in testing
     return Robot.ofType.PROTOHATCH
-  } else if (Hatchling) { //Maybe for hatchling, name will not determine type. Just uuid.
+  } else if (Hatchling || HatchPlus) { //Maybe for hatchling, name will not determine type. Just uuid.
     return Robot.ofType.HATCHLING
   } else return null;
 }
@@ -252,7 +252,7 @@ Robot.prototype.initialize = function() {
   if (Robot.propertiesFor[this.type].getFirmwareCommand != null) {
     //Read the current robot's firmware version to determine if it includes a V2 micro:bit
     this.write(Robot.propertiesFor[this.type].getFirmwareCommand)
-  } else if (Hatchling) {
+  } else if (Hatchling || HatchPlus) {
     this.isInitialized = true //avoid any initialization for now
   } else {
     this.write(Uint8Array.of(0x62, 0x67));
@@ -649,7 +649,7 @@ Robot.prototype.setTriLED = function(port, red, green, blue) {
 
   } else {
     port = parseInt(port)
-    if (Hatchling) {
+    if (Hatchling || HatchPlus) {
       if (port < 0 || port > 5) { return
       } else { port = port + 1 }
     } else {
@@ -1104,7 +1104,7 @@ Robot.prototype.receiveSensorData = function(data) {
 
   this.currentSensorData = data
   //console.log(data)
-  if (Hatchling) { 
+  if (Hatchling || HatchPlus) { 
     //The frontend will update the battery status if necessary.
     fbFrontend.CallbackManager.robot.setHLState(data) 
     return

@@ -70,7 +70,7 @@ function parseLegacyMessage(request) {
  */
 function parseMessage(message) {
   let robot = getRobotByLetter(message.robot);
-  if (FinchBlox) { robot = finchBloxRobot }
+  if (FinchBlox || HatchPlus) { robot = finchBloxRobot }
   if (robot == null) {
     console.error("Unable to find robot " + message.robot);
     return;
@@ -165,7 +165,7 @@ function parseMessage(message) {
       robot.setGBPoint(message.xPos, message.yPos, message.color, message.brightness)
 
       break;
-    case "hlSetOutput":
+    /*case "hlSetOutput":
       robot.setHatchlingPort(message.port, message.value)
 
       break;
@@ -189,7 +189,7 @@ function parseMessage(message) {
     case "hlPortOff":
       robot.setHatchlingPort(message.port, message.value)
 
-      break;
+      break;*/
     default:
       console.error("Command not implemented: " + message.cmd);
   }

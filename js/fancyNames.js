@@ -688,7 +688,7 @@ const blacklistArray = ['ANL',
  */
 function getDeviceFancyName(devName) {
 
-    if (Hatchling) { 
+    if (Hatchling || HatchPlus) { 
       console.log("Hatchling Fancy Name requested for " + devName)
       return "Hatchling Prototype Name" 
     }

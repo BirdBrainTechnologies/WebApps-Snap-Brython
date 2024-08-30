@@ -13,6 +13,55 @@ const fbFrontend = document.getElementById('frontend').contentWindow
  * file information is stored in localStorage.
  */
 function FB_Files() {}
+
+/**
+ * Return name of current file - may be null
+ * @return {string} filename or null
+ */
+FB_Files.getCurrentFile = function() {
+  if (HatchPlus) {
+    return localStorage.currentHpFile
+  } else if (Hatchling) {
+    return localStorage.currentHlFile
+  } else {
+    return localStorage.currentFbFile
+  }
+}
+FB_Files.setCurrentFile = function(filename) {
+  if (HatchPlus) {
+    localStorage.currentHpFile = filename
+  } else if (Hatchling) {
+    localStorage.currentHlFile = filename
+  } else {
+    localStorage.currentFbFile = filename
+  }
+}
+/**
+ * Get list of file names from memory
+ * @return {string} comma separated list of files or null if there are none
+ */
+FB_Files.getFileNames = function() {
+  if (HatchPlus) {
+    return localStorage.hatchPlusFileNames || null
+  } else if (Hatchling) {
+    return localStorage.hatchlingFileNames || null
+  } else {
+    return localStorage.finchBloxFileNames || null
+  }
+}
+/**
+ * Set list of file names in memory
+ * @param {string} names - comma separated list of file names
+ */
+FB_Files.setFileNames = function(names) {
+  if (HatchPlus) {
+    localStorage.hatchPlusFileNames = names
+  } else if (Hatchling) {
+    localStorage.hatchlingFileNames = names
+  } else {
+    localStorage.finchBloxFileNames = names
+  }
+}
 /**
  * FB_Files.newFile - Create a new file with the given name and contents
  *
@@ -27,40 +76,23 @@ FB_Files.newFile = function(filename, contents) {
     return
   }
 
-  let allFileNames = []
-  if (Hatchling) {
-    if (localStorage.hatchlingFileNames) {
-      allFileNames = localStorage.hatchlingFileNames.split(",")
-    }
-    allFileNames.push(filename)
-    localStorage.hatchlingFileNames = allFileNames.toString()
-  } else {
-    if (localStorage.finchBloxFileNames) {
-      allFileNames = localStorage.finchBloxFileNames.split(",")
-    }
-    allFileNames.push(filename)
-    localStorage.finchBloxFileNames = allFileNames.toString()
-  }
+  let filenames = FB_Files.getFileNames()
+  let allFileNames = filenames ? filenames.split(",") : []
+  allFileNames.push(filename)
+  FB_Files.setFileNames(allFileNames.toString())
+
   localStorage[filename] = contents
 }
 /**
- * FB_Files.getFileNames - return a JSON list of the names of all currently
+ * FB_Files.getFileNamesResponse - return a JSON list of the names of all currently
  * saved files.
  *
  * @return {string}  JSON file name list
  */
-FB_Files.getFileNames = function() {
-  if (Hatchling && localStorage.hatchlingFileNames) {
-    let filenames = localStorage.hatchlingFileNames.replace(/,/g, '","')
-    let filesString = '{"files":["' + filenames + '"]}'
-    return filesString
-  } else if (!Hatchling && localStorage.finchBloxFileNames) {
-    let filenames = localStorage.finchBloxFileNames.replace(/,/g, '","')
-    let filesString = '{"files":["' + filenames + '"]}'
-    return filesString
-  } else {
-    return '{"files":[]}'
-  }
+FB_Files.getFileNamesResponse = function() {
+  let filenames = FB_Files.getFileNames()
+
+  return filenames ? '{"files":["' + filenames.replace(/,/g, '","') + '"]}' : '{"files":[]}'
 }
 /**
  * FB_Files.openFile - Finds the file with the given filename and sends its
@@ -69,17 +101,14 @@ FB_Files.getFileNames = function() {
  * @param  {string} filename name of the file to open
  */
 FB_Files.openFile = function(filename) {
-  //console.log("*** openFile " + filename + " " + noFilesLoadedYet)
+  console.log("*** openFile " + filename + " " + noFilesLoadedYet)
   console.log(localStorage)
 
   if (noFilesLoadedYet) {
     noFilesLoadedYet = false;
-    if (Hatchling) {
-      if (localStorage.currentHlFile != null) {
-        filename = localStorage.currentHlFile
-      }
-    } else if (localStorage.currentFbFile != null) {
-      filename = localStorage.currentFbFile
+    if (FinchBlox || filename == null) {
+      let cf = FB_Files.getCurrentFile()
+      if (cf) { filename = cf }
     }
   }
 
@@ -87,11 +116,7 @@ FB_Files.openFile = function(filename) {
 
   if (projectContent) {
     //console.log("Opening file " + filename + " with contents: " + projectContent);
-    if (Hatchling) {
-      localStorage.currentHlFile = filename
-    } else {
-      localStorage.currentFbFile = filename
-    }
+    FB_Files.setCurrentFile(filename)
     fbFrontend.CallbackManager.data.open(filename, projectContent);
   } else {
     console.error("No contents found for file named " + filename)
@@ -103,7 +128,11 @@ FB_Files.openFile = function(filename) {
  * @param  {string} projectContent xml contents of the file
  */
 FB_Files.autoSave = function(projectContent) {
-  const filename = Hatchling ? localStorage.currentHlFile : localStorage.currentFbFile
+  const filename = FB_Files.getCurrentFile()
+  if (filename == null) {
+    console.error("Tried to autoSave with a null filename")
+    return
+  }
   //console.log("*** autoSave " + filename)
   //console.log(projectContent)
   localStorage[filename] = projectContent
@@ -121,7 +150,8 @@ FB_Files.getAvailableName = function(nameRequested) {
   if (Object.keys(localStorage).includes(nameRequested)) {
     let parts = Hatchling ? nameRequested.split("-") : nameRequested.split("_")
 
-    let numParts = parts[parts.length - 2].split("(")
+    let offset = FinchBlox ? 2 : 1
+    let numParts = parts[parts.length - offset].split("(")
     let currentNum = parseInt(numParts[numParts.length - 1])
     if (numParts.length > 1 && !isNaN(currentNum)) {
       currentNum = currentNum + 1
@@ -130,7 +160,7 @@ FB_Files.getAvailableName = function(nameRequested) {
       currentNum = 1
       numParts.push(currentNum + ")")
     }
-    parts[parts.length - 2] = numParts.join("(")
+    parts[parts.length - offset] = numParts.join("(")
 
     let nameToCheck = Hatchling ? parts.join("-") : parts.join("_")
     //console.log("The name " + nameRequested + " is already taken. Checking " + nameToCheck)
@@ -164,16 +194,12 @@ FB_Files.rename = function(request) {
  */
 FB_Files.deleteFile = function(filename) {
   //console.log("*** deleteFile " + filename)
-  let names = Hatchling ? localStorage.hatchlingFileNames : localStorage.finchBloxFileNames
+  let names = FB_Files.getFileNames() || ""
   let fn = names.split(",")
   let remainingFileNames = fn.filter(value => {
     return value != filename
   })
-  if (Hatchling) {
-    localStorage.hatchlingFileNames = remainingFileNames.toString()  
-  } else {
-    localStorage.finchBloxFileNames = remainingFileNames.toString()
-  }
+  FB_Files.setFileNames(remainingFileNames.toString())
   delete localStorage[filename]
 }
 
@@ -307,12 +333,15 @@ function parseFinchBloxRequest(request) {
       let filename;
       switch (query[0]) {
         case "files":
-          responseBody = FB_Files.getFileNames();
+          responseBody = FB_Files.getFileNamesResponse();
           break;
         case "new":
           filename = query[1].split("=").pop();
           let projectContent = request.body
           FB_Files.newFile(filename, projectContent)
+          if (!FinchBlox) { //TODO: Why not finchblox?
+            FB_Files.openFile(filename)
+          }
           break;
         case "open":
           filename = query[1].split("=").pop();
@@ -331,7 +360,7 @@ function parseFinchBloxRequest(request) {
           break;
         case "delete":
           filename = query[1].split("&")[0].split("=").pop();
-          const currentFile = Hatchling ? localStorage.currentHlFile : localStorage.currentFbFile
+          const currentFile = HatchPlus ? localStorage.currentHpFile : Hatchling ? localStorage.currentHlFile : localStorage.currentFbFile
           let deletingCurrentFile = (filename == currentFile) 
           FB_Files.deleteFile(filename)
           if (deletingCurrentFile) {
@@ -341,6 +370,9 @@ function parseFinchBloxRequest(request) {
         case "markAsNamed":
           //TODO: anything here?
           //console.log("*** markAsNamed")
+          break;
+        case "close":
+          //TODO: do something to close the current file? Maybe save again?
           break;
         default:
           console.error("got data request for " + path[1]);
@@ -493,6 +525,7 @@ function handleFinchBloxRobotOutput(path) {
 
 /**
  * getFinchBloxRobotInput - Handles requests for sensor data.
+ * Note: Hatchling does not support these functions - it uses the microblocks virtual machine instead.
  *
  * @param  {[string]} path  request array
  * @param  {Object} robot The robot to get sensor data from
@@ -508,14 +541,16 @@ function getFinchBloxRobotInput(path, robot) {
 
   switch (sensor) {
     case "shake":
-      if (Hatchling) {
+      /*if (Hatchling) {
         let shake = robot.currentSensorData[6];
         response = ((shake & 0x01) > 0).toString()
-      }
+      }*/
+      console.error("Shake not supported")
+      break;
     case "light":
-      if (Hatchling) {
+      /*if (Hatchling) {
         response = (robot.currentSensorData[1]).toString();
-      } else {
+      } else {*/
         const port = params[3].split("=")[1]
         const R = currentFinchBloxBeak[0] * 100 / 255;
         const G = currentFinchBloxBeak[1] * 100 / 255;
@@ -537,15 +572,15 @@ function getFinchBloxRobotInput(path, robot) {
         }
 
         response = Math.round(Math.max(0, Math.min(100, (raw - correction)))).toString();
-      }
+      //}
       break;
     case "distance":
-      if (Hatchling) {
+      /*if (Hatchling) {
         const port = parseInt(params[3].split("=")[1])
         if (port >=0 && port < 6) {
           response = (robot.currentSensorData[14 + port]).toString()
         }
-      } else if (robot.hasV2Microbit) {
+      } else*/ if (robot.hasV2Microbit) {
         response = (robot.currentSensorData[1]).toString()
       } else {
         let msb = robot.currentSensorData[0]
@@ -570,7 +605,7 @@ function getFinchBloxRobotInput(path, robot) {
     case "V2sound":
       //because of the when clap block, this request may come while the robot is still setting up
       let sound = robot.currentSensorData[0]
-      if (Hatchling && sound == 255) { sound = 0; }
+      //if (Hatchling && sound == 255) { sound = 0; }
       response = sound ? sound.toString() : "0"
       break;
     default:
@@ -588,16 +623,16 @@ function getFinchBloxRobotInput(path, robot) {
  * @param  {Object} device ble device connecting
  */
 function finchBloxNotifyDiscovered(device) {
-  console.log("Discovered " + device.name);
+  console.log("*** Notifying frontend: Discovered " + device.name);
   let fancyName = null
-  if (Hatchling) {
+  if (Hatchling || HatchPlus) {
     fancyName = device.name
   } else {
     fancyName = getDeviceFancyName(device.name)
     fancyName = fancyName.slice(0, -6)
   }
 
-  if (Hatchling) {
+  if (Hatchling || HatchPlus) {
     fbFrontend.CallbackManager.robot.discovered('[{"id":"' + device.name + '", "device":"Hatch", "name":"' + fancyName + '", "RSSI":0, "advertisedName":"' + device.name + '"}]')
   } else {
     fbFrontend.CallbackManager.robot.discovered('[{"id":"' + device.name + '", "device":"Finch", "name":"' + fancyName + '", "RSSI":0}]')
@@ -610,10 +645,14 @@ function finchBloxNotifyDiscovered(device) {
  * @return {boolean}  true if set successfully
  */
 function finchBloxSetFrontendDevice() {
+  console.log("*** finchBloxSetFrontendDevice")
+  console.log(fbFrontend.RowDialog.currentDialog)
   if (fbFrontend.RowDialog.currentDialog != null &&
     fbFrontend.RowDialog.currentDialog.discoveredDevices != null &&
     fbFrontend.RowDialog.currentDialog.discoveredDevices.length > 0) {
     let guiDevice = fbFrontend.RowDialog.currentDialog.discoveredDevices[0];
+    console.log("*** setting device to: ")
+    console.log(guiDevice)
     fbFrontend.RowDialog.currentDialog.selectDevice(guiDevice)
     return true
   } else {

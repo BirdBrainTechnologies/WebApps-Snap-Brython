@@ -65,7 +65,7 @@ function findAndConnect() {
       { namePrefix: "FN", services: [BBT_SERVICE_UUID] }
     ]
   }
-  if (Hatchling) {
+  if (Hatchling || HatchPlus) {
     bleFilters = [
       //{ namePrefix: "HL", services: ["6e400001-b5a3-f393-e0a9-e50e24dcca9e"] },
       {  services: [HATCHLING_SERVICE_UUID] } //"bc4c31b0-647f-11ee-8c99-0242ac120002"]  }
@@ -95,7 +95,7 @@ function findAndConnect() {
       //This block is temporary until ble scanning is implemented. For now, we
       // will send the requested device to the dialog so that finchblox can set
       // the device up.
-      if (FinchBlox) {
+      if (BloxIDE) {
         finchBloxNotifyDiscovered(device)
         finchBloxRobot = robot
       }
@@ -124,14 +124,14 @@ function connectToRobot(robot) {
       // Get the Service
       //console.log("getting service")
 
-      if (Hatchling) { return server.getPrimaryService(HATCHLING_SERVICE_UUID) }
+      if (Hatchling || HatchPlus) { return server.getPrimaryService(HATCHLING_SERVICE_UUID) }
       return server.getPrimaryService(BBT_SERVICE_UUID);
     })
     .then(service => {
       //console.log("getting characteristic from ")
       //console.log(service)
-      let txuuid = Hatchling ? "bb37a002-b922-4018-8e74-e14824b3a638" : "6e400002-b5a3-f393-e0a9-e50e24dcca9e" //"bc4c31b1-647f-11ee-8c99-0242ac120002" : "6e400002-b5a3-f393-e0a9-e50e24dcca9e"
-      let rxuuid = Hatchling ? "bb37a003-b922-4018-8e74-e14824b3a638" : "6e400003-b5a3-f393-e0a9-e50e24dcca9e" //"bc4c31b2-647f-11ee-8c99-0242ac120002" : "6e400003-b5a3-f393-e0a9-e50e24dcca9e"
+      let txuuid = (Hatchling || HatchPlus) ? "bb37a002-b922-4018-8e74-e14824b3a638" : "6e400002-b5a3-f393-e0a9-e50e24dcca9e" //"bc4c31b1-647f-11ee-8c99-0242ac120002" : "6e400002-b5a3-f393-e0a9-e50e24dcca9e"
+      let rxuuid = (Hatchling || HatchPlus) ? "bb37a003-b922-4018-8e74-e14824b3a638" : "6e400003-b5a3-f393-e0a9-e50e24dcca9e" //"bc4c31b2-647f-11ee-8c99-0242ac120002" : "6e400003-b5a3-f393-e0a9-e50e24dcca9e"
       //let txuuid = "6e400002-b5a3-f393-e0a9-e50e24dcca9e"
       //let rxuuid = "6e400003-b5a3-f393-e0a9-e50e24dcca9e"
 
@@ -191,18 +191,20 @@ function onConnectionComplete(robot) {
     return;
   }
 
-  //console.log("Connection to " + robot.fancyName + " complete. Starting sensor polling.")
+  console.log("Connection to " + robot.fancyName + " complete. Starting sensor polling.")
   robot.initialize()
-
+  console.log("*** initialized ")
   closeErrorModal()
 
 
   if (!robots.includes(robot)) { robots.push(robot) }
-  if (FinchBlox && fbFrontend.RowDialog.currentDialog && fbFrontend.RowDialog.currentDialog.constructor == fbFrontend.DiscoverDialog) {
+  if ((FinchBlox || HatchPlus) && fbFrontend.RowDialog.currentDialog && fbFrontend.RowDialog.currentDialog.constructor == fbFrontend.DiscoverDialog) {
     finchBloxRobot = robot
   }
   updateConnectedDevices();
+  console.log("*** connected devices updated")
   updateBatteryStatus()
+  console.log("*** battery status updated")
   //open snap or brython.
   loadIDE();
 }
@@ -221,7 +223,7 @@ function onDisconnected(event) {
         robot: robots[i].devLetter,
         connectionLost: true
       });
-      if (!Hatchling) {
+      if (!(Hatchling || HatchPlus)) {
         let cf = " " + thisLocaleTable["Connection_Failure"];
         let msg = robots[i].fancyName + cf;
         showErrorModal(cf, msg, true)

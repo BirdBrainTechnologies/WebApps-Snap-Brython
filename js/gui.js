@@ -12,6 +12,8 @@ if (FinchBlox === undefined) { var FinchBlox = false }
 if (useHID === undefined) { var useHID = false }
 if (Hatchling === undefined) { var Hatchling = false }
 if (Hatchling) { FinchBlox = true } //the hatchling app using most of the finchblox settings
+if (HatchPlus === undefined) { var HatchPlus = false }
+const BloxIDE = FinchBlox || HatchPlus
 //console.log("FinchBlox == " + FinchBlox)
 
 const header = document.getElementById('main-header');
@@ -86,9 +88,9 @@ function onLoad() {
  * user.
  */
 function updateConnectedDevices() {
-  if (FinchBlox) {
-    //console.log("Updating FinchBlox connected devices. robots.length = " + robots.length + " finchbloxrobot = " + (finchBloxRobot ? finchBloxRobot.fancyName : null))
-
+  if (BloxIDE) {
+    console.log("Updating FinchBlox connected devices. robots.length = " + robots.length + " finchbloxrobot = " + (finchBloxRobot ? finchBloxRobot.fancyName : null))
+    console.log(fbFrontend)
     if (fbFrontend.RowDialog.currentDialog && fbFrontend.RowDialog.currentDialog.constructor == fbFrontend.DiscoverDialog) {
       if (!finchBloxSetFrontendDevice()) {
         if (finchBloxRobot == null) {
@@ -240,7 +242,7 @@ function displayConnectedDevice(robot) {
  * @param  {string} filename Optional filename to open. Only used with legacy finch.
  */
 function loadIDE(filename) {
-  if (FinchBlox) {
+  if (BloxIDE) { //For BirdBrain's custom block based programing environment, the ide is already loaded.
     return;
   }
   //const useSnap = ($('#snap-slider').prop('checked'))
