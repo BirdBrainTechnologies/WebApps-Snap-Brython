@@ -1172,3 +1172,15 @@ Robot.prototype.sendMicroBlocksData = function(data) {
   //console.log(data)
   this.write(data)
 }
+
+/**
+ * Finch only. Used for test app.
+ */
+Robot.prototype.isMoving = function() {
+  if (!this.isA(Robot.ofType.FINCH)) {
+    console.log("Only finches have encoders and keep track of movements.")
+    return false
+  }
+
+  return (this.currentSensorData[4] > 127) ? true : false
+}

@@ -60,7 +60,7 @@ function findAndConnect() {
   if (useSnap) {
     bleFilters.push({ namePrefix: "GB", services: [BBT_SERVICE_UUID] })
   }
-  if (FinchBlox) {
+  if (FinchBlox || robotTest) {
     bleFilters = [
       { namePrefix: "FN", services: [BBT_SERVICE_UUID] }
     ]
