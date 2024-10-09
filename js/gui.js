@@ -14,6 +14,7 @@ if (Hatchling === undefined) { var Hatchling = false }
 if (Hatchling) { FinchBlox = true } //the hatchling app using most of the finchblox settings
 if (HatchPlus === undefined) { var HatchPlus = false }
 const BloxIDE = FinchBlox || HatchPlus
+if (robotTest === undefined) { var robotTest = false }
 //console.log("FinchBlox == " + FinchBlox)
 
 const header = document.getElementById('main-header');

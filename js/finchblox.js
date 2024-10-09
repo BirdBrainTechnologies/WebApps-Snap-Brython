@@ -202,6 +202,27 @@ FB_Files.deleteFile = function(filename) {
   FB_Files.setFileNames(remainingFileNames.toString())
   delete localStorage[filename]
 }
+/**
+ * FB_Files.import - Import a file 
+ */
+FB_Files.import = function() {
+  console.log("**** IMPORT!")
+
+  let input = document.getElementById('chooseFile')
+  let file = input.files[0]
+  let filename = file.name.slice(0, -4) //remove the extension
+  file.text().then(contents => {
+    console.log("**** found contents:")
+    console.log(contents)
+    
+    FB_Files.newFile(filename, contents)
+    FB_Files.openFile(filename)
+
+  }).catch(error => {
+    console.error("failed to read file: " + error.message);
+  });
+}
+
 
 /**
  * FB_Audio - An audio object to handle all of FinchBlox's sound effects (eg.
@@ -373,6 +394,50 @@ function parseFinchBloxRequest(request) {
           break;
         case "close":
           //TODO: do something to close the current file? Maybe save again?
+          break;
+        case "export":
+          filename = query[1].split("&")[0].split("=").pop();
+          contents = localStorage[filename]
+
+          if (contents) {
+            let blob = new Blob([contents], {
+              type: "text/xml"
+            });
+            let a = document.createElement("a");
+            document.body.appendChild(a);
+            a.style = "display: none";
+
+            let url = window.URL.createObjectURL(blob);
+            a.href = url;
+            a.download = filename + ".hbx";
+            a.click();
+            window.URL.revokeObjectURL(url);
+          } else {
+            console.error("Could not export " + filename + ": File not found!")
+          }
+
+          break;
+        case "import":
+
+          let input = document.createElement("input")
+          input.style = "display: none"
+          input.type = "file"
+          input.accept = ".hbx"
+          input.setAttribute("id", "chooseFile")
+          input.setAttribute("onchange", "FB_Files.import()")
+          document.body.appendChild(input)
+          input.click()
+
+          break;
+        case "duplicate":
+
+          filename = query[1].split("&")[0].split("=").pop();
+          contents = localStorage[filename]
+
+          newFilename = query[1].split("&")[1].split("=").pop();
+
+          FB_Files.newFile(newFilename, contents)
+
           break;
         default:
           console.error("got data request for " + path[1]);
