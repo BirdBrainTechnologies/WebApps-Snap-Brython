@@ -52,7 +52,7 @@ function findAndConnect() {
   //Other ways to scan...
   //let bleFilters = [{ services: ["6e400001-b5a3-f393-e0a9-e50e24dcca9e"] }]
   //let bleFilters = [{ acceptAllDevices: true }]
-  let bleFilters = [
+  /*let bleFilters = [
     { namePrefix: "FN", services: [BBT_SERVICE_UUID] },
     { namePrefix: "BB", services: [BBT_SERVICE_UUID] },
     { namePrefix: "MB", services: [BBT_SERVICE_UUID] }
@@ -70,7 +70,36 @@ function findAndConnect() {
       //{ namePrefix: "HL", services: ["6e400001-b5a3-f393-e0a9-e50e24dcca9e"] },
       {  services: [HATCHLING_SERVICE_UUID] } //"bc4c31b0-647f-11ee-8c99-0242ac120002"]  }
     ]
+  }*/
+
+  let bleFilters = []
+  switch (findable) {
+  case BLE_TYPE.FINCH_AND_HUMMINGBIRD:
+    bleFilters = [
+      { namePrefix: "FN", services: [BBT_SERVICE_UUID] },
+      { namePrefix: "BB", services: [BBT_SERVICE_UUID] },
+      { namePrefix: "MB", services: [BBT_SERVICE_UUID] }
+    ]
+    break;
+  case BLE_TYPE.FINCH:
+    bleFilters = [
+      { namePrefix: "FN", services: [BBT_SERVICE_UUID] }
+    ]
+    break;
+  case BLE_TYPE.HUMMINGBIRD:
+    bleFilters = [
+      { namePrefix: "BB", services: [BBT_SERVICE_UUID] }
+    ]
+    break;
+  case BLE_TYPE.HATCHLING:
+    bleFilters = [
+      {  services: [HATCHLING_SERVICE_UUID] } 
+    ]
+    break;
+  default:
+    console.error("unsupported BLE_TYPE " + findable)
   }
+
   //console.log(bleFilters)
 
   navigator.bluetooth.requestDevice({ filters: bleFilters }).then(device => {

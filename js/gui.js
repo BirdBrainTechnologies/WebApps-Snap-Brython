@@ -17,6 +17,17 @@ const BloxIDE = FinchBlox || HatchPlus
 if (robotTest === undefined) { var robotTest = false }
 //console.log("FinchBlox == " + FinchBlox)
 
+const BLE_TYPE = {
+  FINCH: 1,
+  HUMMINGBIRD: 2,
+  FINCH_AND_HUMMINGBIRD: 3,
+  HATCHLING: 4
+}
+var findable = BLE_TYPE.FINCH_AND_HUMMINGBIRD
+if (FinchBlox || robotTest) { findable = BLE_TYPE.FINCH }
+if (Hatchling || HatchPlus) { findable = BLE_TYPE.HATCHLING }
+  
+
 const header = document.getElementById('main-header');
 const finder = document.getElementById('finder');
 const connected = document.getElementById('connected');
@@ -35,6 +46,7 @@ if (useHID) {
   $('#find-button').on('click', function(e) { findHID(); });
 } else {
   $('#find-button').on('click', function(e) { findAndConnect(); });
+  $('#find-button-exp').on('click', function(e) { findAndConnect(); });
 }
 
 //$('#startProgramming').on('click', function(e) { loadSnap(); })
@@ -44,6 +56,11 @@ $('#btn-collapse-section').on('click', function(e) { expandIDE(); })
 //Robot Test App
 if (robotTest) {
   $('#start-test-button').on('click', function(e) { testFinch(); });
+}
+
+//Load IDE without a connected robot
+if(useSnap) { //TODO: add to HID page? add for brython pages?
+  $('#program-button').on('click', function(e) { showProgrammingModal(); });
 }
 
 /**
@@ -94,6 +111,7 @@ function onLoad() {
  * user.
  */
 function updateConnectedDevices() {
+  console.log("*** updateConnectedDevices " + robots.length)
   if (BloxIDE) {
     console.log("Updating FinchBlox connected devices. robots.length = " + robots.length + " finchbloxrobot = " + (finchBloxRobot ? finchBloxRobot.fancyName : null))
     console.log(fbFrontend)
@@ -126,16 +144,21 @@ function updateConnectedDevices() {
     $('#find-button').show();
   }
 
-  if (robots.length == 0) {
+  if (getDisplayedRobotCount() == 0) {//(robots.length == 0) {
     $('#connection-state').css("visibility", "hidden");
-    //$('#startProgramming').hide();
+    $('#or').show()
+    $('#program-row').show();
+
+    $('#find-button-exp').show();
+    $('#robots-connected-snap').hide();
+
   } else {
     $('#connection-state').css("visibility", "visible");
-    /*if (iframe == null) {
-      $('#startProgramming').show();
-    } else {
-      $('#startProgramming').hide();
-    }*/
+    $('#or').hide()
+    $('#program-row').hide();
+    
+    $('#find-button-exp').hide();
+    $('#robots-connected-snap').show();
 
     robots.forEach(robot => {
       if(!robot.userDisconnected) {
@@ -281,6 +304,9 @@ function loadIDE(filename) {
       //projectName = "PWAhummingbird"
       projectName = "WEBhummingbird"
     }
+  } else if (getConnectedRobotCount() == 0) { 
+    if (!filename) { return }
+    projectName = filename
   } else if (allRobotsAreGlowBoards()) {
     //projectName = "PWAGlowBoardMultiDevice";
     projectName = "WebGlowBoardMultiDevice";
@@ -394,6 +420,8 @@ function iframeOnLoadHandler() {
  */
 function collapseIDE() {
   $('#btn-expand-section').hide();
+  $('#find-button-exp').hide();
+  $('#robots-connected-snap').hide();
   ideExpanded = false;
   $('#connected-expanded').css("visibility", "hidden");
   document.body.insertBefore(connected, document.body.childNodes[0]);
@@ -419,6 +447,11 @@ function expandIDE() {
   }
   $('#connected-expanded').css("visibility", "visible");
   $('#btn-expand-section').show();
+  if (getDisplayedRobotCount() == 0) {
+    $('#find-button-exp').show();
+  } else {
+    $('#robots-connected-snap').show();
+  }
 }
 
 
@@ -605,6 +638,98 @@ function showErrorModal(title, content, shouldAddCloseBtn) {
   section.setAttribute("style", "display: block;");
   document.body.appendChild(section);
 }
+
+
+function showProgrammingModal() {
+  let section = createModal();
+  //let icon = section.getElementsByTagName('i')[0];
+  //icon.setAttribute("class", "fas fa-question-circle");
+  let span = section.getElementsByTagName('span')[0];
+  span.textContent = " Choose Your Starter Project"; //TODO: Translate!
+
+  let container = section.getElementsByTagName('div')[0];
+  section.setAttribute("id", "programmingModal")
+  addCloseBtn(container, "return closeProgrammingModal();")
+  
+  let div = section.getElementsByTagName('div')[1];
+  div.setAttribute("style", "position: relative; opacity: 1; background-color: rgba(255,255,255, 0.75); text-align: center; padding: 2em 2em 2em 2em;")
+
+  let btnContainer = document.createElement('div')
+  btnContainer.setAttribute("class", "container")
+  div.appendChild(btnContainer)
+  let bnRow = document.createElement('div')
+  bnRow.setAttribute("class", "row")
+  bnRow.setAttribute("style", "margin-bottom:20px;")
+  btnContainer.appendChild(bnRow)
+
+  const finchBnDiv = document.createElement('div')
+  finchBnDiv.setAttribute("class", "col-xs-6")
+  //finchBnDiv.setAttribute("style", "margin-bottom:20px;")
+
+  const finchBn = document.createElement('a')
+  finchBn.setAttribute("href", "#")
+  finchBn.setAttribute("class", "btn btn-lg btn-orange")
+  finchBn.setAttribute("onclick", "closeProgrammingModal('finch')")
+  finchBn.setAttribute("style", "width: 250px;")
+  finchBn.innerHTML = "<h4>Single Finch</h4>"
+
+  finchBnDiv.appendChild(finchBn)
+  bnRow.appendChild(finchBnDiv)
+
+  const hummingbirdBnDiv = document.createElement('div')
+  hummingbirdBnDiv.setAttribute("class", "col-xs-6")
+  //hummingbirdBnDiv.setAttribute("style", "margin-bottom:20px;")
+
+  const hummingbirdBn = document.createElement('a')
+  hummingbirdBn.setAttribute("href", "#")
+  hummingbirdBn.setAttribute("class", "btn btn-lg btn-orange")
+  hummingbirdBn.setAttribute("onclick", "closeProgrammingModal('hummingbird')")
+  hummingbirdBn.setAttribute("style", "width: 250px;")
+  hummingbirdBn.innerHTML = "<h4>Single Hummingbird</h4>"
+
+  hummingbirdBnDiv.appendChild(hummingbirdBn)
+  bnRow.appendChild(hummingbirdBnDiv)
+
+  let bnRow2 = document.createElement('div')
+  bnRow2.setAttribute("class", "row")
+  btnContainer.appendChild(bnRow2)
+
+  const multiBn = document.createElement('a')
+  multiBn.setAttribute("href", "#")
+  multiBn.setAttribute("class", "btn btn-lg btn-orange")
+  multiBn.setAttribute("onclick", "closeProgrammingModal('multi')")
+  multiBn.setAttribute("style", "width: 250px;")
+  multiBn.innerHTML = "<h4>Multiple Robots</h4>"
+  bnRow2.appendChild(multiBn)
+
+  section.setAttribute("style", "display: block;");
+  document.body.appendChild(section);
+  section.focus()
+}
+
+function closeProgrammingModal(selection) {
+  switch (selection) {
+  case "finch": 
+    findable = BLE_TYPE.FINCH
+    loadIDE("WebFinchSingleDevice")
+    break;
+  case "hummingbird":
+    findable = BLE_TYPE.HUMMINGBIRD
+    loadIDE("WebHummingbirdSingleDevice")
+    break;
+  case "multi":
+    findable = BLE_TYPE.FINCH_AND_HUMMINGBIRD
+    loadIDE("WebMixedMultiDevice")
+    break;
+  }
+
+  let modal = document.getElementById("programmingModal");
+  if (modal != null) {
+    modal.parentNode.removeChild(modal)
+  }
+
+}
+
 
 /**
  * showLegacyFinchModal - Show a modal asking the user to choose which starter

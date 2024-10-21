@@ -57,7 +57,7 @@
 
 		<section id="finder" style="display: block;">
 			<div class="container">
-				<div class="row">
+				<div class="row" style="margin-bottom:20px;">
 					<div class="col-xs-12 text-center">
 						<a id="find-button" class="btn btn-orange btn-lg" href="#">
 							<!-- <i class="fas fa-sync-alt /*fa-spin*/"></i> -->
@@ -70,6 +70,26 @@
 
 						</div>
 					</div>-->
+				</div>
+				<div id="or" class="row" style="margin-bottom:20px;">
+					<div class="col-xs-12 text-center">
+						<span> - OR - </span>
+					</div>
+				</div>
+				<div id="program-row" class="row">
+					<div class="col-xs-4"></div>
+					<div class="col-xs-4 text-center">
+						<a id="program-button" class="btn btn-orange btn-lg" href="#">
+							<!-- <i class="fas fa-sync-alt /*fa-spin*/"></i> -->
+							<span id="programBtnText"> CODE FIRST </span>
+						</a>
+						
+					</div>
+					<div class="col-xs-4 text-left hoverable">
+						<i class="fas fa-info-circle"></i>
+						<span class="hovertext">Select CODE FIRST if you would like to start coding before connecting to a robot</span>
+					</div>
+
 				</div>
 			</div>
 		</section>
@@ -93,17 +113,24 @@
 						</div>
 					</div>
 				</div>
+				
 			</div>
 		</section>
 
 		<section id="connected-expanded" style="visibility:hidden">
 			<div class="container">
-				<div class="row">
+				<div class="row" style="margin-bottom:10px; margin-top:10px;">
 					<div id="logo-section" class="col-xs-2"><img id="hummingbird-only-logo" src="img/hummingbird-only-logo.svg" alt="BirdBrain Technologies LLC" /></div>
-					<div class="col-xs-8">
+					<div class="col-xs-8 text-center">
 						<div id="robots-connected-snap" class="robot-list">
 							<!-- connected robots will be added here when snap is open -->
 						</div>
+
+						<a id="find-button-exp" class="btn btn-orange btn-lg" href="#">
+							<!-- <i class="fas fa-sync-alt /*fa-spin*/"></i> -->
+							<span id="findBtnExpText"> FIND ROBOTS</span>
+						</a>
+					
 					</div>
 					<div id="btn-expand-section" class="col-xs-2"><a id="btn-expand" class="btn btn-lg btn-orange"><i class="fas fa-expand-arrows-alt"></i></a></div>
 				</div>
