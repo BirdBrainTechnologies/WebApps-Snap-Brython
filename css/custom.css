@@ -4,22 +4,6 @@
 .group { content: ""; display: table; clear: both; }
 
 /* tooltip */
-/*.tooltip .tooltiptext {
-  visibility: hidden;
-  width: 120px;
-  background-color: black;
-  color: #fff;
-  text-align: center;
-  border-radius: 6px;
-  padding: 5px 0;*/
-
-  /* Position the tooltip */
-  /* position: absolute; 
-  z-index: 1;
-}
-.tooltip:hover .tooltiptext {
-  visibility: visible;
-}*/
 .hoverable {
     color: #fff;
 }
@@ -95,12 +79,14 @@ h1 { font-family: 'Raleway', Helvetica, Arial, sans-serif; font-size: 28px; text
 #finder {display: none; background-color: #089BAB; color: #fff; padding-top: 2em; padding-bottom: 2em; transition-delay: 0.5s; transition: all 1s ease; height: auto; }
 #find-button { font-family: 'Raleway', Helvetica, Arial, sans-serif; font-size: 28px; padding: 13px 40px 12px 40px; line-height: 28px; text-transform: uppercase; text-align: center; vertical-align: text-bottom; }
 #find-button span { vertical-align: text-bottom; }
+#find-button-exp { text-transform: uppercase; }
 
 /* !connected/programming section */
 #connected { background-color: #881199; color: #fff; display: block; padding-top: 2em; padding-bottom: 2em; }
 
 /* !robot list */
-.robot-list { background-color: #fff; border-radius: 5px; color: #535353; overflow: hidden; margin: 0.5em auto 2em auto; max-width: 720px; width: 98%; display: table; padding-left: 10px; padding-right: 10px; }
+/*.robot-list { background-color: #fff; border-radius: 5px; color: #535353; overflow: hidden; margin: 0.5em auto 0.5em auto; max-width: 720px; width: 98%; display: table; padding-left: 10px; padding-right: 10px; }*/
+.robot-list { background-color: #fff; border-radius: 5px; color: #535353; overflow: hidden; margin: 0 auto 0 auto; max-width: 720px; width: 98%; display: table; }
 .robot-list .robot-item:nth-child(even) { background-color: #F2F2F2; }
 
 /* !robot items */
@@ -110,7 +96,7 @@ h1 { font-family: 'Raleway', Helvetica, Arial, sans-serif; font-size: 28px; text
 .robot-item .img img { height: 32px; width: auto; }
 
 .robot-item .name { padding-top: 4px; padding-left: 5px; font-size: 19px; line-height: 19px; width: 54% !important; }
-.robot-item .buttons { font-size: 9px; line-height: 9px; text-align: right; width: 30% !important; padding-left: 5px; padding-right: 0; }
+.robot-item .buttons { font-size: 9px; line-height: 9px; text-align: right; width: 30% !important; padding-left: 5px; }
 .robot-item .buttons > .button { margin-left: 6px; }
 .robot-item .buttons > .button:first-child { margin-left: 0; }
 .robot-item .buttons .button-battery { margin-right: 11px; }
@@ -139,7 +125,7 @@ h1 { font-family: 'Raleway', Helvetica, Arial, sans-serif; font-size: 28px; text
 
 .modal .container { background-color: rgba(0,0,0,0); border-radius: 10px; overflow: hidden; padding:0; position: relative; max-width: 800px; }
 
-.modal h2 { background-color: #881199; color: #fff; font-size: 36px; margin: 0; padding: 18px 0 18px 14px; text-align: center; }
+.modal h2 { background-color: #881199; color: #fff; font-size: 36px; margin: 0; padding: 18px 0 18px 69px; text-align: center; }
 .modal h4 { color: #fff; font-size: 20px; margin: 0; text-align: center; line-height: 24px; height: 24px; }
 .modal a.close { color: #fff; float: right; opacity: 1; font-size: 28px; opacity: 1; padding: 24px; }
 .modal .animation { position: relative;  }
@@ -203,7 +189,11 @@ h1 { font-family: 'Raleway', Helvetica, Arial, sans-serif; font-size: 28px; text
 #connected-expanded .container { width: 100%; padding-top: 6px; }
 #logo-section { padding-left: 24px; }
 #hummingbird-only-logo { margin-top: 4px; height: 54px; width: auto; }
-#connected-expanded #robots-connected-snap.robot-list { font-size: 13px; margin-bottom: 1em; }
+#connected-expanded #robots-connected-snap.robot-list { max-width: 600px; }
+#connected-expanded #robots-connected-snap.robot-list > div { padding: 0; }
+#connected-expanded #robots-connected-snap.robot-list .robot-item .img { font-size: 17px; padding-top: 3px; padding-bottom: 3px; }
+#connected-expanded #robots-connected-snap.robot-list .robot-item .name { font-size: 15px; padding-top: 3px; padding-bottom: 3px; }
+#connected-expanded #robots-connected-snap.robot-list .robot-item .buttons { font-size: 7px; padding-top: 3px; padding-bottom: 3px; }
 #connected-expanded #robots-connected-snap.robot-list .img img { height: 24px; }
 #btn-expand, #btn-collapse { margin-top: 4px; font-size: 32px; padding: 9px 15px 9px 16px; line-height: 32px; text-align: center; }
 #btn-expand i, #btn-collapse i { vertical-align: bottom; }

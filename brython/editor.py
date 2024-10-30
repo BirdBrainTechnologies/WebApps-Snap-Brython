@@ -48,6 +48,33 @@ defaultMicrobitScript = """from BirdBrain import Microbit
 myMicrobit = Microbit(\'A\')
 myMicrobit.print("hello")
 """
+defaultMultiScript = """from BirdBrain import Hummingbird
+from BirdBrain import Finch
+from BirdBrain import Microbit
+
+#Use the letters assigned to your robots to set these variables once 
+#connected. This app supports any combination of finches and 
+#hummingbirds up to 3 robots total.
+myBird = Hummingbird(\'A\')
+myFinch = Finch(\'B\')
+myMicrobit = Microbit(\'C\')
+
+myBird.playNote(60,0.5)
+myFinch.playNote(64,0.5)
+myMicrobit.playNote(67,0.5)
+
+for i in range(0,10):
+    myBird.setLED(1,100)
+    myFinch.setBeak(100, 100, 100)
+    time.sleep(1)
+    myBird.setLED(1,0)
+    myFinch.setBeak(0, 0, 0)
+    time.sleep(1)
+
+myBird.stopAll()
+myFinch.stopAll()
+myMicrobit.stopAll()
+"""
 defaultLegacyHummingbirdScript = """# Example LED program.
 # Plug in a single colored LED into port 1, a tri colored LED into tri-color
 # port 2, a motor into motor port 1, a sound sensor in port 4, and
@@ -119,6 +146,15 @@ elif (window.bbtLegacy.isConnected):
     else:
         defaultScript = defaultLegacyHummingbirdScript
         currentScriptName = "LegacyHummingbirdTest.py"
+elif (window.birdbrain.robotType.userSelected == window.birdbrain.robotType.FINCH):
+    defaultScript = defaultFinchScript
+    currentScriptName = "FinchTest.py"
+elif (window.birdbrain.robotType.userSelected == window.birdbrain.robotType.HUMMINGBIRDBIT):
+    defaultScript = defaultHummingbirdScript
+    currentScriptName = "HummingbirdTest.py"
+elif (window.birdbrain.robotType.userSelected == window.birdbrain.robotType.MICROBIT):
+    defaultScript = defaultMultiScript
+    currentScriptName = "MultiRobotTest.py"
 else:
     defaultScript = 'for i in range(10):\n\tprint(i)'
     currentScriptName = "Test.py"

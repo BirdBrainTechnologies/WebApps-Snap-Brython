@@ -23,7 +23,14 @@ const fullTranslationTable = {
     Use_Chrome89: 'Please visit this page in Google Chrome (version 89 or later).',
     No_Ble: 'No Bluetooth Detected',
     Ble_Required: 'This app requires Bluetooth.',
-    Choose_Snap_Level: 'Choose Snap! Level'
+    Choose_Snap_Level: 'Choose Snap! Level',
+    OR: "OR",
+    Code_First: "CODE FIRST",
+    Code_First_Hint: "Select CODE FIRST if you would like to start coding before connecting to a robot",
+    Choose_Project: "Choose Your Starter Project",
+    Single_Finch: "Single Finch",
+    Single_Hummingbird: "Single Hummingbird",
+    Multiple_Robots: "Multiple Robots"
   },
   ko: {
     say_this: '(Slot 1 = 안녕!) 말하기',
@@ -42,7 +49,14 @@ const fullTranslationTable = {
     Use_Chrome89: '이 페이지를 구글 크롬에서 열어주세요(버전 89 또는 그 후).',
     No_Ble: '블루투스 장치를 찾을 수 없습니다.',
     Ble_Required: '이 앱은 블루투스 통신이 필요합니다.',
-    Choose_Snap_Level: 'Choose Snap! Level'
+    Choose_Snap_Level: 'Choose Snap! Level',
+    OR: "OR",
+    Code_First: "CODE FIRST",
+    Code_First_Hint: "Select CODE FIRST if you would like to start coding before connecting to a robot",
+    Choose_Project: "Choose Your Starter Project",
+    Single_Finch: "Single Finch",
+    Single_Hummingbird: "Single Hummingbird",
+    Multiple_Robots: "Multiple Robots"
   },
   de: {
     say_this: 'Sage',
@@ -61,7 +75,14 @@ const fullTranslationTable = {
     Use_Chrome89: 'Bitte besuche diese Seite in Google Chrome (Version 89 oder höher).',
     No_Ble: 'Kein Bluetooth gefunden',
     Ble_Required: 'Diese App benötigt Bluetooth',
-    Choose_Snap_Level: 'Choose Snap! Level'
+    Choose_Snap_Level: 'Choose Snap! Level',
+    OR: "OR",
+    Code_First: "CODE FIRST",
+    Code_First_Hint: "Select CODE FIRST if you would like to start coding before connecting to a robot",
+    Choose_Project: "Choose Your Starter Project",
+    Single_Finch: "Single Finch",
+    Single_Hummingbird: "Single Hummingbird",
+    Multiple_Robots: "Multiple Robots"
   },
   pt: {
     say_this: 'Diga Isso',
@@ -80,7 +101,14 @@ const fullTranslationTable = {
     Use_Chrome89: 'Visite esta página no Google Chrome (versão 89 ou posterior).',
     No_Ble: 'Nenhum Bluetooth Detectado',
     Ble_Required: 'Este aplicativo requer Bluetooth.',
-    Choose_Snap_Level: 'Choose Snap! Level'
+    Choose_Snap_Level: 'Choose Snap! Level',
+    OR: "OR",
+    Code_First: "CODE FIRST",
+    Code_First_Hint: "Select CODE FIRST if you would like to start coding before connecting to a robot",
+    Choose_Project: "Choose Your Starter Project",
+    Single_Finch: "Single Finch",
+    Single_Hummingbird: "Single Hummingbird",
+    Multiple_Robots: "Multiple Robots"
   },
   fr: {
     say_this: 'Dites ceci',
@@ -99,7 +127,14 @@ const fullTranslationTable = {
     Use_Chrome89: 'Veuillez visiter cette page dans Google Chrome (version 89 ou version ultérieure).',
     No_Ble: 'Aucun Bluetooth détecté',
     Ble_Required: 'Cette application nécessite Bluetooth.',
-    Choose_Snap_Level: 'Choose Snap! Level'
+    Choose_Snap_Level: 'Choose Snap! Level',
+    OR: "OR",
+    Code_First: "CODE FIRST",
+    Code_First_Hint: "Select CODE FIRST if you would like to start coding before connecting to a robot",
+    Choose_Project: "Choose Your Starter Project",
+    Single_Finch: "Single Finch",
+    Single_Hummingbird: "Single Hummingbird",
+    Multiple_Robots: "Multiple Robots"
   },
   nl: {
     say_this: 'Zeg Dit',
@@ -118,7 +153,14 @@ const fullTranslationTable = {
     Use_Chrome89: 'Bezoek deze pagina in Google Chrome (versie 89 of hoger).',
     No_Ble: 'Bluetooth niet gedetecteerd',
     Ble_Required: 'Deze app vereist Bluetooth.',
-    Choose_Snap_Level: 'Choose Snap! Level'
+    Choose_Snap_Level: 'Choose Snap! Level',
+    OR: "OF",
+    Code_First: "CODE FIRST",
+    Code_First_Hint: "Select CODE FIRST if you would like to start coding before connecting to a robot",
+    Choose_Project: "Choose Your Starter Project",
+    Single_Finch: "Single Finch",
+    Single_Hummingbird: "Single Hummingbird",
+    Multiple_Robots: "Multiple Robots"
   },
   zh_Hans: {
     say_this: '说',
@@ -137,7 +179,14 @@ const fullTranslationTable = {
     Use_Chrome89: '请使用谷歌浏览器。 (版本号 89或者此后的版本)',
     No_Ble: '未检测到蓝牙。',
     Ble_Required: '该设备需要链接蓝牙。',
-    Choose_Snap_Level: 'Choose Snap! Level'
+    Choose_Snap_Level: 'Choose Snap! Level',
+    OR: "OR",
+    Code_First: "CODE FIRST",
+    Code_First_Hint: "Select CODE FIRST if you would like to start coding before connecting to a robot",
+    Choose_Project: "Choose Your Starter Project",
+    Single_Finch: "Single Finch",
+    Single_Hummingbird: "Single Hummingbird",
+    Multiple_Robots: "Multiple Robots"
   },
   zh_Hant: {
     say_this: '說',
@@ -156,7 +205,14 @@ const fullTranslationTable = {
     Use_Chrome89: '請用Google Chrome瀏覽器（版本89或更高版本）瀏覽此頁面。',
     No_Ble: '未能檢測到藍牙',
     Ble_Required: '此應用程式需要藍牙',
-    Choose_Snap_Level: 'Choose Snap! Level'
+    Choose_Snap_Level: 'Choose Snap! Level',
+    OR: "OR",
+    Code_First: "CODE FIRST",
+    Code_First_Hint: "Select CODE FIRST if you would like to start coding before connecting to a robot",
+    Choose_Project: "Choose Your Starter Project",
+    Single_Finch: "Single Finch",
+    Single_Hummingbird: "Single Hummingbird",
+    Multiple_Robots: "Multiple Robots"
   },
   ar: {
     say_this: 'قل هذا',
@@ -175,7 +231,14 @@ const fullTranslationTable = {
     Use_Chrome89: 'Please visit this page in Google Chrome (version 89 or later).',
     No_Ble: 'No Bluetooth Detected',
     Ble_Required: 'This app requires Bluetooth.',
-    Choose_Snap_Level: 'Choose Snap! Level'
+    Choose_Snap_Level: 'Choose Snap! Level',
+    OR: "OR",
+    Code_First: "CODE FIRST",
+    Code_First_Hint: "Select CODE FIRST if you would like to start coding before connecting to a robot",
+    Choose_Project: "Choose Your Starter Project",
+    Single_Finch: "Single Finch",
+    Single_Hummingbird: "Single Hummingbird",
+    Multiple_Robots: "Multiple Robots"
   },
   da: {
     say_this: 'Sig dette',
@@ -194,7 +257,14 @@ const fullTranslationTable = {
     Use_Chrome89: 'Please visit this page in Google Chrome (version 89 or later).',
     No_Ble: 'No Bluetooth Detected',
     Ble_Required: 'This app requires Bluetooth.',
-    Choose_Snap_Level: 'Choose Snap! Level'
+    Choose_Snap_Level: 'Choose Snap! Level',
+    OR: "OR",
+    Code_First: "CODE FIRST",
+    Code_First_Hint: "Select CODE FIRST if you would like to start coding before connecting to a robot",
+    Choose_Project: "Choose Your Starter Project",
+    Single_Finch: "Single Finch",
+    Single_Hummingbird: "Single Hummingbird",
+    Multiple_Robots: "Multiple Robots"
   },
   he: {
     say_this: 'להגיד',
@@ -213,7 +283,14 @@ const fullTranslationTable = {
     Use_Chrome89: 'אנא בקר באתר זה ב- Google Chrome (גרסה 89 ואילך).',
     No_Ble: 'לא זוהה Bluetooth',
     Ble_Required: 'אפליקציה זו דורשת Bluetooth.',
-    Choose_Snap_Level: 'Choose Snap! Level'
+    Choose_Snap_Level: 'Choose Snap! Level',
+    OR: "OR",
+    Code_First: "CODE FIRST",
+    Code_First_Hint: "Select CODE FIRST if you would like to start coding before connecting to a robot",
+    Choose_Project: "Choose Your Starter Project",
+    Single_Finch: "Single Finch",
+    Single_Hummingbird: "Single Hummingbird",
+    Multiple_Robots: "Multiple Robots"
   },
   es: {
     say_this: 'Decir esto',
@@ -232,7 +309,14 @@ const fullTranslationTable = {
     Use_Chrome89: 'Por favor, utiliza Google Chrome (versión 89 o superior) para visitar esta página.',
     No_Ble: 'Bluetooth no detectado',
     Ble_Required: 'Esta aplicación requiere Bluetooth.',
-    Choose_Snap_Level: 'Choose Snap! Level'
+    Choose_Snap_Level: 'Choose Snap! Level',
+    OR: "OR",
+    Code_First: "CODE FIRST",
+    Code_First_Hint: "Select CODE FIRST if you would like to start coding before connecting to a robot",
+    Choose_Project: "Choose Your Starter Project",
+    Single_Finch: "Single Finch",
+    Single_Hummingbird: "Single Hummingbird",
+    Multiple_Robots: "Multiple Robots"
   },
   ca: {
     say_this: 'Digues això',
@@ -251,7 +335,14 @@ const fullTranslationTable = {
     Use_Chrome89: 'Si us plau, utilitza Google Chromve (versió 89 o superior) per visitar aquesta pàgina.',
     No_Ble: 'Bluetooth no detectat',
     Ble_Required: 'Aquesta aplicació requereix Bluetooth.',
-    Choose_Snap_Level: 'Choose Snap! Level'
+    Choose_Snap_Level: 'Choose Snap! Level',
+    OR: "OR",
+    Code_First: "CODE FIRST",
+    Code_First_Hint: "Select CODE FIRST if you would like to start coding before connecting to a robot",
+    Choose_Project: "Choose Your Starter Project",
+    Single_Finch: "Single Finch",
+    Single_Hummingbird: "Single Hummingbird",
+    Multiple_Robots: "Multiple Robots"
   },
   fi: {
     say_this: 'Sano tämä',
@@ -270,7 +361,14 @@ const fullTranslationTable = {
     Use_Chrome89: 'Please visit this page in Google Chrome (version 89 or later).',
     No_Ble: 'No Bluetooth Detected',
     Ble_Required: 'This app requires Bluetooth.',
-    Choose_Snap_Level: 'Choose Snap! Level'
+    Choose_Snap_Level: 'Choose Snap! Level',
+    OR: "OR",
+    Code_First: "CODE FIRST",
+    Code_First_Hint: "Select CODE FIRST if you would like to start coding before connecting to a robot",
+    Choose_Project: "Choose Your Starter Project",
+    Single_Finch: "Single Finch",
+    Single_Hummingbird: "Single Hummingbird",
+    Multiple_Robots: "Multiple Robots"
   },
   sv: {
     say_this: 'Säg detta',
@@ -289,7 +387,14 @@ const fullTranslationTable = {
     Use_Chrome89: 'Please visit this page in Google Chrome (version 89 or later).',
     No_Ble: 'No Bluetooth Detected',
     Ble_Required: 'This app requires Bluetooth.',
-    Choose_Snap_Level: 'Choose Snap! Level'
+    Choose_Snap_Level: 'Choose Snap! Level',
+    OR: "OR",
+    Code_First: "CODE FIRST",
+    Code_First_Hint: "Select CODE FIRST if you would like to start coding before connecting to a robot",
+    Choose_Project: "Choose Your Starter Project",
+    Single_Finch: "Single Finch",
+    Single_Hummingbird: "Single Hummingbird",
+    Multiple_Robots: "Multiple Robots"
   }
 };
 
@@ -304,8 +409,12 @@ function translateStrings() {
   if (thisLocaleTable == null) { return; }
   // Set up defaults
   $('#findBtnText').text(" " + thisLocaleTable["find_robots"]);
+  $('#findBtnExpText').text(" " + thisLocaleTable["find_robots"]);
   $('#connection-state').html(thisLocaleTable["connected"]);
   $('#start_programming').html(thisLocaleTable["start_programming"]);
+  $('#programBtnText').text(" " + thisLocaleTable["Code_First"]);
+  $('#programBtnHint').text(" " + thisLocaleTable["Code_First_Hint"]);
+  $('#orText').text(" - " + thisLocaleTable["OR"] + " - ");
 }
 
 /**

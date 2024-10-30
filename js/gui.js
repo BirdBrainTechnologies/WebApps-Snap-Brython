@@ -59,7 +59,7 @@ if (robotTest) {
 }
 
 //Load IDE without a connected robot
-if(useSnap) { //TODO: add to HID page? add for brython pages?
+if(!BloxIDE && !robotTest) { //TODO: add to HID page? 
   $('#program-button').on('click', function(e) { showProgrammingModal(); });
 }
 
@@ -285,6 +285,12 @@ function loadIDE(filename) {
     return;
   }
 
+  //If the user has already opened the snap with a project, keep that project
+  if (ideExpanded || currentSnapProject == "WebMixedMultiDevice") {
+    expandIDE();
+    return;
+  }
+
   //let projectName = "";
   let projectName
   if (useHID) {
@@ -356,9 +362,9 @@ function loadIDE(filename) {
     } else {
       let displayed = getDisplayedRobotCount()
       if (displayed == 2) {
-        iframe.setAttribute("style", "width: 100%; height: 80vh;")
+        iframe.setAttribute("style", "width: 100%; height: 85vh;")
       } else if (displayed >= 3) {
-        iframe.setAttribute("style", "width: 100%; height: 72vh;")
+        iframe.setAttribute("style", "width: 100%; height: 80vh;")
       }
     }
     let div = document.getElementById('snap-div');
@@ -645,7 +651,7 @@ function showProgrammingModal() {
   //let icon = section.getElementsByTagName('i')[0];
   //icon.setAttribute("class", "fas fa-question-circle");
   let span = section.getElementsByTagName('span')[0];
-  span.textContent = " Choose Your Starter Project"; //TODO: Translate!
+  span.textContent = thisLocaleTable["Choose_Project"]; 
 
   let container = section.getElementsByTagName('div')[0];
   section.setAttribute("id", "programmingModal")
@@ -655,7 +661,7 @@ function showProgrammingModal() {
   div.setAttribute("style", "position: relative; opacity: 1; background-color: rgba(255,255,255, 0.75); text-align: center; padding: 2em 2em 2em 2em;")
 
   let btnContainer = document.createElement('div')
-  btnContainer.setAttribute("class", "container")
+  //btnContainer.setAttribute("class", "container")
   div.appendChild(btnContainer)
   let bnRow = document.createElement('div')
   bnRow.setAttribute("class", "row")
@@ -671,7 +677,7 @@ function showProgrammingModal() {
   finchBn.setAttribute("class", "btn btn-lg btn-orange")
   finchBn.setAttribute("onclick", "closeProgrammingModal('finch')")
   finchBn.setAttribute("style", "width: 250px;")
-  finchBn.innerHTML = "<h4>Single Finch</h4>"
+  finchBn.innerHTML = "<h4>" + thisLocaleTable["Single_Finch"] + "</h4>"
 
   finchBnDiv.appendChild(finchBn)
   bnRow.appendChild(finchBnDiv)
@@ -685,7 +691,7 @@ function showProgrammingModal() {
   hummingbirdBn.setAttribute("class", "btn btn-lg btn-orange")
   hummingbirdBn.setAttribute("onclick", "closeProgrammingModal('hummingbird')")
   hummingbirdBn.setAttribute("style", "width: 250px;")
-  hummingbirdBn.innerHTML = "<h4>Single Hummingbird</h4>"
+  hummingbirdBn.innerHTML = "<h4>" + thisLocaleTable["Single_Hummingbird"] + "</h4>"
 
   hummingbirdBnDiv.appendChild(hummingbirdBn)
   bnRow.appendChild(hummingbirdBnDiv)
@@ -699,7 +705,7 @@ function showProgrammingModal() {
   multiBn.setAttribute("class", "btn btn-lg btn-orange")
   multiBn.setAttribute("onclick", "closeProgrammingModal('multi')")
   multiBn.setAttribute("style", "width: 250px;")
-  multiBn.innerHTML = "<h4>Multiple Robots</h4>"
+  multiBn.innerHTML = "<h4>" + thisLocaleTable["Multiple_Robots"] + "</h4>"
   bnRow2.appendChild(multiBn)
 
   section.setAttribute("style", "display: block;");
@@ -723,11 +729,27 @@ function closeProgrammingModal(selection) {
     break;
   }
 
+  if ((selection != null) && !useSnap) {
+    setBrythonRobotType(selection)
+  } 
+
   let modal = document.getElementById("programmingModal");
   if (modal != null) {
     modal.parentNode.removeChild(modal)
   }
 
+}
+
+function setBrythonRobotType(selection) {
+  if (messagePort == undefined || iframe == null || iframe.contentWindow.birdbrain == undefined) { //the messagePort may be defined but birdbrain not if this isn't the first time the ide was loaded.
+    setTimeout(() => {
+      setBrythonRobotType(selection)
+    }, 50)
+  } else {
+    messagePort.postMessage({
+      userSelectedRobotType: selection
+    })
+  }
 }
 
 

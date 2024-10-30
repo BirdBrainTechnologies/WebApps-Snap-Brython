@@ -19,7 +19,9 @@ window.birdbrain.robotType = {
   //connected robots default unknown type
   A: 4,
   B: 4,
-  C: 4
+  C: 4,
+  //The user can select a type of robot to work on code for
+  userSelected: 4
 };
 
 //For the old style robots that connect over hid.
@@ -65,6 +67,22 @@ window.birdbrain.messageChannel.port1.onmessage = function(e) {
     window.bbtLegacy.sensorData = e.data.hidSensorData;
     window.bbtLegacy.isFinch = e.data.isFinch;
     window.bbtLegacy.isConnected = true;
+  }
+
+  if (e.data.userSelectedRobotType != null) {
+    switch (e.data.userSelectedRobotType) {
+    case "finch":
+      window.birdbrain.robotType.userSelected = window.birdbrain.robotType.FINCH
+      break;
+    case "hummingbird":
+      window.birdbrain.robotType.userSelected = window.birdbrain.robotType.HUMMINGBIRDBIT
+      break;
+    case "multi":
+      window.birdbrain.robotType.userSelected = window.birdbrain.robotType.MICROBIT
+      break;
+    default:
+      console.error("Attempt to set user selected robot type to unknown type '" + e.data.userSelectedRobotType + "'.")
+    }
   }
 }
 window.parent.postMessage("hello from snap", "*", [window.birdbrain.messageChannel.port2]);
