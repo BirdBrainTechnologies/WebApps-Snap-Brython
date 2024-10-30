@@ -312,7 +312,12 @@ Robot.prototype.userDisconnect = function() {
  * (rather than the user disconnecting through the app)
  */
 Robot.prototype.externalDisconnect = function() {
-  this.setDisconnected()
+  //This makes an external disconnect the same as a user disconnect. Remove for 
+  //autoreconnect or if showing the disconnected robot in the robot list.
+  this.userDisconnect()
+  
+  //uncomment to show the disconnected robot in the robot list (required for autoreconnect)
+  //this.setDisconnected()
 
   //uncomment for autoreconnect
   /*setTimeout(function() {

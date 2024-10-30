@@ -7,6 +7,7 @@
   *  Global variables/constants
   */
 var robots = [] //Robot array representing all currently known robots
+const BBT_SERVICE_UUID = "6e400001-b5a3-f393-e0a9-e50e24dcca9e"
 
 /*
 About getting the ble state... Cannot really determine whether ble is turned on
@@ -50,7 +51,7 @@ function findAndConnect() {
   //Other ways to scan...
   //let bleFilters = [{ services: ["6e400001-b5a3-f393-e0a9-e50e24dcca9e"] }]
   //let bleFilters = [{ acceptAllDevices: true }]
-  let bleFilters = [
+  /*let bleFilters = [
     { namePrefix: "FN", services: ["6e400001-b5a3-f393-e0a9-e50e24dcca9e"] },
     { namePrefix: "BB", services: ["6e400001-b5a3-f393-e0a9-e50e24dcca9e"] },
     { namePrefix: "MB", services: ["6e400001-b5a3-f393-e0a9-e50e24dcca9e"] }
@@ -62,7 +63,31 @@ function findAndConnect() {
     bleFilters = [
       { namePrefix: "FN", services: ["6e400001-b5a3-f393-e0a9-e50e24dcca9e"] }
     ]
+  }*/
+
+  let bleFilters = []
+  switch (findable) {
+  case BLE_TYPE.FINCH_AND_HUMMINGBIRD:
+    bleFilters = [
+      { namePrefix: "FN", services: [BBT_SERVICE_UUID] },
+      { namePrefix: "BB", services: [BBT_SERVICE_UUID] },
+      { namePrefix: "MB", services: [BBT_SERVICE_UUID] }
+    ]
+    break;
+  case BLE_TYPE.FINCH:
+    bleFilters = [
+      { namePrefix: "FN", services: [BBT_SERVICE_UUID] }
+    ]
+    break;
+  case BLE_TYPE.HUMMINGBIRD:
+    bleFilters = [
+      { namePrefix: "BB", services: [BBT_SERVICE_UUID] }
+    ]
+    break;
+  default:
+    console.error("unsupported BLE_TYPE " + findable)
   }
+
 
   navigator.bluetooth.requestDevice({ filters: bleFilters }).then(device => {
 
@@ -114,7 +139,7 @@ function connectToRobot(robot) {
   device.gatt.connect().then(server => {
       // Get the Service
       //console.log("getting service")
-      return server.getPrimaryService("6e400001-b5a3-f393-e0a9-e50e24dcca9e");
+      return server.getPrimaryService(BBT_SERVICE_UUID);
     })
     .then(service => {
       //console.log("getting characteristic from ")

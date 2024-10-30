@@ -103,7 +103,7 @@ def setup_editor():
     doc['stop'].bind('click', editor.reload_editor)
 
 def setup_when_ready():
-    if (window.birdbrain.robotType.A != window.birdbrain.robotType.UNKNOWN or window.bbtLegacy.isConnected):
+    if (window.birdbrain.robotType.A != window.birdbrain.robotType.UNKNOWN or window.bbtLegacy.isConnected or window.birdbrain.robotType.userSelected != window.birdbrain.robotType.UNKNOWN):
         browser_console.log("Brython loading...")
         setup_editor()
     else:
