@@ -24,7 +24,7 @@ const BLE_TYPE = {
   HATCHLING: 4
 }
 var findable = BLE_TYPE.FINCH_AND_HUMMINGBIRD
-if (FinchBlox || robotTest) { findable = BLE_TYPE.FINCH }
+if (FinchBlox) { findable = BLE_TYPE.FINCH }
 if (Hatchling || HatchPlus) { findable = BLE_TYPE.HATCHLING }
   
 
@@ -53,13 +53,8 @@ if (useHID) {
 $('#btn-expand-section').on('click', function(e) { collapseIDE(); })
 $('#btn-collapse-section').on('click', function(e) { expandIDE(); })
 
-//Robot Test App
-if (robotTest) {
-  $('#start-test-button').on('click', function(e) { testFinch(); });
-}
-
 //Load IDE without a connected robot
-if(!BloxIDE && !robotTest) { //TODO: add to HID page? 
+if(!BloxIDE) { //TODO: add to HID page? 
   $('#program-button').on('click', function(e) { showProgrammingModal(); });
 }
 
@@ -278,13 +273,6 @@ function loadIDE(filename) {
 
   updateInternetStatus();
 
-  if (robotTest) {
-    //For the robot test app, there is no real IDE, just a tests to perform 
-    //loaded in the IDE space. 
-    expandIDE();
-    return;
-  }
-
   //If the user has already opened the snap with a project, keep that project
   if (ideExpanded || currentSnapProject == "WebMixedMultiDevice") {
     expandIDE();
@@ -459,75 +447,6 @@ function expandIDE() {
     $('#robots-connected-snap').show();
   }
 }
-
-
-////////Functions for the robot test app
-
-function timeout(ms) {
-    return new Promise(resolve => setTimeout(resolve, ms));
-}
-
-/**
- * testFinch - basic test for the connected finch.
- */
-async function testFinch() {
-
-  $('#testText').text("")
-  $('#response-btns').css("display", "none");
-
-  if (robots.length != 1) {
-    $('#testText').text("Please connect one robot to test")
-    return
-  }
-
-
-  ////// Motors test
-  $('#testText').text("Your finch should now move forward, move backward, turn right, and turn left.")
-  await timeout(1000)
-
-  let speed = 50
-  let distance = 10
-  
-  await moveFinchAndWait(speed, speed, distance)
-  await moveFinchAndWait(-speed, -speed, distance)
-  await moveFinchAndWait(speed, -speed, distance)
-  await moveFinchAndWait(-speed, speed, distance)
-  
-  $('#testText').text("Did the finch move forward, move backward, turn right, and turn left?")
-  $('#btn-yes').on('click', function(e) { 
-    $('#response-btns').css("display", "none");
-    $('#testText').text("Congratulations! Your finch has passed the test.")
-  });
-  $('#btn-no').on('click', function(e) { 
-    $('#response-btns').css("display", "none");
-    $('#testText').text("Your finch did not pass the test.")
-  });
-  $('#response-btns').css("display", "block");
-
-}
-
-async function moveFinchAndWait(speedL, speedR, distance) {
-  let robot = robots[0]
-  let ticks = distance * FINCH_TICKS_PER_CM
-  let wasMoving = robot.isMoving()
-  let moveSentTime = new Date().getTime()
-  let moveStartTimedOut = false
-  let done = false
-  
-  robot.setMotors(speedL, ticks, speedR, ticks)
-
-  while(!done) {
-    await timeout(100)
-    moveStartTimedOut = (new Date().getTime() > moveSentTime + 500);
-    let isMoving = robot.isMoving()
-    console.log("Waiting for move " + moveStartTimedOut + " " + isMoving + " " + wasMoving + " " + done)
-    done = ((wasMoving || moveStartTimedOut) && !isMoving)
-    wasMoving = isMoving
-  }
-}
-
-
-////////End robot test app functions
 
 
 /**

@@ -252,7 +252,7 @@ function onDisconnected(event) {
         robot: robots[i].devLetter,
         connectionLost: true
       });
-      if (!(Hatchling || HatchPlus)) {
+      if (!(Hatchling || HatchPlus || robotTest)) {
         let cf = " " + thisLocaleTable["Connection_Failure"];
         let msg = robots[i].fancyName + cf;
         showErrorModal(cf, msg, true)
