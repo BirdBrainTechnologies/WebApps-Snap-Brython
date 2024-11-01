@@ -4,7 +4,7 @@
 'use strict';
 
 // Update cache names any time any of the cached files change.
-const CACHE_NAME = 'static-cache-v25';
+const CACHE_NAME = 'static-cache-v26';
 
 // List of files to cache
 const FILES_TO_CACHE_1 = [

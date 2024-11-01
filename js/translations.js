@@ -310,13 +310,13 @@ const fullTranslationTable = {
     No_Ble: 'Bluetooth no detectado',
     Ble_Required: 'Esta aplicación requiere Bluetooth.',
     Choose_Snap_Level: 'Choose Snap! Level',
-    OR: "OR",
-    Code_First: "CODE FIRST",
-    Code_First_Hint: "Select CODE FIRST if you would like to start coding before connecting to a robot",
-    Choose_Project: "Choose Your Starter Project",
-    Single_Finch: "Single Finch",
-    Single_Hummingbird: "Single Hummingbird",
-    Multiple_Robots: "Multiple Robots"
+    OR: "o",
+    Code_First: "Primero programar",
+    Code_First_Hint: "Selecciona PRIMERO PROGRAMAR si le gustaria empezar a programar antes de conectar al robot",
+    Choose_Project: "Selecciona su Proyecto de Inicio",
+    Single_Finch: "Solo un Finch",
+    Single_Hummingbird: "Solo un Hummingbird",
+    Multiple_Robots: "Varios robots"
   },
   ca: {
     say_this: 'Digues això',
