@@ -60,7 +60,7 @@ function createSectionHeader(product, section) {
 				` + subText + `
 			</div>
 			<div class="col-sm-6">
-				<img src="robotTesting/` + imageFile + `"/>
+				<img src="support/` + imageFile + `"/>
 			</div>
 		</div>
 	`
@@ -150,13 +150,13 @@ contents["home"] =  `
 	<div class="col-sm-6">
 		<button class="btn btn-orange btn-lg btn-product" aria-label="finch" onclick="navigateTo('finchHome')">
 			<span>Finch Robot</span></br>
-			<img src="robotTesting/finch_top_left_transparent.png"/>
+			<img src="support/finch_top_left_transparent.png"/>
 		</button>
 	</div>
 	<div class="col-sm-6">
 		<button class="btn btn-orange btn-lg btn-product" aria-label="hummingbird" onclick="navigateTo('hummingbirdHome')">
 			<span>Hummingbird Kit</span></br>
-			<img src="robotTesting/hummingbirdControllerTransparent.png"/>
+			<img src="support/hummingbirdControllerTransparent.png"/>
 		</button>
 	</div>
 </div>
@@ -262,7 +262,7 @@ contents["hummingbirdHome"] = subHeader + `
 `
 contents["finchMotors1"] = `
 <div class="col-sm-6 align-self-center">
-	<img src="robotTesting/finch_grommet.jpg"/>
+	<img src="support/finch_grommet.jpg"/>
 </div>
 <div class="col-sm-6 align-self-center">
 	<div class="row pb-5">
@@ -343,7 +343,7 @@ contents["finchPower1"] = `
 </div>
 <div class="row align-self-center">
 	<div class="col-sm-4">
-		<img src="robotTesting/finch_plugged_in.png"/>
+		<img src="support/finch_plugged_in.png"/>
 	</div>
 	<div class="col-sm-8">
 		<p>
@@ -368,7 +368,7 @@ contents["finchPower2"] = `
 </div>
 <div class="row align-self-center">
 	<div class="col-sm-4">
-		<img src="robotTesting/finch_power_on.png"/>
+		<img src="support/finch_power_on.png"/>
 	</div>
 	<div class="col-sm-8">
 		<p>
