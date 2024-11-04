@@ -52,7 +52,7 @@ sectionHeaders['success'] = `
 function createSectionHeader(product, section) {
 	let text = (product == 'finch') ? "Finch Robot Support " : "Hummingbird Kit Support "
 	let subText = (section != null) ? "<h2>" + section + "</h2>" : ""
-	let imageFile = (product == 'finch') ? "finch_top_left_transparent.png" : "HummingbirdBitController_12.jpg"
+	let imageFile = (product == 'finch') ? "finch_top_left_transparent.png" : "hummingbirdControllerTransparent.png"
 	return `
 		<div class="row">
 			<div class="col-sm-6 text-end align-self-center">
@@ -75,6 +75,12 @@ sectionHeaders['finchLEDs'] = createSectionHeader("finch", "LEDs")
 sectionHeaders['finchSensors'] = createSectionHeader("finch", "Sensors")
 
 sectionHeaders['hummingbird'] = createSectionHeader("hummingbird")
+sectionHeaders['hummingbirdPower'] = createSectionHeader("hummingbird", "Power") 
+sectionHeaders['hummingbirdBluetooth'] = createSectionHeader("hummingbird", "Bluetooth")
+sectionHeaders['hummingbirdCode'] = createSectionHeader("hummingbird", "Code")
+sectionHeaders['hummingbirdServos'] = createSectionHeader("hummingbird", "Servos")
+sectionHeaders['hummingbirdLEDs'] = createSectionHeader("hummingbird", "LEDs")
+sectionHeaders['hummingbirdSensors'] = createSectionHeader("hummingbird", "Sensors")
 
 ///// Reusable Elements /////
 
@@ -99,6 +105,11 @@ const establishConnection = `
 	</div>
 </div>
 <div class="row">
+</div>
+`
+const switchBrowsers = `
+<div class="row">
+	<span>Web bluetooth is not currently available. Make sure you have bluetooth switched on and that you are using a compatible browser. We recommend the latest versions of Chrome or Edge.</span>
 </div>
 `
 const currentlyConnectedTo = `
@@ -145,7 +156,7 @@ contents["home"] =  `
 	<div class="col-sm-6">
 		<button class="btn btn-orange btn-lg btn-product" aria-label="hummingbird" onclick="navigateTo('hummingbirdHome')">
 			<span>Hummingbird Kit</span></br>
-			<img src="robotTesting/HummingbirdBitController_12.jpg"/>
+			<img src="robotTesting/hummingbirdControllerTransparent.png"/>
 		</button>
 	</div>
 </div>
@@ -440,15 +451,19 @@ contents["bluetooth2"] = `
 <div class="row align-self-center">
 	<div class="col-sm-12">
 		<button class="btn btn-orange btn-lg" type="button" onclick="location.href='https://learn.birdbraintechnologies.com/downloads/installers/BBTFirmware.hex'">Download latest firmware</button>
-		<button id="btn_success" class="btn btn-orange btn-lg">Installing firmware has solved my problem</button>
-		<button id="btn_fail" class="btn btn-orange btn-lg">I have updated the firmware but still have a problem</button>
+	</div>
+</div>
+<div class="row align-self-center">
+	<div class="col-sm-12">
+		<button id="btn_success" class="btn btn-orange btn-lg">I have updated the firmware</button>
+		<button id="btn_fail" class="btn btn-orange btn-lg">My micro:bit would not accept the update</button>
 	</div>
 </div>
 <div class="row align-self-center"></div>
 `
 contents["bluetooth3"] = `
 <div class="row align-self-center">
-	<span>To connect your robot over bluetooth using a web browser, you will need your seven character code. This is the code that follows '#' symbol. The first two characters of this code denote the type of robot you are using (FN for Finch, BB for Hummingbird, and MB for micro:bit). The five characters after that are unique to the micro:bit.</span>
+	<p>To connect your robot over bluetooth using a web browser, you will need your seven character code. This is the code that follows '#' symbol. The first two characters of this code denote the type of robot you are using (FN for Finch, BB for Hummingbird, and MB for micro:bit). The five characters after that are unique to the micro:bit.</p>
 </div>
 <div class="row align-self-center">
 	<div class="col-sm-3">
@@ -465,6 +480,20 @@ contents["bluetooth3"] = `
  	</div>
 </div>
 <div class="row align-self-center">
+	<p id="response"></p>
+</div>
+<div class="row align-self-center">
+</div>
+`
+contents["bluetooth4"] = `
+<div class="row align-self-center">
+	<span>Now, please try again to connect using web bluetooth.</span>
+	
+</div>
+`
+contents["bluetoothSuccess"] = `
+<div class="row align-self-center">
+	<h2>Thanks for using the support app! You have successfully connected your robot over bluetooth!</h2>
 </div>
 `
 
@@ -481,10 +510,10 @@ function Page(headerName, contentName, setupFn, takedownFn, nextAction) {
 	this.productID = null
 	this.productName = null
 	if (headerName.startsWith("finch") || contentName.startsWith("finch")) {
-		this.product = "FN"
+		this.productID = "FN"
 		this.productName = "Finch"
 	} else if (headerName.startsWith("hummingbird") || contentName.startsWith("hummingbird")) {
-		this.product = "BB"
+		this.productID = "BB"
 		this.productName = "Hummingbird"
 	}
 }
@@ -554,14 +583,14 @@ pages['finchBluetooth'] = new Page("finchBluetooth", "bluetooth1", function() {
 	document.getElementById("btn_ok").setAttribute("onclick", "navigateTo('finchBluetooth3')")
 })
 pages['finchBluetooth2'] = new Page("finchBluetooth", "bluetooth2", function() {
-	document.getElementById("btn_success").setAttribute("onclick", "navigateTo('finchBluetoothSuccess')")
-	document.getElementById("btn_fail").setAttribute("onclick", "navigateTo('finchBluetooth3')")
+	document.getElementById("btn_success").setAttribute("onclick", "navigateTo('finchBluetooth3')")
+	document.getElementById("btn_fail").setAttribute("onclick", "navigateTo('contactSupport')")
 })
 pages['finchBluetooth3'] = new Page("finchBluetooth", "bluetooth3", null, null, function() {
 	navigateTo("finchBluetooth4")
 })
-pages['finchBluetooth4'] = new Page("finchBluetooth", "bluetooth4", checkRobotId)
-pages['finchBluetoothSuccess'] = new Page("success", "finchBluetoothSuccess", setupSuccess, takedownSuccess)
+pages['finchBluetooth4'] = new Page("finchBluetooth", "bluetooth4")
+pages['finchBluetoothSuccess'] = new Page("success", "bluetoothSuccess", setupSuccess, takedownSuccess)
 
 
 pages['finchCode'] = new Page("finchCode", "comingSoon")
@@ -569,7 +598,14 @@ pages['finchLEDs'] = new Page("finchLEDs", "comingSoon")
 pages['finchSensors'] = new Page("finchSensors", "comingSoon")
 
 //hummingbird pages
-pages['hummingbirdHome'] = new Page("hummingbird", "comingSoon")
+pages['hummingbirdHome'] = new Page("hummingbird", "hummingbirdHome")
+
+pages['hummingbirdPower'] = new Page("hummingbirdPower", "comingSoon")
+pages['hummingbirdBluetooth'] = new Page("hummingbirdBluetooth", "comingSoon")
+pages['hummingbirdCode'] = new Page("hummingbirdCode", "comingSoon")
+pages['hummingbirdServos'] = new Page("hummingbirdServos", "comingSoon")
+pages['hummingbirdLEDs'] = new Page("hummingbirdLEDs", "comingSoon")
+pages['hummingbirdSensors'] = new Page("hummingbirdSensors", "comingSoon")
 
 
 ///// Navigation /////
@@ -609,7 +645,8 @@ function _showPage(page) {
 
 function setupConnectionPage() {
 	if (robots.length == 0) {
-		document.getElementById("currentConnection").innerHTML = establishConnection
+		let bleOn = webBleIsAvailable()
+		document.getElementById("currentConnection").innerHTML = bleOn ? establishConnection : switchBrowsers
 	} else {
 		updateConnectedDevices()
 	}
@@ -644,6 +681,26 @@ function updateBatteryStatus() {}
 function closeErrorModal() {}
 function loadIDE() {}
 
+function webBleIsAvailable() {
+	if (!("bluetooth" in navigator)) {
+		console.log("*** not ble in nav ")
+		return false
+	}
+
+	navigator.bluetooth.getAvailability().then(isAvailable => {
+  	if (!isAvailable) {
+  		console.log("*** ble not avail")
+  		return false
+  	}
+
+	}).catch(error => {
+  	console.error("Unable to determine whether bluetooth is available. Error: " + error.message)
+  	return false
+  });
+
+  return true
+}
+
 
 ///// Shared Test Functions /////
 
@@ -654,23 +711,46 @@ function timeout(ms) {
 function saveRobotId() {
 	userRobotID = document.getElementById("robotID").value.toUpperCase()
 	console.log("*** the user entered ID: " + userRobotID)
+
+	let idOK = checkRobotId()
+
+	if (idOK) {
+		currentPage.nextAction()
+	}
 }
 
 function checkRobotId() {
 	let text = ""
+	let success = true
 	if (userRobotID.length != 7) {
-		text = "You have entered " + userRobotID + ". This ID is " + userRobotID.length + " characters long. Your id must be 7 characters long. Please go back and try again."
-	}
-	let type = userRobotID.slice(0, 2)
-	let codes = ["FN", "BB", "MB"]
-	if (type != currentPage.productID) {
-		if (codes.includes(type)) {
-			text = "You have entered " + userRobotID + " which starts with " + type + ". Since this is not the correct code for " + currentPage.productName + ", this suggests that your micro:bit may not be seated correctly. Please remove and reinsert the micro:bit. Then go back and enter the new code."
-		} else {
-			text = "You have entered " + userRobotID + " which is an invalid code. Please go back and enter the correct code."
-		}
-	}
+		text = "You have entered " + userRobotID + ". This ID is " + userRobotID.length + " characters long. Your id should be 7 characters long."
+		success = false
+	} else {
 
+		let mbCode = userRobotID.slice(2, 5)
+		let isHex = /^[0-9a-fA-F]+$/.test(mbCode)
+		if (!isHex) {
+			text = "The code " + userRobotID + " is invalid."
+			success = false
+		} else {
+
+			let type = userRobotID.slice(0, 2)
+			let codes = ["FN", "BB", "MB"]
+			if (type != currentPage.productID) {
+				if (codes.includes(type)) {
+					text = "You have entered " + userRobotID + " which starts with " + type + ", but the correct code for the " + currentPage.productName + " is " + currentPage.productID + ". This suggests that your micro:bit may not be seated correctly. Please remove and reinsert the micro:bit. Then enter the updated code."
+				} else {
+					text = "You have entered " + userRobotID + " which is an invalid code."
+				}
+				success = false
+			}
+
+		}
+
+	}
+	
+	document.getElementById("response").innerHTML = text
+	return success
 }
 
 ///// Finch Tests /////
