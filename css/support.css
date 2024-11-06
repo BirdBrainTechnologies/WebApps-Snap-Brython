@@ -12,9 +12,9 @@ h2 { font-family: 'Raleway', Helvetica, Arial, sans-serif; font-size: 36px; colo
 
 /* section header */
 #section-header { background-color: rgba(8, 155, 171, 0.08); }
-#section-header img { max-width: 200px; width: 40%; }
+#section-header img { max-width: 200px; width: 100%; }
 #section-header h2 { color: #881199 }
-.success { background-image: url(../robotTesting/confetti.png); background-position: top center; background-repeat: repeat; background-size: 561px 538px; padding: 12px 20px; position: relative; }
+.success { background-image: url(../support/confetti.png); background-position: top center; background-repeat: repeat; background-size: 561px 538px; padding: 12px 20px; position: relative; }
 
 /* main content */
 #main-content { background-color: #881199; color: #fff; font-size: 24px; }

@@ -725,6 +725,10 @@ function getDeviceFancyName(devName) {
       initials = names[first][0].charAt(0) + names[second][1].charAt(0) + names[third][2].charAt(0);
     }
 
+    if (robotTest){
+      return fancyName + " (" + initials + "#" + devName + ")"
+    }
+
     fancyName += " (" + initials + ")";
     //console.log("Fancy Name assigned to device: " + fancyName);
     return fancyName;
