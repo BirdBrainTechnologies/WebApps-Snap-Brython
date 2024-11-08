@@ -27,5 +27,14 @@ h2 { font-family: 'Raleway', Helvetica, Arial, sans-serif; font-size: 36px; colo
 
 /* !buttons */
 .btn-orange { border-radius: 5px; background-color: #ff9922; color: #fff; }
+.btn-teal { border-radius: 5px; background-color: #089BAB; color: #fff; }
 .btn-product { width: 75%; height: 100%; font-size: 28px; }
 
+/* //BBT Style guide colors
+Colors.easternBlue = "#089BAB"; //bbt blue
+Colors.neonCarrot = "#FF9922";
+Colors.fountainBlue = "#62BCC7"; //lighter blue
+Colors.seance = "#881199"; //dark purple
+Colors.bbtDarkGray = "#535353";
+Colors.iron = "#CACACA";
+*/

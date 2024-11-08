@@ -13,15 +13,6 @@ const BLE_TYPE = {
 }
 var findable = BLE_TYPE.FINCH_AND_HUMMINGBIRD
 
-const Colors = {}
-//BBT Style guide colors
-Colors.easternBlue = "#089BAB"; //bbt blue
-Colors.neonCarrot = "#FF9922";
-Colors.fountainBlue = "#62BCC7"; //lighter blue
-Colors.seance = "#881199"; //dark purple
-Colors.bbtDarkGray = "#535353";
-Colors.iron = "#CACACA";
-
 var userRobotID = ""
 
 
@@ -49,12 +40,12 @@ function createSectionHeader(product, section) {
 	let subText = (section != null) ? "<h2>" + section + "</h2>" : ""
 	let imageFile = (product == 'finch') ? "finch_top_left_transparent.png" : "hummingbirdControllerTransparent.png"
 	return `
-		<div class="row">
-			<div class="col-10 col-md-8 col-xl-6 text-end align-self-center">
+		<div class="d-flex">
+			<div class="flex-grow col-lg-6 text-end align-self-center">
 				<h1>` + text + `</h1>
 				` + subText + `
 			</div>
-			<div class="col-2 col-md-4 col-xl-6">
+			<div class="flex-fill col-lg-6">
 				<img src="support/` + imageFile + `"/>
 			</div>
 		</div>
@@ -85,6 +76,13 @@ sectionHeaders['hummingbirdSuccess'] = sectionHeaders['finchSuccess']
 
 ///// Reusable Elements /////
 
+function basicButton(text, onclickFnString, tealBg, idString) {
+	let colorClass = tealBg ? `btn-teal` : `btn-orange`
+	let onclick = onclickFnString ? ` onclick="` + onclickFnString + `"` : ``
+	let id = idString ? ` id="` + idString + `"` : ``
+	return `<button` + id + ` class="btn ` + colorClass + ` btn-lg m-1"` + onclick + `>` + text + `</button>`
+}
+
 const subHeader = `<div class="row align-self-center"><h2>What seems to be the trouble?</h2></div>`
 
 const connectRobotOverBle = `
@@ -98,16 +96,16 @@ const connectRobotOverBle = `
 `
 const establishConnection = `
 <div class="row">
-	<span>Use the button below to look for a connection</span>
+	<span>Click the 'Find Robots' button to look for a connection.<br>Once you connect your robot, the test will resume automatically.</span>
 </div>
 <div class="row">
-	<div class="col-sm-12">
-		<button id="find-button" class="btn btn-orange btn-lg" onclick="findAndConnect()">Find Robots</button>
+	<div class="col-sm-12">`
+		+ basicButton("Find Robots", "findAndConnect()") + `
 	</div>
 </div>
 <div class="row pt-5">
-	<div class="col-sm-12">
-		<button id="help-button" class="btn btn-orange btn-lg">Having Trouble Connecting?</button>
+	<div class="col-sm-12">`
+		+ basicButton("Having Trouble Connecting?", null, true, "help-button") + `
 	</div>
 </div>
 `
@@ -121,13 +119,13 @@ const currentlyConnectedTo = `
 <div class="row">
 	<span>You are currently connected to</span>
 </div>
-<div id="robotDetails" class="row">
+<div id="robotDetails" class="row p-2">
 	
 </div>
 <div class="row">
-	<div class="col-sm-12">
-		<button class="btn btn-orange btn-lg" onclick="currentPage.nextAction()">Test this robot</button>
-		<button class="btn btn-orange btn-lg" onclick="disconnectFromAllRobots()">Test a different robot</button>
+	<div class="col-sm-12">`
+		+ basicButton("Test this robot", "currentPage.nextAction()") 
+		+ basicButton("Test a different robot", "disconnectFromAllRobots()", true) + `
 	</div>
 </div>
 `
@@ -188,7 +186,7 @@ contents["contactSupport"] = `
 </div>
 <div class="row align-self-center">
 	<div class="col-sm-12">
-		<a class="btn btn-orange btn-lg" style="color: #fff;" target="_blank" href="https://www.birdbraintechnologies.com/about-us/contact-us/">Contact Support</a>
+		<a class="btn btn-teal btn-lg" style="color: #fff;" target="_blank" href="https://www.birdbraintechnologies.com/about-us/contact-us/">Contact Support</a>
 	</div>
 </div>
 <div class="row"></div>
@@ -278,11 +276,9 @@ contents["finchMotors1"] = `
 		<span>First, please flip your Finch over to look at the underside. Take a look at the gray star-shaped rubber grommet. Is it dislodged or torn?</span>
 	</div>
 	<div class="row">
-		<div class="col-sm-6">
-			<button class="btn btn-orange btn-lg" onclick="navigateTo('finchMotors3')">My grommet looks fine</button>
-		</div>
-		<div class="col-sm-6">
-			<button class="btn btn-orange btn-lg" onclick="navigateTo('finchMotors2')">My grommet needs help</button>
+		<div class="col-sm-12">
+		` + basicButton("My grommet looks fine", "navigateTo('finchMotors3')")
+			+ basicButton("My grommet needs help", "navigateTo('finchMotors2')", true) + `
 		</div>
 	</div>
 </div>
@@ -292,12 +288,12 @@ contents["finchMotors2"] = `
 	<span>The grommet is only there to hold a marker during drawing activities, and many markers don't even need it. You can safely remove this part, adjust its position, or replace it if you have a spare. If you need help doing this, please take a look at this <a target="_blank" href="https://support.birdbraintechnologies.com/hc/en-us/articles/21908696662811-How-do-I-replace-Finch-2-0-s-rubber-marker-grommet">support article</a>. </span>
 </div>
 <div class="row align-self-center">
-	<div class="col-sm-6">
-		<button class="btn btn-orange btn-lg" onclick="navigateTo('finchMotorsSuccess')">Fixing the grommet has solved my problem</button>
+	<div class="col-sm-12">
+		` + basicButton("Fixing the grommet has solved my problem", "navigateTo('finchMotorsSuccess')")
+			+ basicButton("I have fixed my grommet but still have a problem", "navigateTo('finchMotors3')", true) + `
 	</div>
-	<div class="col-sm-6">
-		<button class="btn btn-orange btn-lg" onclick="navigateTo('finchMotors3')">I have fixed my grommet but still have a problem</button>
-	</div>
+</div>
+<div class="row">
 </div>
 `
 contents["finchMotors3"] = `
@@ -306,7 +302,8 @@ contents["finchMotors3"] = `
 </div>
 <div class="row align-self-center">
 	<div class="col-sm-12">
-		<button class="btn btn-orange btn-lg" onclick="navigateTo('finchMotors4')">My Finch is powered on</button>
+		` + basicButton("My Finch is powered on", "navigateTo('finchMotors4')")
+			+ basicButton("My Finch will not power on", "navigateTo('finchPower')", true) + `
 	</div>
 </div>
 <div class="row">
@@ -316,18 +313,18 @@ contents["finchMotors4"] = connectRobotOverBle
 
 contents["finchMotors5"] = `
 <div class="row align-self-center">
-	<span>Your finch is about to receive commands to move forward, move backward, turn right, and turn left.</span>
+	<span>Your Finch is about to receive commands to move forward, move backward, turn right, and turn left.</span>
 </div>
 ` + cameraInstruction
 
 contents["finchMotors6"] = `
 <div class="row align-self-center">
-	<span>Did the finch move forward, move backward, turn right, and turn left?</span>
+	<span>Did the Finch move forward, move backward, turn right, and turn left?</span>
 </div>
 <div class="row align-self-center">
 	<div class="col-sm-12">
-		<button class="btn btn-orange btn-lg" onclick="navigateTo('finchMotorsSuccess')">Yes</button>
-		<button class="btn btn-orange btn-lg" onclick="navigateTo('contactSupport')">No</button>
+	` + basicButton("Yes", "navigateTo('finchMotorsSuccess')")
+		+ basicButton("No", "navigateTo('contactSupport')", true) + `
 	</div>
 </div>
 <div class="row align-self-center">
@@ -338,17 +335,64 @@ contents["finchMotorsSuccess"] = `
 	<h2>Thanks for using the support app! Your Finch's motors appear to be functioning normally!</h2>
 </div>
 <div class="row align-self-center">
-	<div class="col-sm-6">
-		<button class="btn btn-orange btn-lg" onclick="navigateTo('finchCode')">Help me with my code</button>
+	<div class="col-sm-12">
+	` + basicButton("Help me with my code", "navigateTo('finchCode')")
+		+ basicButton("Diagnose another problem", "navigateTo('finchHome')") + `
 	</div>
-	<div class="col-sm-6">
-		<button class="btn btn-orange btn-lg" onclick="navigateTo('finchHome')">Diagnose another problem</button>
+</div>
+<div class="row align-self-center">
+</div>
+`
+contents["finchLEDs1"] = `
+<div class="row align-self-center">
+	<span>We will test your Finch's LEDs by sending some commands automatically. Please ensure that your Finch is powered on.</span>
+</div>
+<div class="row align-self-center">
+	<div class="col-sm-12">
+		` + basicButton("My Finch is powered on", "navigateTo('finchLEDs2')")
+			+ basicButton("My Finch will not power on", "navigateTo('finchPower')", true) + `
 	</div>
+</div>
+<div class="row">
+</div>
+`
+contents["finchLEDs2"] = connectRobotOverBle
+
+contents["finchLEDs3"] = `
+<div class="row align-self-center">
+	<span>Your Finch has 4 LEDs in the tail and 1 LED in the beak. We are about to send commands to turn all 5 on. They will turn red, then green, then blue, then white.</span>
+</div>
+` + cameraInstruction
+
+contents["finchLEDs4"] = `
+<div class="row align-self-center">
+	<span>Did the Finch's 5 LEDs turn red, then green, then blue, and finally white?</span>
+</div>
+<div class="row align-self-center">
+	<div class="col-sm-12">
+	` + basicButton("Yes", "navigateTo('finchLEDsSuccess')")
+		+ basicButton("No", "navigateTo('contactSupport')", true) + `
+	</div>
+</div>
+<div class="row align-self-center">
+</div>
+`
+contents["finchLEDsSuccess"] = `
+<div class="row align-self-center">
+	<h2>Thanks for using the support app! Your Finch's LEDs appear to be functioning normally!</h2>
+</div>
+<div class="row align-self-center">
+	<div class="col-sm-12">
+	` + basicButton("Help me with my code", "navigateTo('finchCode')")
+		+ basicButton("Diagnose another problem", "navigateTo('finchHome')") + `
+	</div>
+</div>
+<div class="row align-self-center">
 </div>
 `
 contents["finchPower1"] = `
 <div class="row align-self-center">
-	<span>First, make sure your battery is charged</span>
+	<h2>First, make sure your battery is charged</h2>
 </div>
 <div class="row align-self-center">
 	<div class="col-lg-4 col-md-6">
@@ -364,16 +408,16 @@ contents["finchPower1"] = `
 </div>
 <div class="row align-self-center text-center">
 	<div class="col-12">
-		<button class="btn btn-orange btn-lg my-1" onclick="navigateTo('finchPowerSuccess')">Charging solved my problem</button>
-		<button class="btn btn-orange btn-lg my-1" onclick="navigateTo('finchPower2')">My battery is charged</button>
-		<button class="btn btn-orange btn-lg my-1" onclick="navigateTo('finchPower3')">My battery won't charge</button>
+	` + basicButton("Charging solved my problem", "navigateTo('finchPowerSuccess')")
+		+ basicButton("My battery is charged", "navigateTo('finchPower2')")
+		+ basicButton("My battery won't charge", "navigateTo('finchPower3')", true) + `
 	</div>
 </div>
 <div class="row align-self-center"></div>
 `
 contents["finchPower2"] = `
 <div class="row align-self-center">
-	<span>Next, attempt to power your finch on</span>
+	<h2>Next, attempt to power your finch on</h2>
 </div>
 <div class="row align-self-center">
 	<div class="col-lg-4 col-md-6">
@@ -387,9 +431,8 @@ contents["finchPower2"] = `
 </div>
 <div class="row align-self-center">
 	<div class="col-12">
-		<button class="btn btn-orange btn-lg my-1" onclick="navigateTo('finchPowerSuccess')">This solved my problem</button>
-		<button class="btn btn-orange btn-lg my-1" onclick="navigateTo('finchPower3')">My Finch is powered on</button>
-		<button class="btn btn-orange btn-lg my-1" onclick="navigateTo('finchPower3')">My Finch will not power on</button>
+	` + basicButton("My Finch is powered on", "navigateTo('finchPowerSuccess')")
+		+ basicButton("My Finch will not power on", "navigateTo('finchPower3')", true) + `
 	</div>
 </div>
 <div class="row align-self-center"></div>
@@ -410,8 +453,8 @@ contents["finchPower3"] = `
 </div>
 <div class="row align-self-center">
 	<div class="col-12">
-		<button class="btn btn-orange btn-lg my-1" onclick="navigateTo('finchPowerSuccess')">This solved my problem</button>
-		<button class="btn btn-orange btn-lg my-1" onclick="navigateTo('finchPower4')">My battery is seated correctly</button>
+	` + basicButton("This solved my problem", "navigateTo('finchPowerSuccess')")
+		+ basicButton("My Finch still won't power on", "navigateTo('finchPower4')", true) + `
 	</div>
 </div>
 <div class="row align-self-center"></div>
@@ -432,10 +475,10 @@ contents["finchPower4"] = `
 </div>
 <div class="row align-self-center">
 	<div class="col-12">
-		<button class="btn btn-orange btn-lg my-1" onclick="navigateTo('finchPowerSuccess')">This solved my problem</button>
-		<button class="btn btn-orange btn-lg my-1" onclick="navigateTo('contactSupport')">My battery is holding a charge</button>
-		<button class="btn btn-orange btn-lg my-1" onclick="navigateTo('contactSupport')">I need a replacement battery</button>
-		<button class="btn btn-orange btn-lg my-1" onclick="navigateTo('contactSupport')">I don't have a second Finch</button>
+	` + basicButton("This solved my problem", "navigateTo('finchPowerSuccess')")
+		+ basicButton("My Finch would not power on with the new battery", "navigateTo('contactSupport')", true) 
+		+ basicButton("I need a replacement battery", "navigateTo('contactSupport')", true) 
+		+ basicButton("I don't have a second Finch", "navigateTo('contactSupport')", true) + `
 	</div>
 </div>
 <div class="row align-self-center"></div>
@@ -446,9 +489,10 @@ contents["finchPowerSuccess"] = `
 </div>
 <div class="row align-self-center">
 	<div class="col-12">
-		<button class="btn btn-orange btn-lg" onclick="navigateTo('finchHome')">Diagnose another problem</button>
+	` + basicButton("Diagnose another problem", "navigateTo('finchHome')") + `
 	</div>
 </div>
+<div class="row align-self-center"></div>
 `
 contents["bluetooth1"] = `
 <div class="row align-self-center">
@@ -456,16 +500,16 @@ contents["bluetooth1"] = `
 </div>
 <div class="row align-self-center">
 	<div class="col-sm-12">
-		<button id="btn_not_on" class="btn btn-orange btn-lg my-1">My robot will not power on</button>
-		<button id="btn_no_display" class="btn btn-orange btn-lg my-1">My robot is on but the display is off or wrong</button>
-		<button id="btn_ok" class="btn btn-orange btn-lg my-1">My robot is on and flashing the right characters</button>
+	` + basicButton("My robot is on and flashing the right characters", null, false, "btn_ok")
+		+ basicButton("My robot is on but the display is off or wrong", null, true, "btn_no_display") 
+		+ basicButton("My robot will not power on", null, true, "btn_not_on") + `
 	</div>
 </div>
 <div class="row align-self-center"></div>
 `
 contents["bluetooth2"] = `
 <div class="row align-self-center">
-	<span>If your robot is powered on, but is not displaying the correct sequence of characters, please update your firmware. For detailed installation instructions view steps 2 and 3 of this <a href="https://learn.birdbraintechnologies.com/finch/finchblox/program/1-1" target="_blank">tutorial</a>.</span>
+	<span>If your robot is powered on, but is not displaying the correct sequence of characters, please update your firmware. For detailed installation instructions view steps 2 and 3 of this <a href="https://learn.birdbraintechnologies.com/finch/finchblox/program/1-2" target="_blank">tutorial</a>.</span>
 </div>
 <div class="row align-self-center">
 	<div class="col-sm-12">
@@ -474,8 +518,8 @@ contents["bluetooth2"] = `
 </div>
 <div class="row align-self-center">
 	<div class="col-sm-12">
-		<button id="btn_success" class="btn btn-orange btn-lg">I have updated the firmware</button>
-		<button id="btn_fail" class="btn btn-orange btn-lg">My micro:bit would not accept the update</button>
+	` + basicButton("I have updated the firmware", null, false, "btn_success")
+		+ basicButton("My micro:bit would not accept the update", null, true, "btn_fail") + `
 	</div>
 </div>
 <div class="row align-self-center"></div>
@@ -512,8 +556,8 @@ contents["bluetooth5"] = `
 </div>
 <div class="row align-self-center">
 	<div class="col-sm-12">
-		<button id="yes" class="btn btn-orange btn-lg">Yes</button>
-		<button class="btn btn-orange btn-lg" onclick="navigateTo('contactSupport')">No</button>
+	` + basicButton("Yes", null, false, "yes")
+		+ basicButton("No", "navigateTo('contactSupport')", true) + `
 	</div>
 </div>
 <div class="row align-self-center">
@@ -525,8 +569,8 @@ contents["bluetooth6"] = `
 </div>
 <div class="row align-self-center">
 	<div class="col-sm-12">
-		<button id="no_problem" class="btn btn-orange btn-lg">It's OK, I have solved my problem</button>
-		<button id="need_help" class="btn btn-orange btn-lg" onclick="disconnectFromAllRobots()">I selected that device because mine was not listed</button>
+	` + basicButton("It's OK, I have solved my problem", null, false, "no_problem")
+		+ basicButton("I selected that device because mine was not listed", "disconnectFromAllRobots()", true) + `
 	</div>
 </div>
 <div class="row align-self-center">
@@ -541,13 +585,26 @@ contents["bluetooth7"] = `
 </div>
 <div class="row align-self-center">
 	<div class="col-sm-12">
-		<button id="robot_forgotten" class="btn btn-orange btn-lg">Chrome has now forgotten my robot</button>
-		<button class="btn btn-orange btn-lg" onclick="navigateTo('contactSupport')">I have a different problem</button>
+	` + basicButton("Chrome has now forgotten my robot", null, false, "robot_forgotten")
+		+ basicButton("I have a different problem", "navigateTo('contactSupport')", true) + `
 	</div>
 </div>
 <div class="row align-self-center">
 </div>
 ` 
+contents["bluetooth8"] = `
+<div class="row align-self-center">
+	<span>If you are having trouble updating the firmware on your micro:bit, please try the <a href="https://microbit.org/tools/webusb-hex-flashing/" target="_blank">webUSB flashing tool</a> on the micro:bit website</span>
+</div>
+<div class="row align-self-center">
+	<div class="col-sm-12">
+	` + basicButton("I have updated the firmware", null, false, "btn_success")
+		+ basicButton("My micro:bit would still not accept the update", "navigateTo('contactSupport')", true) + `
+	</div>
+</div>
+<div class="row align-self-center">
+</div>
+`
 contents["bluetoothSuccess"] = `
 <div class="row align-self-center">
 	<h2>Thanks for using the support app!</h2>
@@ -559,11 +616,136 @@ contents["bluetoothSuccess"] = `
 	</div>
 	<div class="row">
 		<div class="col-sm-12">
-			<button class="btn btn-orange btn-lg" onclick="disconnectFromAllRobots()">Test Connecting to a different robot</button>
+		` + basicButton("Test Connecting to a different robot", "disconnectFromAllRobots()")
+			+ basicButton("Diagnose another problem", "navigateTo('finchHome')") + `
 		</div>
 	</div>
 </div>
 <div class="row align-self-center">
+</div>
+`
+contents["hummingbirdLEDs1"] = `
+<div class="row align-self-center">
+	<h2>First, make sure your LEDs are plugged in correctly and securely</h2>
+</div>
+<div class="row align-self-center p-3">
+	<div class="col-sm-6">
+		<div class="row">
+			<div class="col-sm-12">
+				<iframe src="//fast.wistia.com/embed/iframe/qvkx9cpzjp" width="448" height="252" frameborder="0" allowfullscreen=""></iframe>		
+			</div>
+		</div>
+		<div class="row">
+			<span>tri-color LEDs</span>
+		</div>
+	</div>
+	<div class="col-sm-6">
+		<div class="row">
+			<div class="col-sm-12">
+				<iframe src="//fast.wistia.com/embed/iframe/zz3sbasgw0" width="448" height="252" frameborder="0" allowfullscreen=""></iframe>
+			</div>
+		</div>
+		<div class="row">
+			<span>Single color LEDs</span>
+		</div>
+	</div>
+</div>
+<div class="row align-self-center">
+	<div class="col-12">
+		<button class="btn btn-orange btn-lg my-1" onclick="navigateTo('hummingbirdLEDs3')">Looks Good</button>
+		<button class="btn btn-orange btn-lg my-1" onclick="navigateTo('hummingbirdLEDs2')">LED does not plug in</button>
+	</div>
+</div>
+<div class="row align-self-center"></div>
+`
+contents["hummingbirdLEDs2"] = `
+<div class="row align-self-center">
+	<span>If the LED leads (the metal ends of the wires) have broken off, you will need to use wire strippers to expose more wire</span>
+</div>
+<div class="row align-self-center">
+	<div class="col-12">
+		<iframe src="//fast.wistia.com/embed/iframe/4r001p6dyv" width="560" height="315" frameborder="0" allowfullscreen=""></iframe>
+	</div>
+</div>
+<div class="row align-self-center">
+	<div class="col-12">
+		<button class="btn btn-orange btn-lg my-1" onclick="navigateTo('hummingbirdLEDs3')">LED is now plugged in</button>
+		<button class="btn btn-orange btn-lg my-1" onclick="navigateTo('contactSupport')">I have a different problem</button>
+	</div>
+</div>
+<div class="row align-self-center"></div>
+`
+contents["hummingbirdLEDs3"] = connectRobotOverBle
+
+contents["hummingbirdLEDs4"] = `
+<div class="row align-self-center">
+	<h2>Use the buttons below to turn on the LED in each port</h2>
+</div>
+<div class="row align-self-center">
+	<div class="col-12">
+	` + basicButton("LEDS 1", "testBBLED(1)") 
+		+ basicButton("LEDS 2", "testBBLED(2)")
+		+ basicButton("LEDS 3", "testBBLED(3)")
+		+ basicButton("TRI-COLOR 1", "testBBTri(1)")
+		+ basicButton("TRI-COLOR 2", "testBBTri(2)") + `
+	</div>	
+</div>
+<div class="row align-self-center">
+	<div class="col-12">
+	` + basicButton("My LEDs are on", "navigateTo('hummingbirdLEDsSuccess')")
+	  + basicButton("My LEDs are not working", "navigateTo('contactSupport')") + `
+	</div>	
+</div>
+<div class="row align-self-center">
+</div>
+`
+contents["hummingbirdLEDsSuccess"] = `
+<div class="row align-self-center">
+	<h2>Thanks for using the support app!</h2>
+</div>
+<div class="row align-self-center">
+	<div class="col-sm-12">
+	` + basicButton("Help me with my code", "navigateTo('hummingbirdCode')")
+	  + basicButton("Diagnose another problem", "navigateTo('hummingbirdHome')") + `
+	</div>
+</div>
+`
+contents["hummingbirdCode1"] = `
+<div class="row align-self-center">
+	<h2>What would you like to control with code?</h2>
+</div>
+<div class="row align-self-center">
+	<div class="col-sm-12">
+	` + basicButton("Servos", "navigateTo('hummingbirdCodeServos')")
+		+ basicButton("LEDs", "navigateTo('hummingbirdCodeLEDs')")
+	  + basicButton("Sensors", "navigateTo('hummingbirdCodeSensors')") + `
+	</div>
+</div>
+`
+contents["hummingbirdCodeLEDs"] = `
+<div class="row align-self-center">
+	<h2>Watch this video for help with your LED code</h2>
+</div>
+<div class="row align-self-center">
+	<div class="col-12">
+		<iframe src="//fast.wistia.com/embed/iframe/iwvcot2aj7" width="560" height="315" frameborder="0" allowfullscreen=""></iframe>
+	</div>
+</div>
+<div class="row align-self-center">
+	<div class="col-sm-12">
+	` + basicButton("Problem Solved!", "navigateTo('hummingbirdCodeSuccess')")
+		+ basicButton("I still need help", "navigateTo('contactSupport')") + `
+	</div>
+</div>
+`
+contents["hummingbirdCodeSuccess"] = `
+<div class="row align-self-center">
+	<h2>Thanks for using the support app!</h2>
+</div>
+<div class="row align-self-center">
+	<div class="col-sm-12">
+	` + basicButton("Diagnose another problem", "navigateTo('hummingbirdHome')") + `
+	</div>
 </div>
 `
 
@@ -654,7 +836,7 @@ pages['finchBluetooth'] = new Page("finchBluetooth", "bluetooth1", setupBluetoot
 function setupBluetooth2() {
 	let prefix = this.productName.toLowerCase()
 	document.getElementById("btn_success").setAttribute("onclick", "navigateTo('" + prefix + "Bluetooth3')")
-	document.getElementById("btn_fail").setAttribute("onclick", "navigateTo('contactSupport')")
+	document.getElementById("btn_fail").setAttribute("onclick", "navigateTo('" + prefix + "Bluetooth8')")
 }
 pages['finchBluetooth2'] = new Page("finchBluetooth", "bluetooth2", setupBluetooth2)
 
@@ -674,7 +856,11 @@ pages['finchBluetooth5'] = new Page("finchBluetooth", "bluetooth5", setupBluetoo
 
 function setupBluetooth6() {
 	let prefix = this.productName.toLowerCase()
-	document.getElementById("details").innerHTML = "You have entered the ID " + userRobotID + " but are now connected to a robot with ID " + robots[0].device.name
+	if (robots.length == 0) {
+		document.getElementById("details").innerHTML = "You have been disconnected"
+	} else {
+		document.getElementById("details").innerHTML = "You have entered the ID " + userRobotID + " but are now connected to a robot with ID " + robots[0].device.name
+	}
 	document.getElementById("no_problem").setAttribute("onclick", "navigateTo('" + prefix + "BluetoothSuccess')")
 }
 function nextActionBluetooth6() {
@@ -689,10 +875,19 @@ function setupBluetooth7() {
 }
 pages['finchBluetooth7'] = new Page("finchBluetooth", "bluetooth7", setupBluetooth7)
 
+function setupBluetooth8() {
+	let prefix = this.productName.toLowerCase()
+	document.getElementById("btn_success").setAttribute("onclick", "navigateTo('" + prefix + "Bluetooth3')")
+}
+pages['finchBluetooth8'] = new Page("finchBluetooth", "bluetooth8", setupBluetooth8)
+
 function setupBluetoothSuccess() {
 	setupSuccess()
-	let robot = robots[0]
-	document.getElementById("details").innerHTML = "You are currently connected to " + robot.fancyName
+	if (robots.length == 0) {
+		document.getElementById("details").innerHTML = "You are currently disconnected"
+	} else {
+		document.getElementById("details").innerHTML = "You are currently connected to " + robots[0].fancyName
+	}
 }
 function nextActionBluetoothSuccess() {
 	let prefix = this.productName.toLowerCase()
@@ -701,7 +896,18 @@ function nextActionBluetoothSuccess() {
 pages['finchBluetoothSuccess'] = new Page("finchSuccess", "bluetoothSuccess", setupBluetoothSuccess, takedownSuccess, nextActionBluetoothSuccess)
 
 pages['finchCode'] = new Page("finchCode", "comingSoon")
-pages['finchLEDs'] = new Page("finchLEDs", "comingSoon")
+
+pages['finchLEDs'] = new Page("finchLEDs", "finchLEDs1")
+pages['finchLEDs2'] = new Page("finchLEDs", "finchLEDs2", setupConnectionPage, null, function() {
+	navigateTo("finchLEDs3")
+})
+pages['finchLEDs3'] = new Page("finchLEDs", "finchLEDs3", null, null, async function() {
+	await testFinchLEDs()
+	navigateTo("finchLEDs4")
+})
+pages['finchLEDs4'] = new Page("finchLEDs", "finchLEDs4")
+pages['finchLEDsSuccess'] = new Page("finchSuccess", "finchLEDsSuccess", setupSuccess, takedownSuccess)
+
 pages['finchSensors'] = new Page("finchSensors", "comingSoon")
 
 //hummingbird pages
@@ -716,11 +922,24 @@ pages['hummingbirdBluetooth4'] = new Page("hummingbirdBluetooth", "bluetooth4", 
 pages['hummingbirdBluetooth5'] = new Page("hummingbirdBluetooth", "bluetooth5", setupBluetooth5)
 pages['hummingbirdBluetooth6'] = new Page("hummingbirdBluetooth", "bluetooth6", setupBluetooth6, null, nextActionBluetooth6)
 pages['hummingbirdBluetooth7'] = new Page("hummingbirdBluetooth", "bluetooth7", setupBluetooth7)
+pages['hummingbirdBluetooth8'] = new Page("hummingbirdBluetooth", "bluetooth8", setupBluetooth8)
 pages['hummingbirdBluetoothSuccess'] = new Page("hummingbirdSuccess", "bluetoothSuccess", setupBluetoothSuccess, takedownSuccess, nextActionBluetoothSuccess)
 
-pages['hummingbirdCode'] = new Page("hummingbirdCode", "comingSoon")
+pages['hummingbirdCode'] = new Page("hummingbirdCode", "hummingbirdCode1")
+pages['hummingbirdCodeLEDs'] = new Page("hummingbirdCode", "hummingbirdCodeLEDs")
+pages['hummingbirdCodeSuccess'] = new Page("hummingbirdSuccess", "hummingbirdCodeSuccess", setupSuccess, takedownSuccess)
+
+
 pages['hummingbirdServos'] = new Page("hummingbirdServos", "comingSoon")
-pages['hummingbirdLEDs'] = new Page("hummingbirdLEDs", "comingSoon")
+
+pages['hummingbirdLEDs'] = new Page("hummingbirdLEDs", "hummingbirdLEDs1")
+pages['hummingbirdLEDs2'] = new Page("hummingbirdLEDs", "hummingbirdLEDs2")
+pages['hummingbirdLEDs3'] = new Page("hummingbirdLEDs", "hummingbirdLEDs3", setupConnectionPage, null, function() {
+	navigateTo("hummingbirdLEDs4")
+})
+pages['hummingbirdLEDs4'] = new Page("hummingbirdLEDs", "hummingbirdLEDs4")
+pages['hummingbirdLEDsSuccess'] = new Page("hummingbirdSuccess", "hummingbirdLEDsSuccess", setupSuccess, takedownSuccess)
+
 pages['hummingbirdSensors'] = new Page("hummingbirdSensors", "comingSoon")
 
 
@@ -805,6 +1024,9 @@ function updateConnectedDevices() {
 }
 
 function disconnectFromAllRobots() {
+	if (robots.length == 0) {
+		updateConnectedDevices()
+	}
 	while (robots.length != 0) {
 		let robot = robots.pop()
 		robot.userDisconnect()
@@ -874,7 +1096,7 @@ function checkRobotId() {
 			let codes = ["FN", "BB", "MB"]
 			if (type != currentPage.productID) {
 				if (codes.includes(type)) {
-					text = "You have entered " + userRobotID + " which starts with " + type + ". The correct code for the " + currentPage.productName + " is " + currentPage.productID + ". Your micro:bit may not be seated correctly. Please remove and reinsert the micro:bit, and be sure that its USB port is disconnected. Then enter the updated code. <button class=\"btn btn-orange btn-sm\" onclick=\"navigateTo('contactSupport')\">Code would not update</button>"
+					text = "You have entered " + userRobotID + " which starts with " + type + ". The correct code for the " + currentPage.productName + " is " + currentPage.productID + ". Your micro:bit may not be seated correctly. Please remove and reinsert the micro:bit, and be sure that its USB port is disconnected. Then enter the updated code. <button class=\"btn btn-teal btn-sm\" onclick=\"navigateTo('contactSupport')\">Code would not update</button>"
 				} else {
 					text = "You have entered " + userRobotID + " which is an invalid code."
 				}
@@ -925,12 +1147,49 @@ async function moveFinchAndWait(speedL, speedR, distance) {
   }
 }
 
+async function testFinchLEDs() {
 
-////////End robot test app functions
+	await timeout(500)
 
+	let robot = robots[0]
+	robot.setTriLED(1, 255, 0, 0)
+	robot.setTriLED("all", 255, 0, 0)
+	await timeout(1000)
+	robot.setTriLED(1, 0, 255, 0)
+	robot.setTriLED("all", 0, 255, 0)
+	await timeout(1000)
+	robot.setTriLED(1, 0, 0, 255)
+	robot.setTriLED("all", 0, 0, 255)
+	await timeout(1000)
+	robot.setTriLED(1, 255, 255, 255)
+	robot.setTriLED("all", 255, 255, 255)
+
+}
+
+
+///// Hummingbird Tests /////
+
+function testBBLED(port) {
+	let robot = robots[0]
+	robot.setLED(port, 255)
+}
+
+function testBBTri(port) {
+	let robot = robots[0]
+	robot.setTriLED(port, 255, 255, 255)
+}
 
 
 ///// Initialize State ///////
+
+const currentUrl = window.location.href
+
+let paramString = currentUrl.split('?')[1];
+        let queryString = new URLSearchParams(paramString);
+        for(let pair of queryString.entries()) {
+            console.log("Key is:" + pair[0]);
+            console.log("Value is:" + pair[1]);
+        }
 
 var currentPage = pages["home"]
 const previousPages = []
