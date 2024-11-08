@@ -1179,7 +1179,7 @@ Robot.prototype.sendMicroBlocksData = function(data) {
 }
 
 /**
- * Finch only. Used for test app.
+ * Finch only. Used in the support app.
  */
 Robot.prototype.isMoving = function() {
   if (!this.isA(Robot.ofType.FINCH)) {
@@ -1188,4 +1188,37 @@ Robot.prototype.isMoving = function() {
   }
 
   return (this.currentSensorData[4] > 127) ? true : false
+}
+/**
+ * Used in the support app
+ */
+Robot.prototype.getSensor = function(sensor) {
+  switch(sensor) {
+  case "Distance": 
+    let distance
+    if (this.hasV2Microbit) {
+      return this.currentSensorData[1] 
+    } else {
+      let msb = this.currentSensorData[0]
+      let lsb = this.currentSensorData[1]
+      return Math.round(((msb << 8) | lsb) * 0.0919)
+    }
+  case "Left Light":
+    return this.currentSensorData[2];
+  case "Right Light":
+    return this.currentSensorData[3];
+  case "Left Line":
+    let lValue = this.currentSensorData[4];
+    lValue = (0x7F & lValue) //first bit is for position control
+    lValue = 100 - ((lValue - 6) * 100/121)
+    return Math.round(Math.max(0, Math.min(lValue, 100)))
+  case "Right Line":
+    let rValue = this.currentSensorData[5];
+    rValue = (0x7F & rValue) //first bit is for position control
+    rValue = 100 - ((rValue - 6) * 100/121)
+    return Math.round(Math.max(0, Math.min(rValue, 100)))
+    break;
+  default:
+    return -1
+  }
 }

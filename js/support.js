@@ -332,7 +332,7 @@ contents["finchMotors6"] = `
 `
 contents["finchMotorsSuccess"] = `
 <div class="row align-self-center">
-	<h2>Thanks for using the support app! Your Finch's motors appear to be functioning normally!</h2>
+	<h2>Thanks for using the support app!<br>Your Finch's motors appear to be functioning normally!</h2>
 </div>
 <div class="row align-self-center">
 	<div class="col-sm-12">
@@ -379,7 +379,91 @@ contents["finchLEDs4"] = `
 `
 contents["finchLEDsSuccess"] = `
 <div class="row align-self-center">
-	<h2>Thanks for using the support app! Your Finch's LEDs appear to be functioning normally!</h2>
+	<h2>Thanks for using the support app!<br>Your Finch's LEDs appear to be functioning normally!</h2>
+</div>
+<div class="row align-self-center">
+	<div class="col-sm-12">
+	` + basicButton("Help me with my code", "navigateTo('finchCode')")
+		+ basicButton("Diagnose another problem", "navigateTo('finchHome')") + `
+	</div>
+</div>
+<div class="row align-self-center">
+</div>
+`
+contents["finchSensors1"] = `
+<div class="row align-self-center">
+	<span>For this test, we will take a look at the sensor data coming from your Finch. Please ensure that your Finch is powered on.</span>
+</div>
+<div class="row align-self-center">
+	<div class="col-sm-12">
+		` + basicButton("My Finch is powered on", "navigateTo('finchSensors2')")
+			+ basicButton("My Finch will not power on", "navigateTo('finchPower')", true) + `
+	</div>
+</div>
+<div class="row">
+</div>
+`
+contents["finchSensors2"] = `
+<div class="row align-self-center">
+	<span>To get the sensor data needed for this test, you will need to be in a well lit room. You will also need to have box that your Finch can be placed inside with a lid that closes completely. The box the Finch came in, any shoe box, or similar will do.</span>
+</div>
+<div class="row align-self-center">
+	<div class="col-sm-12">
+		` + basicButton("I am in a well lit room and have a box", "navigateTo('finchSensors3')")
+			+ basicButton("I am unable to complete this test", "navigateTo('contactSupport')", true) + `
+	</div>
+</div>
+<div class="row">
+</div>
+`
+contents["finchSensors3"] = connectRobotOverBle
+
+contents["finchSensors4"] = `
+<div class="row align-self-center">
+	<span>Hold the Finch up in the air with the beak pointed into the distance</span>
+</div>
+<div class="row align-self-center">
+	<div class="col-sm-12">
+		` + basicButton("I am holding the Finch up", "testFinchSensorsMax()") + `
+	</div>
+</div>
+<div class="row">
+</div>
+`
+contents["finchSensors5"] = `
+<div class="row align-self-center">
+	<span>Place the finch in a dark box with the lid closed</span>
+</div>
+<div class="row align-self-center">
+	<div class="col-sm-12">
+		` + basicButton("The Finch is in the box", "testFinchSensorsMin()") + `
+	</div>
+</div>
+<div class="row">
+</div>
+`
+contents["finchSensorsFail"] = `
+<div class="row align-self-center">
+	<span>Your Finch has failed the sensor test. Please take a screenshot of these results to send to support.</span>
+</div>
+<div class="row align-self-center">
+	<p id="results"></p>
+</div>
+<div class="row align-self-center">
+	<div class="col-sm-12">
+		` + basicButton("Try again", "navigateTo('finchSensors4')")
+			+ basicButton("I have a screenshot", "navigateTo('contactSupport')", true) + `
+	</div>
+</div>
+<div class="row">
+</div>
+`
+contents["finchSensorsSuccess"] = `
+<div class="row align-self-center">
+	<h2>Thanks for using the support app!<br>Your Finch's Sensors appear to be functioning normally!</h2>
+</div>
+<div class="row align-self-center">
+	<p id="results"></p>
 </div>
 <div class="row align-self-center">
 	<div class="col-sm-12">
@@ -652,8 +736,8 @@ contents["hummingbirdLEDs1"] = `
 </div>
 <div class="row align-self-center">
 	<div class="col-12">
-		<button class="btn btn-orange btn-lg my-1" onclick="navigateTo('hummingbirdLEDs3')">Looks Good</button>
-		<button class="btn btn-orange btn-lg my-1" onclick="navigateTo('hummingbirdLEDs2')">LED does not plug in</button>
+	` + basicButton("Looks Good", "navigateTo('hummingbirdLEDs3')")
+	  + basicButton("LED does not plug in", "navigateTo('hummingbirdLEDs2')", true) + `
 	</div>
 </div>
 <div class="row align-self-center"></div>
@@ -669,8 +753,8 @@ contents["hummingbirdLEDs2"] = `
 </div>
 <div class="row align-self-center">
 	<div class="col-12">
-		<button class="btn btn-orange btn-lg my-1" onclick="navigateTo('hummingbirdLEDs3')">LED is now plugged in</button>
-		<button class="btn btn-orange btn-lg my-1" onclick="navigateTo('contactSupport')">I have a different problem</button>
+	` + basicButton("LED is now plugged in", "navigateTo('hummingbirdLEDs3')")
+	  + basicButton("I have a different problem", "navigateTo('contactSupport')", true) + `
 	</div>
 </div>
 <div class="row align-self-center"></div>
@@ -693,7 +777,7 @@ contents["hummingbirdLEDs4"] = `
 <div class="row align-self-center">
 	<div class="col-12">
 	` + basicButton("My LEDs are on", "navigateTo('hummingbirdLEDsSuccess')")
-	  + basicButton("My LEDs are not working", "navigateTo('contactSupport')") + `
+	  + basicButton("My LEDs are not working", "navigateTo('contactSupport')", true) + `
 	</div>	
 </div>
 <div class="row align-self-center">
@@ -709,6 +793,8 @@ contents["hummingbirdLEDsSuccess"] = `
 	  + basicButton("Diagnose another problem", "navigateTo('hummingbirdHome')") + `
 	</div>
 </div>
+<div class="row align-self-center">
+</div>
 `
 contents["hummingbirdCode1"] = `
 <div class="row align-self-center">
@@ -720,6 +806,8 @@ contents["hummingbirdCode1"] = `
 		+ basicButton("LEDs", "navigateTo('hummingbirdCodeLEDs')")
 	  + basicButton("Sensors", "navigateTo('hummingbirdCodeSensors')") + `
 	</div>
+</div>
+<div class="row align-self-center">
 </div>
 `
 contents["hummingbirdCodeLEDs"] = `
@@ -734,8 +822,10 @@ contents["hummingbirdCodeLEDs"] = `
 <div class="row align-self-center">
 	<div class="col-sm-12">
 	` + basicButton("Problem Solved!", "navigateTo('hummingbirdCodeSuccess')")
-		+ basicButton("I still need help", "navigateTo('contactSupport')") + `
+		+ basicButton("I still need help", "navigateTo('contactSupport')", true) + `
 	</div>
+</div>
+<div class="row align-self-center">
 </div>
 `
 contents["hummingbirdCodeSuccess"] = `
@@ -908,7 +998,24 @@ pages['finchLEDs3'] = new Page("finchLEDs", "finchLEDs3", null, null, async func
 pages['finchLEDs4'] = new Page("finchLEDs", "finchLEDs4")
 pages['finchLEDsSuccess'] = new Page("finchSuccess", "finchLEDsSuccess", setupSuccess, takedownSuccess)
 
-pages['finchSensors'] = new Page("finchSensors", "comingSoon")
+pages['finchSensors'] = new Page("finchSensors", "finchSensors1")
+pages['finchSensors2'] = new Page("finchSensors", "finchSensors2")
+pages['finchSensors3'] = new Page("finchSensors", "finchSensors3", setupConnectionPage, null, function() {
+	navigateTo("finchSensors4")
+})
+pages['finchSensors4'] = new Page("finchSensors", "finchSensors4", null, null, function() {
+	navigateTo("finchSensors5")
+})
+pages['finchSensors5'] = new Page("finchSensors", "finchSensors5")
+pages['finchSensorsFail'] = new Page("finchSensors", "finchSensorsFail", function() {
+	console.log(finchSensorResults)
+	console.log(document.getElementById("results"))
+	document.getElementById("results").innerHTML = finchSensorResults
+})
+pages['finchSensorsSuccess'] = new Page("finchSuccess", "finchSensorsSuccess", function() {
+	setupSuccess()
+	document.getElementById("results").innerHTML = finchSensorResults
+}, takedownSuccess)
 
 //hummingbird pages
 pages['hummingbirdHome'] = new Page("hummingbird", "hummingbirdHome")
@@ -925,7 +1032,7 @@ pages['hummingbirdBluetooth7'] = new Page("hummingbirdBluetooth", "bluetooth7", 
 pages['hummingbirdBluetooth8'] = new Page("hummingbirdBluetooth", "bluetooth8", setupBluetooth8)
 pages['hummingbirdBluetoothSuccess'] = new Page("hummingbirdSuccess", "bluetoothSuccess", setupBluetoothSuccess, takedownSuccess, nextActionBluetoothSuccess)
 
-pages['hummingbirdCode'] = new Page("hummingbirdCode", "hummingbirdCode1")
+pages['hummingbirdCode'] = new Page("hummingbirdCode", "comingSoon")//"hummingbirdCode1")
 pages['hummingbirdCodeLEDs'] = new Page("hummingbirdCode", "hummingbirdCodeLEDs")
 pages['hummingbirdCodeSuccess'] = new Page("hummingbirdSuccess", "hummingbirdCodeSuccess", setupSuccess, takedownSuccess)
 
@@ -1166,6 +1273,52 @@ async function testFinchLEDs() {
 
 }
 
+const finchSensorNames = ["Distance", "Left Light", "Right Light", "Left Line", "Right Line"]
+const maxFinchThresholds = [60, 5, 5, 60, 60]
+const minFinchThresholds = [20, 5, 5, 10, 10]
+var finchMaxSensors = []
+var finchMinSensors = []
+var finchSensorResults = ""
+function testFinchSensorsMax() {
+	robots[0].stopAll()
+	getFinchSensorValues(true)
+	currentPage.nextAction()
+}
+function testFinchSensorsMin() {
+	getFinchSensorValues(false)
+	let pass = true
+	finchSensorResults = "The values recorded were as follows:<br>"
+	for (let i = 0; i < 5; i++) {
+		finchSensorResults += finchSensorNames[i] + ": " + finchMinSensors[i] + " to " + finchMaxSensors[i]
+
+		let failed = (i > 2) ? (finchMinSensors[i] < maxFinchThresholds[i] || finchMaxSensors[i] > minFinchThresholds[i])
+			: (finchMaxSensors[i] < maxFinchThresholds[i] || finchMinSensors[i] > minFinchThresholds[i])
+
+		finchSensorResults += failed ? " (fail)<br>" : " (pass)<br>"
+
+		pass = pass && !failed
+	}
+	console.log(finchSensorResults)
+	if (pass) {
+		navigateTo("finchSensorsSuccess")
+	} else {
+		navigateTo("finchSensorsFail")
+	}
+}
+function getFinchSensorValues(max) {
+	let robot = robots[0]
+	let values = []
+	for (let i = 0; i < 5; i++) {
+		values.push(robot.getSensor(finchSensorNames[i]))
+	}
+
+	if (max) {
+		finchMaxSensors = values
+	} else {
+		finchMinSensors = values
+	}
+}
+
 
 ///// Hummingbird Tests /////
 
@@ -1183,14 +1336,64 @@ function testBBTri(port) {
 ///// Initialize State ///////
 
 const currentUrl = window.location.href
-
 let paramString = currentUrl.split('?')[1];
-        let queryString = new URLSearchParams(paramString);
-        for(let pair of queryString.entries()) {
-            console.log("Key is:" + pair[0]);
-            console.log("Value is:" + pair[1]);
-        }
+let queryString = new URLSearchParams(paramString);
+let startingProduct = null
+let startingSection = null
+for(let pair of queryString.entries()) {
+    //console.log("Key is:" + pair[0]);
+    //console.log("Value is:" + pair[1]);
+    switch (pair[0].toLowerCase()) {
+    case "product": 
+    	startingProduct = pair[1].toLowerCase()
+    	break;
+    case "troubleshoot":
+    	startingSection = pair[1].toLowerCase()
+    	break;
+    }
+}
 
 var currentPage = pages["home"]
+if (startingProduct == "finch" || startingProduct == "hummingbird") {
+	switch(startingSection) {
+	case "power":
+		currentPage = pages[startingProduct + "Power"]
+		break;
+	case "bluetooth":
+	case "ble":
+		currentPage = pages[startingProduct + "Bluetooth"]
+		break;
+	case "code":
+		currentPage = pages[startingProduct + "Code"]
+		break;
+	case "motors":
+	case "wheels":
+		if (startingProduct == "finch") {
+			currentPage = pages[startingProduct + "Motors"]
+		} else {
+			currentPage = pages[startingProduct + "Home"]
+		}
+		break;
+	case "leds":
+	case "led":
+		currentPage = pages[startingProduct + "LEDs"]
+		break;
+	case "sensors":
+		currentPage = pages[startingProduct + "Sensors"]
+		break;
+	case "servos":
+	case "servo":
+		if (startingProduct == "hummingbird") {
+			currentPage = pages[startingProduct + "Servos"]
+		} else {
+			currentPage = pages[startingProduct + "Home"]
+		}
+		break;
+	default:
+		currentPage = pages[startingProduct + "Home"]
+	}
+	
+}
+
 const previousPages = []
 currentPage.show()

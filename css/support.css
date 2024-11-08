@@ -14,7 +14,7 @@ h2 { font-family: 'Raleway', Helvetica, Arial, sans-serif; font-size: 36px; colo
 #section-header { background-color: rgba(8, 155, 171, 0.08); }
 #section-header img { max-width: 200px; width: 100%; }
 #section-header h2 { color: #881199 }
-.success { background-image: url(../support/confetti.png); background-position: top center; background-repeat: repeat; background-size: 561px 538px; padding: 12px 20px; position: relative; }
+.success { background-image: url(../support/Confetti!.gif); background-position: top center; background-repeat: repeat; background-size: 864px 432px; padding: 12px 20px; position: relative; }
 
 /* main content */
 #main-content { background-color: #881199; color: #fff; font-size: 24px; }
