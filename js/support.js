@@ -15,10 +15,439 @@ var findable = BLE_TYPE.FINCH_AND_HUMMINGBIRD
 
 var userRobotID = ""
 
+///// Code tutorial links /////
 
-/*
-<span id="downloadFirmware" style="color: white;"> Having trouble connecting? Download the latest firmware <a href="https://learn.birdbraintechnologies.com/downloads/installers/BBTFirmware.hex" style="color: #ff9922;">here</a>. For detailed installation instructions view steps 2 and 3 of this <a href="https://learn.birdbraintechnologies.com/finch/finchblox/program/1-1" style="color: #ff9922;">tutorial</a>.</span>
-*/
+const robotComponents = {
+	'finch': ['motors', 'leds', 'buzzer', 'led_screen', 'sensors'],
+	'hummingbird': ['single_color_leds', 'tri_color_leds', 'led_screen', 'position_servos', 'rotation_servos', 'buzzer', 'light_sensor', 'dial_sensor', 'distance_sensor', 'sound_sensor', 'buttons', 'accelerometer', 'compass', 'v2_sensors']
+}
+const hummingbirdComponents = ['single_color_leds', 'tri_color_leds', 'led_screen', 'position_servos', 'rotation_servos', 'buzzer', 'light_sensor', 'dial_sensor', 'distance_sensor', 'sound_sensor', 'buttons', 'accelerometer', 'compass', 'v2_sensors']
+const codeTutorialLangs = ['finchblox', 'birdblox', 'snap', 'makecode', 'python', 'java']
+const codeTutorialsByLang = {
+	'labels' : {
+		'finchblox': "FinchBlox",
+		'birdblox': "BirdBlox",
+		'snap': "Snap!",
+		'makecode': "MakeCode/JavaScript",
+		'python': "Python",
+		'java': "Java"
+	},
+	'finch': {
+		'finchblox': "https://learn.birdbraintechnologies.com/finch/finchblox/program/1-1",
+		'birdblox': "https://learn.birdbraintechnologies.com/finch/birdblox/program/1-1",
+		'snap': "https://learn.birdbraintechnologies.com/finch/snap/program/1-1",
+		'makecode': "https://learn.birdbraintechnologies.com/finch/makecode/program/1-1",
+		'python': "https://learn.birdbraintechnologies.com/finch/python/program/",
+		'java': "https://learn.birdbraintechnologies.com/finch/java/program/"
+	},
+	'hummingbird': {
+		'birdblox': "https://learn.birdbraintechnologies.com/hummingbirdbit/birdblox/program/1-1",
+		'snap': "https://learn.birdbraintechnologies.com/hummingbirdbit/snap/program/1-1",
+		'makecode': "https://learn.birdbraintechnologies.com/hummingbirdbit/makecode/program/1-1",
+		'python': "https://learn.birdbraintechnologies.com/hummingbirdbit/python/program/",
+		'java': "https://learn.birdbraintechnologies.com/hummingbirdbit/java/?portal=1"
+	}
+}
+const codeTutorials = {
+	'finch': {
+		'motors': {
+			'label': "Motors/Wheels",
+			'finchblox': "https://learn.birdbraintechnologies.com/finch/finchblox/program/3-1",
+			'birdblox': "https://learn.birdbraintechnologies.com/finch/birdblox/program/3-1",
+			'snap': "https://learn.birdbraintechnologies.com/finch/snap/program/3-1",
+			'makecode': "https://learn.birdbraintechnologies.com/finch/makecode/program/3-1",
+			'python': "https://learn.birdbraintechnologies.com/finch/python/program/lesson-1-moving-and-turning",
+			'java': "https://learn.birdbraintechnologies.com/finch/java/program/lesson-1-moving-and-turning"
+		},
+		'leds': {
+			'label': "LEDs",
+			'finchblox': "https://learn.birdbraintechnologies.com/finch/finchblox/program/4-1",
+			'birdblox': "https://learn.birdbraintechnologies.com/finch/birdblox/program/6-1",
+			'snap': "https://learn.birdbraintechnologies.com/finch/snap/program/3-1",
+			'makecode': "https://learn.birdbraintechnologies.com/finch/makecode/program/6-1",
+			'python': "https://learn.birdbraintechnologies.com/finch/python/program/lesson-3-controlling-lights",
+			'java': "https://learn.birdbraintechnologies.com/finch/java/program/lesson-3-controlling-the-lights"
+		},
+		'led_screen': {
+			'label': "LED Screen",
+			'finchblox': "https://learn.birdbraintechnologies.com/finch/finchblox/program/10-4",
+			'birdblox': "https://learn.birdbraintechnologies.com/finch/birdblox/program/7-1",
+			'snap': "https://learn.birdbraintechnologies.com/finch/snap/program/7-1",
+			'makecode': "https://learn.birdbraintechnologies.com/finch/makecode/program/7-1",
+			'python': "https://learn.birdbraintechnologies.com/finch/python/program/lesson-6-microbit-display",
+			'java': "https://learn.birdbraintechnologies.com/finch/java/program/lesson-6-microbit-display"
+		},
+		'sensors': {
+			'label': "Sensors",
+			'finchblox': "https://learn.birdbraintechnologies.com/finch/finchblox/program/12-6",
+			'birdblox': "https://learn.birdbraintechnologies.com/finch/birdblox/program/10-1",
+			'snap': "https://learn.birdbraintechnologies.com/finch/snap/program/10-1",
+			'makecode': "https://learn.birdbraintechnologies.com/finch/makecode/program/10-1",
+			'python': "https://learn.birdbraintechnologies.com/finch/python/program/",
+			'java': "https://learn.birdbraintechnologies.com/finch/java/program/"
+		},
+		'buzzer': {
+			'label': "Buzzer",
+			'finchblox': "https://learn.birdbraintechnologies.com/finch/finchblox/program/5-1",
+			'birdblox': "https://learn.birdbraintechnologies.com/finch/birdblox/program/8-1",
+			'snap': "https://learn.birdbraintechnologies.com/finch/snap/program/8-1",
+			'makecode': "https://learn.birdbraintechnologies.com/finch/makecode/program/8-1",
+			'python': "https://learn.birdbraintechnologies.com/finch/python/program/lesson-11-buzzer",
+			'java': "https://learn.birdbraintechnologies.com/finch/java/program/lesson-11-buzzer"
+		},
+		/*'blank': {
+			'label': ,
+			'finchblox': ,
+			'birdblox': ,
+			'snap': ,
+			'makecode': ,
+			'python': ,
+			'java':
+		}*/
+	},
+	'hummingbird': {
+		'single_color_leds': {
+			'label': "Single Color LEDs",
+			'birdblox': "https://learn.birdbraintechnologies.com/hummingbirdbit/birdblox/program/3-1",
+			'snap': "https://learn.birdbraintechnologies.com/hummingbirdbit/snap/program/6-1",
+			'makecode': "https://learn.birdbraintechnologies.com/hummingbirdbit/makecode/program/3-1",
+			'python': "https://learn.birdbraintechnologies.com/hummingbirdbit/python/program/python-lesson-1-single-color-leds",
+			'java': "https://learn.birdbraintechnologies.com/hummingbirdbit/java/program/java-lesson-1-single-color-leds"
+		},
+		'tri_color_leds': {
+			'label': "Tri-color LEDs",
+			'birdblox': "https://learn.birdbraintechnologies.com/hummingbirdbit/birdblox/program/4-1",
+			'snap': "https://learn.birdbraintechnologies.com/hummingbirdbit/snap/program/7-1",
+			'makecode': "https://learn.birdbraintechnologies.com/hummingbirdbit/makecode/program/4-1",
+			'python': "https://learn.birdbraintechnologies.com/hummingbirdbit/python/program/python-lesson-2-tri-color-leds",
+			'java': "https://learn.birdbraintechnologies.com/hummingbirdbit/java/program/java-lesson-2-tri-color-leds"
+		},
+		'led_screen': {
+			'label': "LED Screen",
+			'birdblox': "https://learn.birdbraintechnologies.com/hummingbirdbit/birdblox/program/5-1",
+			'snap': "https://learn.birdbraintechnologies.com/hummingbirdbit/snap/program/8-1",
+			'makecode': "https://learn.birdbraintechnologies.com/hummingbirdbit/makecode/program/5-1",
+			'python': "https://learn.birdbraintechnologies.com/hummingbirdbit/python/program/python-lesson-3-microbit-display",
+			'java': "https://learn.birdbraintechnologies.com/hummingbirdbit/java/program/java-lesson-3-microbit-display"
+		},
+		'position_servos': {
+			'label': "Position Servos",
+			'birdblox': "https://learn.birdbraintechnologies.com/hummingbirdbit/birdblox/program/6-1",
+			'snap': "https://learn.birdbraintechnologies.com/hummingbirdbit/snap/program/9-1",
+			'makecode': "https://learn.birdbraintechnologies.com/hummingbirdbit/makecode/program/6-1",
+			'python': "https://learn.birdbraintechnologies.com/hummingbirdbit/python/program/python-lesson-4-position-servos",
+			'java': "https://learn.birdbraintechnologies.com/hummingbirdbit/java/program/java-lesson-4-position-servos"
+		},
+		'rotation_servos': {
+			'label': "Rotation Servos",
+			'birdblox': "https://learn.birdbraintechnologies.com/hummingbirdbit/birdblox/program/7-1",
+			'snap': "https://learn.birdbraintechnologies.com/hummingbirdbit/snap/program/10-1",
+			'makecode': "https://learn.birdbraintechnologies.com/hummingbirdbit/makecode/program/7-1",
+			'python': "https://learn.birdbraintechnologies.com/hummingbirdbit/python/program/python-lesson-5-rotation-servos",
+			'java': "https://learn.birdbraintechnologies.com/hummingbirdbit/java/program/java-lesson-5-rotation-servos"
+		},
+		'buzzer': {
+			'label': "Buzzer",
+			'birdblox': "https://learn.birdbraintechnologies.com/hummingbirdbit/birdblox/program/8-1",
+			'snap': "https://learn.birdbraintechnologies.com/hummingbirdbit/snap/program/11-1",
+			'makecode': "https://learn.birdbraintechnologies.com/hummingbirdbit/makecode/program/8-1",
+			'python': "https://learn.birdbraintechnologies.com/hummingbirdbit/python/program/python-lesson-6-buzzer-putting-it-all-together",
+			'java': "https://learn.birdbraintechnologies.com/hummingbirdbit/java/program/java-lesson-6-rotation-servos-putting-it-all-together"
+		},
+
+		'light_sensor': {
+			'label': "Light Sensor",
+			'birdblox': "https://learn.birdbraintechnologies.com/hummingbirdbit/birdblox/program/10-1",
+			'snap': "https://learn.birdbraintechnologies.com/hummingbirdbit/snap/program/13-1",
+			'makecode': "https://learn.birdbraintechnologies.com/hummingbirdbit/makecode/program/9-1",
+			'python': "https://learn.birdbraintechnologies.com/hummingbirdbit/python/program/python-lesson-7-light-sensor",
+			'java': "https://learn.birdbraintechnologies.com/hummingbirdbit/java/program/java-lesson-7-light-sensor"
+		},
+		'dial_sensor': {
+			'label': "Dial Sensor",
+			'birdblox': "https://learn.birdbraintechnologies.com/hummingbirdbit/birdblox/program/11-1",
+			'snap': "https://learn.birdbraintechnologies.com/hummingbirdbit/snap/program/14-1",
+			'makecode': "https://learn.birdbraintechnologies.com/hummingbirdbit/makecode/program/10-1",
+			'python': "https://learn.birdbraintechnologies.com/hummingbirdbit/python/program/python-lesson-9-dial-sound-sensors",
+			'java': "https://learn.birdbraintechnologies.com/hummingbirdbit/java/program/java-lesson-9-dial-sound-sensors"
+		},
+		'distance_sensor': {
+			'label': "Distance Sensor",
+			'birdblox': "https://learn.birdbraintechnologies.com/hummingbirdbit/birdblox/program/12-1",
+			'snap': "https://learn.birdbraintechnologies.com/hummingbirdbit/snap/program/15-1",
+			'makecode': "https://learn.birdbraintechnologies.com/hummingbirdbit/makecode/program/11-1",
+			'python': "https://learn.birdbraintechnologies.com/hummingbirdbit/python/program/python-lesson-8-distance-sensor",
+			'java': "https://learn.birdbraintechnologies.com/hummingbirdbit/java/program/java-lesson-8-distance-sensor"
+		},
+		'sound_sensor': {
+			'label': "Sound Sensor",
+			'birdblox': "https://learn.birdbraintechnologies.com/hummingbirdbit/birdblox/program/13-1",
+			'snap': "https://learn.birdbraintechnologies.com/hummingbirdbit/snap/program/16-1",
+			'makecode': "https://learn.birdbraintechnologies.com/hummingbirdbit/makecode/program/12-1",
+			'python': "https://learn.birdbraintechnologies.com/hummingbirdbit/python/program/python-lesson-9-dial-sound-sensors",
+			'java': "https://learn.birdbraintechnologies.com/hummingbirdbit/java/program/java-lesson-9-dial-sound-sensors"
+		},
+		'buttons': {
+			'label': "Buttons",
+			'birdblox': "https://learn.birdbraintechnologies.com/hummingbirdbit/birdblox/program/14-1",
+			'snap': "https://learn.birdbraintechnologies.com/hummingbirdbit/snap/program/17-1",
+			'makecode': "https://learn.birdbraintechnologies.com/hummingbirdbit/makecode/program/13-1",
+			'python': "https://learn.birdbraintechnologies.com/hummingbirdbit/python/program/python-lesson-10-microbit-buttons-and-accelerometer",
+			'java': "https://learn.birdbraintechnologies.com/hummingbirdbit/java/program/java-lesson-10-microbit-buttons-and-accelerometer"
+		},
+		'accelerometer': {
+			'label': "Accelerometer",
+			'birdblox': "https://learn.birdbraintechnologies.com/hummingbirdbit/birdblox/program/15-1",
+			'snap': "https://learn.birdbraintechnologies.com/hummingbirdbit/snap/program/18-1",
+			'makecode': "https://learn.birdbraintechnologies.com/hummingbirdbit/makecode/program/14-1",
+			'python': "https://learn.birdbraintechnologies.com/hummingbirdbit/python/program/python-lesson-10-microbit-buttons-and-accelerometer",
+			'java': "https://learn.birdbraintechnologies.com/hummingbirdbit/java/program/java-lesson-10-microbit-buttons-and-accelerometer"
+		},
+		'compass': {
+			'label': "Compass",
+			'birdblox': "https://learn.birdbraintechnologies.com/hummingbirdbit/birdblox/program/16-1",
+			'snap': "https://learn.birdbraintechnologies.com/hummingbirdbit/snap/program/19-1",
+			'makecode': "https://learn.birdbraintechnologies.com/hummingbirdbit/makecode/program/15-1",
+			'python': "https://learn.birdbraintechnologies.com/hummingbirdbit/python/program/python-lesson-11-microbit-compass",
+			'java': "https://learn.birdbraintechnologies.com/hummingbirdbit/java/program/java-lesson-11-microbit-compass"
+		},
+		'v2_sensors': {
+			'label': "Micro:bit V2 Sensors",
+			'birdblox': "https://learn.birdbraintechnologies.com/hummingbirdbit/birdblox/program/18-1",
+			'snap': "https://learn.birdbraintechnologies.com/hummingbirdbit/snap/program/21-1",
+			'makecode': "https://learn.birdbraintechnologies.com/hummingbirdbit/makecode/program/17-1",
+			'python': "https://learn.birdbraintechnologies.com/hummingbirdbit/python/program/python-lesson-9-dial-sound-sensors",
+			'java': "https://learn.birdbraintechnologies.com/hummingbirdbit/java/program/java-lesson-9-dial-sound-sensors"
+		},
+		/*'blank': {
+			'birdblox': ,
+			'snap': ,
+			'makecode': ,
+			'python': ,
+			'java'
+		},*/
+	}
+}
+
+
+///// Pages /////
+
+function Page(headerName, contentName, setupFn, takedownFn, nextAction) {
+	this.headerName = headerName
+	this.contentName = contentName
+	this.setup = setupFn
+	this.takedown = takedownFn
+	this.nextAction = nextAction
+
+	this.productID = null
+	this.productName = null
+	if (headerName.startsWith("finch") || contentName.startsWith("finch")) {
+		this.productID = "FN"
+		this.productName = "Finch"
+	} else if (headerName.startsWith("hummingbird") || contentName.startsWith("hummingbird")) {
+		this.productID = "BB"
+		this.productName = "Hummingbird"
+	}
+}
+Page.prototype.show = function() {
+	const header = sectionHeaders[this.headerName]
+	const content = contents[this.contentName]
+
+	if (header && content) {
+		const headerDiv = document.getElementById("section-header")
+		headerDiv.innerHTML = header
+
+		const mainDiv = document.getElementById("main-content")
+		mainDiv.innerHTML = content
+	} else {
+		console.error("Unknown section header '" + this.headerName + "' or content '" + this.contentName + "'.")
+		document.getElementById("main-content").innerHTML = contents['comingSoon']
+	}
+
+	if (this.setup) { this.setup() }
+}
+
+function setupSuccess() {
+	document.getElementById("section-header").classList.add("success")
+}
+function takedownSuccess() {
+	document.getElementById("section-header").classList.remove("success")
+}
+
+const pages = {}
+
+pages['home'] = new Page("welcome", "home", function() {
+	document.getElementById("home-button").setAttribute("style", "visibility: hidden;")
+}, function() {
+	document.getElementById("home-button").setAttribute("style", "visibility: visible;")
+})
+pages['contactSupport'] = new Page("contactSupport", "contactSupport")
+
+//finch pages
+pages['finchHome'] = new Page("finch", "finchHome")
+
+pages['finchMotors'] = new Page("finchMotors", "finchMotors1")
+pages['finchMotors2'] = new Page("finchMotors", "finchMotors2")
+pages['finchMotors3'] = new Page("finchMotors", "finchMotors3")
+pages['finchMotors4'] = new Page("finchMotors", "finchMotors4", setupConnectionPage, null, function() {
+	navigateTo("finchMotors5")
+})
+pages['finchMotors5'] = new Page("finchMotors", "finchMotors5", null, null, async function() {
+	await testFinchMotors()
+	navigateTo("finchMotors6")
+})
+pages['finchMotors6'] = new Page("finchMotors", "finchMotors6") 
+pages['finchMotorsSuccess'] = new Page("finchSuccess", "finchMotorsSuccess", setupSuccess, takedownSuccess) 
+
+pages['finchPower'] = new Page("finchPower", "finchPower1")
+pages['finchPower2'] = new Page("finchPower", "finchPower2")
+pages['finchPower3'] = new Page("finchPower", "finchPower3")
+pages['finchPower4'] = new Page("finchPower", "finchPower4")
+pages['finchPowerSuccess'] = new Page("finchSuccess", "finchPowerSuccess", setupSuccess, takedownSuccess)
+
+function setupBluetooth1() {
+	let prefix = this.productName.toLowerCase()
+	document.getElementById("btn_not_on").setAttribute("onclick", "navigateTo('" + prefix + "Power')")
+	document.getElementById("btn_no_display").setAttribute("onclick", "navigateTo('" + prefix + "Bluetooth2')")
+	document.getElementById("btn_ok").setAttribute("onclick", "navigateTo('" + prefix + "Bluetooth3')")
+}
+pages['finchBluetooth'] = new Page("finchBluetooth", "bluetooth1", setupBluetooth1)
+
+function setupBluetooth2() {
+	let prefix = this.productName.toLowerCase()
+	document.getElementById("btn_success").setAttribute("onclick", "navigateTo('" + prefix + "Bluetooth3')")
+	document.getElementById("btn_fail").setAttribute("onclick", "navigateTo('" + prefix + "Bluetooth8')")
+}
+pages['finchBluetooth2'] = new Page("finchBluetooth", "bluetooth2", setupBluetooth2)
+
+function nextActionBluetooth3() {
+	let prefix = this.productName.toLowerCase()
+	navigateTo(prefix + "Bluetooth4")
+}
+pages['finchBluetooth3'] = new Page("finchBluetooth", "bluetooth3", null, null, nextActionBluetooth3)
+pages['finchBluetooth4'] = new Page("finchBluetooth", "bluetooth4", setupConnectionPage)
+
+function setupBluetooth5() {
+	let prefix = this.productName.toLowerCase()
+	document.getElementById("chars").innerHTML = userRobotID.slice(2, 7)
+	document.getElementById("yes").setAttribute("onclick", "navigateTo('" + prefix + "Bluetooth7')")
+}
+pages['finchBluetooth5'] = new Page("finchBluetooth", "bluetooth5", setupBluetooth5)
+
+function setupBluetooth6() {
+	let prefix = this.productName.toLowerCase()
+	if (robots.length == 0) {
+		document.getElementById("details").innerHTML = "You have been disconnected"
+	} else {
+		document.getElementById("details").innerHTML = "You have entered the ID " + userRobotID + " but are now connected to a robot with ID " + robots[0].device.name
+	}
+	document.getElementById("no_problem").setAttribute("onclick", "navigateTo('" + prefix + "BluetoothSuccess')")
+}
+function nextActionBluetooth6() {
+	let prefix = this.productName.toLowerCase()
+	navigateTo(prefix + "Bluetooth5")
+}
+pages['finchBluetooth6'] = new Page("finchBluetooth", "bluetooth6", setupBluetooth6, null, nextActionBluetooth6)
+
+function setupBluetooth7() {
+	let prefix = this.productName.toLowerCase()
+	document.getElementById("robot_forgotten").setAttribute("onclick", "navigateTo('" + prefix + "Bluetooth4')")
+}
+pages['finchBluetooth7'] = new Page("finchBluetooth", "bluetooth7", setupBluetooth7)
+
+function setupBluetooth8() {
+	let prefix = this.productName.toLowerCase()
+	document.getElementById("btn_success").setAttribute("onclick", "navigateTo('" + prefix + "Bluetooth3')")
+}
+pages['finchBluetooth8'] = new Page("finchBluetooth", "bluetooth8", setupBluetooth8)
+
+function setupBluetoothSuccess() {
+	setupSuccess()
+	if (robots.length == 0) {
+		document.getElementById("details").innerHTML = "You are currently disconnected"
+	} else {
+		document.getElementById("details").innerHTML = "You are currently connected to " + robots[0].fancyName
+	}
+}
+function nextActionBluetoothSuccess() {
+	let prefix = this.productName.toLowerCase()
+	navigateTo("" + prefix + "Bluetooth4")
+}
+pages['finchBluetoothSuccess'] = new Page("finchSuccess", "bluetoothSuccess", setupBluetoothSuccess, takedownSuccess, nextActionBluetoothSuccess)
+
+pages['finchCode'] = new Page("finchCode", "finchCode1")
+
+pages['finchLEDs'] = new Page("finchLEDs", "finchLEDs1")
+pages['finchLEDs2'] = new Page("finchLEDs", "finchLEDs2", setupConnectionPage, null, function() {
+	navigateTo("finchLEDs3")
+})
+pages['finchLEDs3'] = new Page("finchLEDs", "finchLEDs3", null, null, async function() {
+	await testFinchLEDs()
+	navigateTo("finchLEDs4")
+})
+pages['finchLEDs4'] = new Page("finchLEDs", "finchLEDs4")
+pages['finchLEDsSuccess'] = new Page("finchSuccess", "finchLEDsSuccess", setupSuccess, takedownSuccess)
+
+pages['finchSensors'] = new Page("finchSensors", "finchSensors1")
+pages['finchSensors2'] = new Page("finchSensors", "finchSensors2")
+pages['finchSensors3'] = new Page("finchSensors", "finchSensors3", setupConnectionPage, null, function() {
+	navigateTo("finchSensors4")
+})
+pages['finchSensors4'] = new Page("finchSensors", "finchSensors4", null, null, function() {
+	navigateTo("finchSensors5")
+})
+pages['finchSensors5'] = new Page("finchSensors", "finchSensors5")
+pages['finchSensorsFail'] = new Page("finchSensors", "finchSensorsFail", function() {
+	console.log(finchSensorResults)
+	console.log(document.getElementById("results"))
+	document.getElementById("results").innerHTML = finchSensorResults
+})
+pages['finchSensorsSuccess'] = new Page("finchSuccess", "finchSensorsSuccess", function() {
+	setupSuccess()
+	document.getElementById("results").innerHTML = finchSensorResults
+}, takedownSuccess)
+
+//hummingbird pages
+pages['hummingbirdHome'] = new Page("hummingbird", "hummingbirdHome")
+
+pages['hummingbirdPower'] = new Page("hummingbirdPower", "comingSoon")
+
+pages['hummingbirdBluetooth'] = new Page("hummingbirdBluetooth", "bluetooth1", setupBluetooth1)
+pages['hummingbirdBluetooth2'] = new Page("hummingbirdBluetooth", "bluetooth2", setupBluetooth2)
+pages['hummingbirdBluetooth3'] = new Page("hummingbirdBluetooth", "bluetooth3", null, null, nextActionBluetooth3)
+pages['hummingbirdBluetooth4'] = new Page("hummingbirdBluetooth", "bluetooth4", setupConnectionPage)
+pages['hummingbirdBluetooth5'] = new Page("hummingbirdBluetooth", "bluetooth5", setupBluetooth5)
+pages['hummingbirdBluetooth6'] = new Page("hummingbirdBluetooth", "bluetooth6", setupBluetooth6, null, nextActionBluetooth6)
+pages['hummingbirdBluetooth7'] = new Page("hummingbirdBluetooth", "bluetooth7", setupBluetooth7)
+pages['hummingbirdBluetooth8'] = new Page("hummingbirdBluetooth", "bluetooth8", setupBluetooth8)
+pages['hummingbirdBluetoothSuccess'] = new Page("hummingbirdSuccess", "bluetoothSuccess", setupBluetoothSuccess, takedownSuccess, nextActionBluetoothSuccess)
+
+pages['hummingbirdCode'] = new Page("hummingbirdCode", "hummingbirdCode1")
+//pages['hummingbirdCodeLEDs'] = new Page("hummingbirdCode", "hummingbirdCodeLEDs")
+//pages['hummingbirdCodeSuccess'] = new Page("hummingbirdSuccess", "hummingbirdCodeSuccess", setupSuccess, takedownSuccess)
+
+
+pages['hummingbirdServos'] = new Page("hummingbirdServos", "hummingbirdServos1")
+pages['hummingbirdServos2'] = new Page("hummingbirdServos", "hummingbirdServos2")
+pages['hummingbirdServos3'] = new Page("hummingbirdServos", "hummingbirdServos3")
+pages['hummingbirdServos4'] = new Page("hummingbirdServos", "hummingbirdServos4", setupConnectionPage, null, function() {
+	navigateTo("hummingbirdServos5")
+})
+pages['hummingbirdServos5'] = new Page("hummingbirdServos", "hummingbirdServos5")
+pages['hummingbirdServosSuccess'] = new Page("hummingbirdServos", "hummingbirdServosSuccess", setupSuccess, takedownSuccess)
+
+pages['hummingbirdLEDs'] = new Page("hummingbirdLEDs", "hummingbirdLEDs1")
+pages['hummingbirdLEDs2'] = new Page("hummingbirdLEDs", "hummingbirdLEDs2")
+pages['hummingbirdLEDs3'] = new Page("hummingbirdLEDs", "hummingbirdLEDs3")
+pages['hummingbirdLEDs4'] = new Page("hummingbirdLEDs", "hummingbirdLEDs4", setupConnectionPage, null, function() {
+	navigateTo("hummingbirdLEDs5")
+})
+pages['hummingbirdLEDs5'] = new Page("hummingbirdLEDs", "hummingbirdLEDs5")
+pages['hummingbirdLEDsSuccess'] = new Page("hummingbirdSuccess", "hummingbirdLEDsSuccess", setupSuccess, takedownSuccess)
+
+pages['hummingbirdSensors'] = new Page("hummingbirdSensors", "comingSoon")
+
+
 
 ///// Section Headers /////
 
@@ -83,6 +512,79 @@ function basicButton(text, onclickFnString, tealBg, idString) {
 	return `<button` + id + ` class="btn ` + colorClass + ` btn-lg m-1"` + onclick + `>` + text + `</button>`
 }
 
+function externalLinkButton(text, href, tealBg) {
+	let colorClass = tealBg ? `btn-teal` : `btn-orange`
+	return `<a class="btn ` + colorClass + ` btn-lg m-1" style="color: #fff;" target="_blank" href="` + href + `">` + text + `</a>`
+}
+
+function codeTutorialButtons(product, component) {
+	let links = codeTutorials[product][component]
+	let html = `
+	<div class="row align-self-center">
+		<span>Check out these tutorials to program your ` + links['label'] + ` in the language of your choice</span>
+	</div>
+	<div class="row align-self-center">
+		<div class="col-sm-12">
+	` 
+	for (let i = 0; i < codeTutorialLangs.length; i++) {
+		let lang = codeTutorialLangs[i]
+		let label = codeTutorialsByLang['labels'][lang]
+		let link = links[lang]
+		if (link) {
+			html += externalLinkButton(label, link)
+		}
+	}
+	html += `
+		</div>
+	</div>
+	<div class="row align-self-center">
+	</div>
+	`
+	return html
+}
+function codeTutorialPage(product) {
+	let page = `
+	<div class="row align-self-center">
+		<h2>Check out a full tutorial in the language of your choice</h2>
+	</div>
+	<div class="row align-self-center">
+		<div class="col-sm-12">
+		` 
+	for (let i = 0; i < codeTutorialLangs.length; i++) {
+		let lang = codeTutorialLangs[i]
+		let label = codeTutorialsByLang['labels'][lang]
+		let link = codeTutorialsByLang[product][lang]
+		if (link) {
+			page += externalLinkButton(label, link)
+		}
+	}
+	page += `
+		</div>
+	</div>
+	<div class="row align-self-center">
+		<span>Or, get advice on controlling a specific component with code</span>
+	</div>
+	<div class="row align-self-center">
+		<div class="col-sm-12">
+	`
+	let components = robotComponents[product]
+	for(let i = 0; i < components.length; i++) {
+		let component = components[i]
+		let label = codeTutorials[product][component]['label']
+		let pageName = product + 'Code' + component 
+		page += basicButton(label, "navigateTo('" + pageName + "')")
+		contents[pageName] = codeTutorialButtons(product, component)
+		pages[pageName] = new Page(product + "Code", pageName)
+	}
+	page += `
+		</div>
+	</div>
+	<div class="row align-self-center">
+	</div>
+	`
+	return page
+}
+
 const subHeader = `<div class="row align-self-center"><h2>What seems to be the trouble?</h2></div>`
 
 const connectRobotOverBle = `
@@ -140,6 +642,32 @@ const cameraInstruction = `
 </div>
 <div class="row"></div>
 `
+const hummingbirdWires1 = `
+<div class="row align-self-center">
+	<h2>Wires can wear over time, making them hard to plug in</h2>
+</div>
+<div class="row align-self-center">
+	<div class="col-sm-4">
+		<img src="support/hummingbird_wires.png" style="height: 150px; width: 268px;"/>
+	</div>
+	<div class="col-sm-8">
+		<p>The image to the left shows 3 wires. The left most wire is in almost new condition, the middle wire is frayed, and the right most wire is almost completely stripped. If your wires are only frayed, twisting them back together with your fingers should be enough to get them back in working order. If, on the other hand, your wires have been stripped, you will need to use wire strippers to remove the outer casing and expose more wire.</p>
+	</div>
+</div>
+`
+const hummingbirdWires2 = `
+<div class="row align-self-center">
+	<h2>Stripping and twisting</h2>
+</div>
+<div class="row align-self-center">
+	<div class="col-sm-4">
+		
+	</div>
+	<div class="col-sm-8">
+		<p>Put enough pressure on the strippers to cut through the plastic casing, but not enough to go all the way through the metal wires inside.</p>
+	</div>
+</div>
+`
 
 ///// Contents /////
 
@@ -175,8 +703,7 @@ contents["contactSupport"] = `
 		<div class="row">
 			<span style="text-align: left">Please contact our support team for further assistance.<br>Be sure to include the following information in your message:
 				<ul>
-					<li>Your order number (it would start with a BB)</li>
-					<li>Your shipping address</li>
+					<li id="details"><li>
 					<li>A detailed description of what you have tried to fix the problem</li>
 					<li>Any images or videos of the problem you have</li>
 				</ul>
@@ -186,7 +713,7 @@ contents["contactSupport"] = `
 </div>
 <div class="row align-self-center">
 	<div class="col-sm-12">
-		<a class="btn btn-teal btn-lg" style="color: #fff;" target="_blank" href="https://www.birdbraintechnologies.com/about-us/contact-us/">Contact Support</a>
+	`	+ externalLinkButton("Contact Support", "https://www.birdbraintechnologies.com/about-us/contact-us/", true) + `
 	</div>
 </div>
 <div class="row"></div>
@@ -578,6 +1105,8 @@ contents["finchPowerSuccess"] = `
 </div>
 <div class="row align-self-center"></div>
 `
+contents["finchCode1"] = codeTutorialPage('finch')
+
 contents["bluetooth1"] = `
 <div class="row align-self-center">
 	<span>When connecting over bluetooth, your robot should be on, and the micro:bit display should be flashing a sequence of characters. This sequence should be three letters, followed by the '#' symbol, followed by a seven character code.</span>
@@ -712,56 +1241,57 @@ contents["hummingbirdLEDs1"] = `
 <div class="row align-self-center">
 	<h2>First, make sure your LEDs are plugged in correctly and securely</h2>
 </div>
-<div class="row align-self-center p-3">
-	<div class="col-sm-6">
-		<div class="row">
-			<div class="col-sm-12">
-				<iframe src="//fast.wistia.com/embed/iframe/qvkx9cpzjp" width="448" height="252" frameborder="0" allowfullscreen=""></iframe>		
-			</div>
+<div class="row align-self-center">
+	<div class="col-sm-3">
+		<div class="row justify-content-center">
+			<img src="support/hummingbird_triLED.png" style="height: 150px; width: 165px;"/>
 		</div>
 		<div class="row">
 			<span>tri-color LEDs</span>
 		</div>
 	</div>
-	<div class="col-sm-6">
-		<div class="row">
-			<div class="col-sm-12">
-				<iframe src="//fast.wistia.com/embed/iframe/zz3sbasgw0" width="448" height="252" frameborder="0" allowfullscreen=""></iframe>
-			</div>
+	<div class="col-sm-3">
+		<div class="row justify-content-center">
+			<img src="support/hummingbird_singleLED.png" style="height: 150px; width: 152px;"/>
 		</div>
 		<div class="row">
 			<span>Single color LEDs</span>
 		</div>
 	</div>
+	<div class="col-sm-6">
+		<span>Make sure the color coded wires are connected to the terminals as shown. Once plugged in, a gentle tug on the wires should not dislodge them.</span>
+		<p>For more advice, check out these support articles: <a href="https://support.birdbraintechnologies.com/hc/en-us/articles/360042280434-Why-is-my-tri-color-LED-not-responding-or-not-responding-as-expected-in-BirdBlox" target="_blank">Tri-color LED</a> or <a href="https://support.birdbraintechnologies.com/hc/en-us/articles/360042280314-Why-is-my-LED-not-responding-or-not-responding-as-expected-in-BirdBlox" target="_blank">Single color LED</a>
+	</div>
 </div>
 <div class="row align-self-center">
 	<div class="col-12">
-	` + basicButton("Looks Good", "navigateTo('hummingbirdLEDs3')")
+	` + basicButton("Looks Good", "navigateTo('hummingbirdLEDs4')")
 	  + basicButton("LED does not plug in", "navigateTo('hummingbirdLEDs2')", true) + `
 	</div>
 </div>
 <div class="row align-self-center"></div>
 `
-contents["hummingbirdLEDs2"] = `
-<div class="row align-self-center">
-	<span>If the LED leads (the metal ends of the wires) have broken off, you will need to use wire strippers to expose more wire</span>
-</div>
+contents["hummingbirdLEDs2"] = hummingbirdWires1 + `
 <div class="row align-self-center">
 	<div class="col-12">
-		<iframe src="//fast.wistia.com/embed/iframe/4r001p6dyv" width="560" height="315" frameborder="0" allowfullscreen=""></iframe>
+	` + basicButton("LED is now plugged in", "navigateTo('hummingbirdLEDs4')")
+	  + basicButton("I need more help", "navigateTo('hummingbirdLEDs3')", true) + `
 	</div>
 </div>
+<div class="row align-self-center"></div>
+`
+contents["hummingbirdLEDs3"] = hummingbirdWires2 + `
 <div class="row align-self-center">
 	<div class="col-12">
-	` + basicButton("LED is now plugged in", "navigateTo('hummingbirdLEDs3')")
+	` + basicButton("LED is now plugged in", "navigateTo('hummingbirdLEDs4')")
 	  + basicButton("I have a different problem", "navigateTo('contactSupport')", true) + `
 	</div>
 </div>
 <div class="row align-self-center"></div>
 `
-contents["hummingbirdLEDs3"] = connectRobotOverBle
+contents["hummingbirdLEDs4"] = connectRobotOverBle
 
-contents["hummingbirdLEDs4"] = `
+contents["hummingbirdLEDs5"] = `
 <div class="row align-self-center">
 	<h2>Use the buttons below to turn on the LED in each port</h2>
 </div>
@@ -796,21 +1326,85 @@ contents["hummingbirdLEDsSuccess"] = `
 <div class="row align-self-center">
 </div>
 `
-contents["hummingbirdCode1"] = `
+contents["hummingbirdSensors1"] = `
 <div class="row align-self-center">
-	<h2>What would you like to control with code?</h2>
+	<h2>First, make sure your sensors are plugged in correctly and securely</h2>
+</div>
+<div class="row align-self-center">
+	<div class="col-sm-4">
+		<div class="row justify-content-center">
+			<img src="support/hummingbird_triLED.png" style="height: 187px; width: 264px;"/>
+		</div>
+	<div class="col-sm-8">
+		<span>Make sure the color coded wires are connected to the terminals as shown. Regardless of which sensor you are using, the black wire should be attached to the negative terminal, the red to positive, and the yellow to 'S' (for signal). Once plugged in, a gentle tug on the wires should not dislodge them.</span>
+		<p>For more advice, check out this <a href="https://support.birdbraintechnologies.com/hc/en-us/articles/360042769833-Why-is-my-sensor-not-responding-or-not-responding-as-expected-in-BirdBlox" target="_blank">support article</a>.</p>
+	</div>
+</div>
+<div class="row align-self-center">
+	<div class="col-12">
+	` + basicButton("Looks Good", "navigateTo('hummingbirdSensors4')")
+	  + basicButton("Sensor does not plug in", "navigateTo('hummingbirdSensors2')", true) + `
+	</div>
+</div>
+<div class="row align-self-center"></div>
+`
+contents["hummingbirdSensors2"] = hummingbirdWires1 + `
+<div class="row align-self-center">
+	<div class="col-12">
+	` + basicButton("Sensor is now plugged in", "navigateTo('hummingbirdSensors4')")
+	  + basicButton("I need more help", "navigateTo('hummingbirdSensors3')", true) + `
+	</div>
+</div>
+<div class="row align-self-center"></div>
+`
+contents["hummingbirdSensors3"] = hummingbirdWires2 + `
+<div class="row align-self-center">
+	<div class="col-12">
+	` + basicButton("Sensor is now plugged in", "navigateTo('hummingbirdSensors4')")
+	  + basicButton("I have a different problem", "navigateTo('contactSupport')", true) + `
+	</div>
+</div>
+<div class="row align-self-center"></div>
+`
+contents["hummingbirdSensors4"] = connectRobotOverBle
+
+contents["hummingbirdSensors5"] = `
+<div class="row align-self-center">
+	<h2>Use the buttons below to get data the Sensor in each port</h2>
+</div>
+<div class="row align-self-center">
+	<div class="col-12">
+	` + basicButton("SENSORS 1", "testBBSENSOR(1)") 
+		+ basicButton("SENSORS 2", "testBBLED(2)")
+		+ basicButton("SENSORS 3", "testBBLED(3)")
+		+ basicButton("TRI-COLOR 1", "testBBTri(1)")
+		+ basicButton("TRI-COLOR 2", "testBBTri(2)") + `
+	</div>	
+</div>
+<div class="row align-self-center">
+	<div class="col-12">
+	` + basicButton("My LEDs are on", "navigateTo('hummingbirdLEDsSuccess')")
+	  + basicButton("My LEDs are not working", "navigateTo('contactSupport')", true) + `
+	</div>	
+</div>
+<div class="row align-self-center">
+</div>
+`
+contents["hummingbirdLEDsSuccess"] = `
+<div class="row align-self-center">
+	<h2>Thanks for using the support app!</h2>
 </div>
 <div class="row align-self-center">
 	<div class="col-sm-12">
-	` + basicButton("Servos", "navigateTo('hummingbirdCodeServos')")
-		+ basicButton("LEDs", "navigateTo('hummingbirdCodeLEDs')")
-	  + basicButton("Sensors", "navigateTo('hummingbirdCodeSensors')") + `
+	` + basicButton("Help me with my code", "navigateTo('hummingbirdCode')")
+	  + basicButton("Diagnose another problem", "navigateTo('hummingbirdHome')") + `
 	</div>
 </div>
 <div class="row align-self-center">
 </div>
 `
-contents["hummingbirdCodeLEDs"] = `
+contents["hummingbirdCode1"] = codeTutorialPage('hummingbird')
+/*contents["hummingbirdCodeLEDs"] = `
 <div class="row align-self-center">
 	<h2>Watch this video for help with your LED code</h2>
 </div>
@@ -837,217 +1431,9 @@ contents["hummingbirdCodeSuccess"] = `
 	` + basicButton("Diagnose another problem", "navigateTo('hummingbirdHome')") + `
 	</div>
 </div>
-`
+`*/
 
 
-///// Pages /////
-
-function Page(headerName, contentName, setupFn, takedownFn, nextAction) {
-	this.headerName = headerName
-	this.contentName = contentName
-	this.setup = setupFn
-	this.takedown = takedownFn
-	this.nextAction = nextAction
-
-	this.productID = null
-	this.productName = null
-	if (headerName.startsWith("finch") || contentName.startsWith("finch")) {
-		this.productID = "FN"
-		this.productName = "Finch"
-	} else if (headerName.startsWith("hummingbird") || contentName.startsWith("hummingbird")) {
-		this.productID = "BB"
-		this.productName = "Hummingbird"
-	}
-}
-Page.prototype.show = function() {
-	const header = sectionHeaders[this.headerName]
-	const content = contents[this.contentName]
-
-	if (header && content) {
-		const headerDiv = document.getElementById("section-header")
-		headerDiv.innerHTML = header
-
-		const mainDiv = document.getElementById("main-content")
-		mainDiv.innerHTML = content
-	} else {
-		console.error("Unknown section header '" + this.headerName + "' or content '" + this.contentName + "'.")
-		document.getElementById("main-content").innerHTML = contents['comingSoon']
-	}
-
-	if (this.setup) { this.setup() }
-}
-
-function setupSuccess() {
-	document.getElementById("section-header").classList.add("success")
-}
-function takedownSuccess() {
-	document.getElementById("section-header").classList.remove("success")
-}
-
-const pages = {}
-
-pages['home'] = new Page("welcome", "home", function() {
-	document.getElementById("home-button").setAttribute("style", "visibility: hidden;")
-}, function() {
-	document.getElementById("home-button").setAttribute("style", "visibility: visible;")
-})
-pages['contactSupport'] = new Page("contactSupport", "contactSupport")
-
-//finch pages
-pages['finchHome'] = new Page("finch", "finchHome")
-
-pages['finchMotors'] = new Page("finchMotors", "finchMotors1")
-pages['finchMotors2'] = new Page("finchMotors", "finchMotors2")
-pages['finchMotors3'] = new Page("finchMotors", "finchMotors3")
-pages['finchMotors4'] = new Page("finchMotors", "finchMotors4", setupConnectionPage, null, function() {
-	navigateTo("finchMotors5")
-})
-pages['finchMotors5'] = new Page("finchMotors", "finchMotors5", null, null, async function() {
-	await testFinchMotors()
-	navigateTo("finchMotors6")
-})
-pages['finchMotors6'] = new Page("finchMotors", "finchMotors6") 
-pages['finchMotorsSuccess'] = new Page("finchSuccess", "finchMotorsSuccess", setupSuccess, takedownSuccess) 
-
-pages['finchPower'] = new Page("finchPower", "finchPower1")
-pages['finchPower2'] = new Page("finchPower", "finchPower2")
-pages['finchPower3'] = new Page("finchPower", "finchPower3")
-pages['finchPower4'] = new Page("finchPower", "finchPower4")
-pages['finchPowerSuccess'] = new Page("finchSuccess", "finchPowerSuccess", setupSuccess, takedownSuccess)
-
-function setupBluetooth1() {
-	let prefix = this.productName.toLowerCase()
-	document.getElementById("btn_not_on").setAttribute("onclick", "navigateTo('" + prefix + "Power')")
-	document.getElementById("btn_no_display").setAttribute("onclick", "navigateTo('" + prefix + "Bluetooth2')")
-	document.getElementById("btn_ok").setAttribute("onclick", "navigateTo('" + prefix + "Bluetooth3')")
-}
-pages['finchBluetooth'] = new Page("finchBluetooth", "bluetooth1", setupBluetooth1)
-
-function setupBluetooth2() {
-	let prefix = this.productName.toLowerCase()
-	document.getElementById("btn_success").setAttribute("onclick", "navigateTo('" + prefix + "Bluetooth3')")
-	document.getElementById("btn_fail").setAttribute("onclick", "navigateTo('" + prefix + "Bluetooth8')")
-}
-pages['finchBluetooth2'] = new Page("finchBluetooth", "bluetooth2", setupBluetooth2)
-
-function nextActionBluetooth3() {
-	let prefix = this.productName.toLowerCase()
-	navigateTo(prefix + "Bluetooth4")
-}
-pages['finchBluetooth3'] = new Page("finchBluetooth", "bluetooth3", null, null, nextActionBluetooth3)
-pages['finchBluetooth4'] = new Page("finchBluetooth", "bluetooth4", setupConnectionPage)
-
-function setupBluetooth5() {
-	let prefix = this.productName.toLowerCase()
-	document.getElementById("chars").innerHTML = userRobotID.slice(2, 7)
-	document.getElementById("yes").setAttribute("onclick", "navigateTo('" + prefix + "Bluetooth7')")
-}
-pages['finchBluetooth5'] = new Page("finchBluetooth", "bluetooth5", setupBluetooth5)
-
-function setupBluetooth6() {
-	let prefix = this.productName.toLowerCase()
-	if (robots.length == 0) {
-		document.getElementById("details").innerHTML = "You have been disconnected"
-	} else {
-		document.getElementById("details").innerHTML = "You have entered the ID " + userRobotID + " but are now connected to a robot with ID " + robots[0].device.name
-	}
-	document.getElementById("no_problem").setAttribute("onclick", "navigateTo('" + prefix + "BluetoothSuccess')")
-}
-function nextActionBluetooth6() {
-	let prefix = this.productName.toLowerCase()
-	navigateTo(prefix + "Bluetooth5")
-}
-pages['finchBluetooth6'] = new Page("finchBluetooth", "bluetooth6", setupBluetooth6, null, nextActionBluetooth6)
-
-function setupBluetooth7() {
-	let prefix = this.productName.toLowerCase()
-	document.getElementById("robot_forgotten").setAttribute("onclick", "navigateTo('" + prefix + "Bluetooth4')")
-}
-pages['finchBluetooth7'] = new Page("finchBluetooth", "bluetooth7", setupBluetooth7)
-
-function setupBluetooth8() {
-	let prefix = this.productName.toLowerCase()
-	document.getElementById("btn_success").setAttribute("onclick", "navigateTo('" + prefix + "Bluetooth3')")
-}
-pages['finchBluetooth8'] = new Page("finchBluetooth", "bluetooth8", setupBluetooth8)
-
-function setupBluetoothSuccess() {
-	setupSuccess()
-	if (robots.length == 0) {
-		document.getElementById("details").innerHTML = "You are currently disconnected"
-	} else {
-		document.getElementById("details").innerHTML = "You are currently connected to " + robots[0].fancyName
-	}
-}
-function nextActionBluetoothSuccess() {
-	let prefix = this.productName.toLowerCase()
-	navigateTo("" + prefix + "Bluetooth4")
-}
-pages['finchBluetoothSuccess'] = new Page("finchSuccess", "bluetoothSuccess", setupBluetoothSuccess, takedownSuccess, nextActionBluetoothSuccess)
-
-pages['finchCode'] = new Page("finchCode", "comingSoon")
-
-pages['finchLEDs'] = new Page("finchLEDs", "finchLEDs1")
-pages['finchLEDs2'] = new Page("finchLEDs", "finchLEDs2", setupConnectionPage, null, function() {
-	navigateTo("finchLEDs3")
-})
-pages['finchLEDs3'] = new Page("finchLEDs", "finchLEDs3", null, null, async function() {
-	await testFinchLEDs()
-	navigateTo("finchLEDs4")
-})
-pages['finchLEDs4'] = new Page("finchLEDs", "finchLEDs4")
-pages['finchLEDsSuccess'] = new Page("finchSuccess", "finchLEDsSuccess", setupSuccess, takedownSuccess)
-
-pages['finchSensors'] = new Page("finchSensors", "finchSensors1")
-pages['finchSensors2'] = new Page("finchSensors", "finchSensors2")
-pages['finchSensors3'] = new Page("finchSensors", "finchSensors3", setupConnectionPage, null, function() {
-	navigateTo("finchSensors4")
-})
-pages['finchSensors4'] = new Page("finchSensors", "finchSensors4", null, null, function() {
-	navigateTo("finchSensors5")
-})
-pages['finchSensors5'] = new Page("finchSensors", "finchSensors5")
-pages['finchSensorsFail'] = new Page("finchSensors", "finchSensorsFail", function() {
-	console.log(finchSensorResults)
-	console.log(document.getElementById("results"))
-	document.getElementById("results").innerHTML = finchSensorResults
-})
-pages['finchSensorsSuccess'] = new Page("finchSuccess", "finchSensorsSuccess", function() {
-	setupSuccess()
-	document.getElementById("results").innerHTML = finchSensorResults
-}, takedownSuccess)
-
-//hummingbird pages
-pages['hummingbirdHome'] = new Page("hummingbird", "hummingbirdHome")
-
-pages['hummingbirdPower'] = new Page("hummingbirdPower", "comingSoon")
-
-pages['hummingbirdBluetooth'] = new Page("hummingbirdBluetooth", "bluetooth1", setupBluetooth1)
-pages['hummingbirdBluetooth2'] = new Page("hummingbirdBluetooth", "bluetooth2", setupBluetooth2)
-pages['hummingbirdBluetooth3'] = new Page("hummingbirdBluetooth", "bluetooth3", null, null, nextActionBluetooth3)
-pages['hummingbirdBluetooth4'] = new Page("hummingbirdBluetooth", "bluetooth4", setupConnectionPage)
-pages['hummingbirdBluetooth5'] = new Page("hummingbirdBluetooth", "bluetooth5", setupBluetooth5)
-pages['hummingbirdBluetooth6'] = new Page("hummingbirdBluetooth", "bluetooth6", setupBluetooth6, null, nextActionBluetooth6)
-pages['hummingbirdBluetooth7'] = new Page("hummingbirdBluetooth", "bluetooth7", setupBluetooth7)
-pages['hummingbirdBluetooth8'] = new Page("hummingbirdBluetooth", "bluetooth8", setupBluetooth8)
-pages['hummingbirdBluetoothSuccess'] = new Page("hummingbirdSuccess", "bluetoothSuccess", setupBluetoothSuccess, takedownSuccess, nextActionBluetoothSuccess)
-
-pages['hummingbirdCode'] = new Page("hummingbirdCode", "comingSoon")//"hummingbirdCode1")
-pages['hummingbirdCodeLEDs'] = new Page("hummingbirdCode", "hummingbirdCodeLEDs")
-pages['hummingbirdCodeSuccess'] = new Page("hummingbirdSuccess", "hummingbirdCodeSuccess", setupSuccess, takedownSuccess)
-
-
-pages['hummingbirdServos'] = new Page("hummingbirdServos", "comingSoon")
-
-pages['hummingbirdLEDs'] = new Page("hummingbirdLEDs", "hummingbirdLEDs1")
-pages['hummingbirdLEDs2'] = new Page("hummingbirdLEDs", "hummingbirdLEDs2")
-pages['hummingbirdLEDs3'] = new Page("hummingbirdLEDs", "hummingbirdLEDs3", setupConnectionPage, null, function() {
-	navigateTo("hummingbirdLEDs4")
-})
-pages['hummingbirdLEDs4'] = new Page("hummingbirdLEDs", "hummingbirdLEDs4")
-pages['hummingbirdLEDsSuccess'] = new Page("hummingbirdSuccess", "hummingbirdLEDsSuccess", setupSuccess, takedownSuccess)
-
-pages['hummingbirdSensors'] = new Page("hummingbirdSensors", "comingSoon")
 
 
 ///// Navigation /////
@@ -1336,6 +1722,12 @@ function testBBTri(port) {
 ///// Initialize State ///////
 
 const currentUrl = window.location.href
+
+/*console.log("*** referrer : " + document.referrer)
+if (currentPage != pages["home"]) {
+	window.location.replace(currentUrl.split('?')[0])
+}*/
+
 let paramString = currentUrl.split('?')[1];
 let queryString = new URLSearchParams(paramString);
 let startingProduct = null
@@ -1367,7 +1759,9 @@ if (startingProduct == "finch" || startingProduct == "hummingbird") {
 		currentPage = pages[startingProduct + "Code"]
 		break;
 	case "motors":
+	case "motor":
 	case "wheels":
+	case "wheel":
 		if (startingProduct == "finch") {
 			currentPage = pages[startingProduct + "Motors"]
 		} else {
@@ -1379,6 +1773,7 @@ if (startingProduct == "finch" || startingProduct == "hummingbird") {
 		currentPage = pages[startingProduct + "LEDs"]
 		break;
 	case "sensors":
+	case "sensor":
 		currentPage = pages[startingProduct + "Sensors"]
 		break;
 	case "servos":
@@ -1397,3 +1792,9 @@ if (startingProduct == "finch" || startingProduct == "hummingbird") {
 
 const previousPages = []
 currentPage.show()
+
+//TODO:
+// - make 'test running' screen while a test is running
+// - add automatic details to 'contact support'
+// - remove the 'make sure it's plugged in' page when already connected
+// - remove query from header?
