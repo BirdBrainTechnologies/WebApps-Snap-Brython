@@ -1192,33 +1192,51 @@ Robot.prototype.isMoving = function() {
 /**
  * Used in the support app
  */
-Robot.prototype.getSensor = function(sensor) {
-  switch(sensor) {
-  case "Distance": 
-    let distance
-    if (this.hasV2Microbit) {
-      return this.currentSensorData[1] 
-    } else {
-      let msb = this.currentSensorData[0]
-      let lsb = this.currentSensorData[1]
-      return Math.round(((msb << 8) | lsb) * 0.0919)
+Robot.prototype.getSensor = function(sensor, port) {
+  if (this.isA(Robot.ofType.FINCH)) {
+    switch(sensor) {
+    case "Distance": 
+      let distance
+      if (this.hasV2Microbit) {
+        return this.currentSensorData[1] 
+      } else {
+        let msb = this.currentSensorData[0]
+        let lsb = this.currentSensorData[1]
+        return Math.round(((msb << 8) | lsb) * 0.0919)
+      }
+    case "Left Light":
+      return this.currentSensorData[2];
+    case "Right Light":
+      return this.currentSensorData[3];
+    case "Left Line":
+      let lValue = this.currentSensorData[4];
+      lValue = (0x7F & lValue) //first bit is for position control
+      lValue = 100 - ((lValue - 6) * 100/121)
+      return Math.round(Math.max(0, Math.min(lValue, 100)))
+    case "Right Line":
+      let rValue = this.currentSensorData[5];
+      rValue = (0x7F & rValue) //first bit is for position control
+      rValue = 100 - ((rValue - 6) * 100/121)
+      return Math.round(Math.max(0, Math.min(rValue, 100)))
+      break;
+    default:
+      return -1
     }
-  case "Left Light":
-    return this.currentSensorData[2];
-  case "Right Light":
-    return this.currentSensorData[3];
-  case "Left Line":
-    let lValue = this.currentSensorData[4];
-    lValue = (0x7F & lValue) //first bit is for position control
-    lValue = 100 - ((lValue - 6) * 100/121)
-    return Math.round(Math.max(0, Math.min(lValue, 100)))
-  case "Right Line":
-    let rValue = this.currentSensorData[5];
-    rValue = (0x7F & rValue) //first bit is for position control
-    rValue = 100 - ((rValue - 6) * 100/121)
-    return Math.round(Math.max(0, Math.min(rValue, 100)))
-    break;
-  default:
-    return -1
+  } else { //hummingbird
+    let data = this.currentSensorData[port - 1]
+    switch(sensor) {
+    case "distance":
+      return Math.round(data * (117/100)).toString() + " cm"
+    case "dial":
+      let dialVal = Math.round(data * (100/230))
+      if (dialVal > 100) { dialVal = 100 }
+      return dialVal.toString()
+    case "light":
+      return Math.round(data * (100/255)).toString() 
+    case "sound":
+      return Math.round(data * (200/255)).toString() 
+    default:
+      console.error("Unknown sensor " + sensor.value + " selected")
+    }
   }
 }

@@ -410,7 +410,10 @@ pages['finchSensorsSuccess'] = new Page("finchSuccess", "finchSensorsSuccess", f
 //hummingbird pages
 pages['hummingbirdHome'] = new Page("hummingbird", "hummingbirdHome")
 
-pages['hummingbirdPower'] = new Page("hummingbirdPower", "comingSoon")
+pages['hummingbirdPower'] = new Page("hummingbirdPower", "hummingbirdPower1")
+pages['hummingbirdPower2'] = new Page("hummingbirdPower", "hummingbirdPower2")
+pages['hummingbirdPower3'] = new Page("hummingbirdPower", "hummingbirdPower3")
+pages['hummingbirdPowerSuccess'] = new Page("hummingbirdSuccess", "hummingbirdPowerSuccess", setupSuccess, takedownSuccess)
 
 pages['hummingbirdBluetooth'] = new Page("hummingbirdBluetooth", "bluetooth1", setupBluetooth1)
 pages['hummingbirdBluetooth2'] = new Page("hummingbirdBluetooth", "bluetooth2", setupBluetooth2)
@@ -429,12 +432,13 @@ pages['hummingbirdCode'] = new Page("hummingbirdCode", "hummingbirdCode1")
 
 pages['hummingbirdServos'] = new Page("hummingbirdServos", "hummingbirdServos1")
 pages['hummingbirdServos2'] = new Page("hummingbirdServos", "hummingbirdServos2")
-pages['hummingbirdServos3'] = new Page("hummingbirdServos", "hummingbirdServos3")
-pages['hummingbirdServos4'] = new Page("hummingbirdServos", "hummingbirdServos4", setupConnectionPage, null, function() {
-	navigateTo("hummingbirdServos5")
+pages['hummingbirdServos3'] = new Page("hummingbirdServos", "hummingbirdServos3", setupConnectionPage, null, function() {
+	navigateTo("hummingbirdServos4")
 })
-pages['hummingbirdServos5'] = new Page("hummingbirdServos", "hummingbirdServos5")
-pages['hummingbirdServosSuccess'] = new Page("hummingbirdServos", "hummingbirdServosSuccess", setupSuccess, takedownSuccess)
+pages['hummingbirdServos4'] = new Page("hummingbirdServos", "hummingbirdServos4")
+pages['hummingbirdServosPosition'] = new Page("hummingbirdServos", "hummingbirdServosPosition")
+pages['hummingbirdServosRotation'] = new Page("hummingbirdServos", "hummingbirdServosRotation")
+pages['hummingbirdServosSuccess'] = new Page("hummingbirdSuccess", "hummingbirdServosSuccess", setupSuccess, takedownSuccess)
 
 pages['hummingbirdLEDs'] = new Page("hummingbirdLEDs", "hummingbirdLEDs1")
 pages['hummingbirdLEDs2'] = new Page("hummingbirdLEDs", "hummingbirdLEDs2")
@@ -445,7 +449,15 @@ pages['hummingbirdLEDs4'] = new Page("hummingbirdLEDs", "hummingbirdLEDs4", setu
 pages['hummingbirdLEDs5'] = new Page("hummingbirdLEDs", "hummingbirdLEDs5")
 pages['hummingbirdLEDsSuccess'] = new Page("hummingbirdSuccess", "hummingbirdLEDsSuccess", setupSuccess, takedownSuccess)
 
-pages['hummingbirdSensors'] = new Page("hummingbirdSensors", "comingSoon")
+pages['hummingbirdSensors'] = new Page("hummingbirdSensors", "hummingbirdSensors1")
+pages['hummingbirdSensors2'] = new Page("hummingbirdSensors", "hummingbirdSensors2")
+pages['hummingbirdSensors3'] = new Page("hummingbirdSensors", "hummingbirdSensors3")
+pages['hummingbirdSensors4'] = new Page("hummingbirdSensors", "hummingbirdSensors4", setupConnectionPage, null, function() {
+	navigateTo("hummingbirdSensors5")
+})
+pages['hummingbirdSensors5'] = new Page("hummingbirdSensors", "hummingbirdSensors5")
+pages['hummingbirdSensorsSuccess'] = new Page("hummingbirdSensors", "hummingbirdSensorsSuccess", setupSuccess, takedownSuccess)
+
 
 
 
@@ -660,11 +672,13 @@ const hummingbirdWires2 = `
 	<h2>Stripping and twisting</h2>
 </div>
 <div class="row align-self-center">
-	<div class="col-sm-4">
-		
+	<div class="col-sm-6">
+		<video width="250" height="250" controls muted>
+			<source src="support/hummingbird_fixWire.mp4" type="video/mp4">
+		</video>
 	</div>
-	<div class="col-sm-8">
-		<p>Put enough pressure on the strippers to cut through the plastic casing, but not enough to go all the way through the metal wires inside.</p>
+	<div class="col-sm-6 align-self-center">
+		<span>The video to the left shows how you can make an old wire as good as new</span>
 	</div>
 </div>
 `
@@ -1139,7 +1153,7 @@ contents["bluetooth2"] = `
 `
 contents["bluetooth3"] = `
 <div class="row align-self-center">
-	<p>To connect your robot over bluetooth using a web browser, you will need your seven character code. This is the code that follows '#' symbol. The first two characters of this code denote the type of robot you are using (FN for Finch, BB for Hummingbird, and MB for micro:bit). The five characters after that are unique to the micro:bit.</p>
+	<span>To connect your robot over bluetooth using a web browser, you will need your seven character code. <strong>This is the code that follows the '#' symbol.</strong> The first two characters of this code denote the type of robot you are using (FN for Finch, BB for Hummingbird, and MB for micro:bit). The five characters after that are unique to the micro:bit.</span>
 </div>
 <div class="row align-self-center">
 	<div class="col-sm-3">
@@ -1211,6 +1225,11 @@ contents["bluetooth8"] = `
 </div>
 <div class="row align-self-center">
 	<div class="col-sm-12">
+		<iframe width="560" height="315" src="https://www.youtube.com/embed/XUs-sv3DGFg?si=DIS4Ps78alQtaMce" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+	</div>
+</div>
+<div class="row align-self-center">
+	<div class="col-sm-12">
 	` + basicButton("I have updated the firmware", null, false, "btn_success")
 		+ basicButton("My micro:bit would still not accept the update", "navigateTo('contactSupport')", true) + `
 	</div>
@@ -1232,6 +1251,191 @@ contents["bluetoothSuccess"] = `
 		` + basicButton("Test Connecting to a different robot", "disconnectFromAllRobots()")
 			+ basicButton("Diagnose another problem", "navigateTo('finchHome')") + `
 		</div>
+	</div>
+</div>
+<div class="row align-self-center">
+</div>
+`
+contents["hummingbirdPower1"] = `
+<div class="row align-self-center">
+	<h2>First, let's review the parts of your controller</h2>
+</div>
+<div class="row align-self-center">
+	<div class="col-sm-6">
+		<div class="row justify-content-center">
+			<img class="img-fluid" src="support/hummingbird-bit-controller.png"/>
+		</div>
+	</div>
+	<div class="col-sm-6">
+		<span>You should be using the 4 AA battery pack provided with your kit, plugged in to the power connector located next to servo ports</span>
+		<p></p>
+		<p>Using the USB connector or the battery port on the micro:bit will also provide some power, but it will not be enough for all components</p>
+	</div>
+</div>
+<div class="row align-self-center">
+	<div class="col-12">
+	` + basicButton("I am using the Power Connector", "navigateTo('hummingbirdPower2')") + `
+	</div>
+</div>
+<div class="row align-self-center"></div>
+`
+contents["hummingbirdPower2"] = `
+<div class="row align-self-center">
+	<h2>Next, make sure your batteries have enough charge</h2>
+</div>
+<div class="row align-self-center">
+	<span>Try swapping your batteries for fresh ones. If you are using rechargeable batteries, read this <a href="https://support.birdbraintechnologies.com/hc/en-us/articles/15374980232859-Why-aren-t-my-rechargeable-batteries-working" target="_blank">support article</a>.</span>
+</div>
+<div class="row align-self-center">
+	<div class="col-12">
+	` + basicButton("My batteries are charged", "navigateTo('hummingbirdPower3')") + `
+	</div>
+</div>
+<div class="row align-self-center"></div>
+`
+contents["hummingbirdPower3"] = `
+<div class="row align-self-center">
+	<h2>Inspect your battery pack</h2>
+</div>
+<div class="row align-self-center">
+	<span>Make sure the switch on the battery pack is switched to the 'on' position. Check the battery pack for loose wires and other defects.</span>
+</div>
+<div class="row align-self-center">
+	<div class="col-12">
+	` + basicButton("My Hummingbird is now powered on", "navigateTo('hummingbirdPowerSuccess')") 
+		+ basicButton("I still have a problem", "navigateTo('contactSupport')", true) + `
+	</div>
+</div>
+<div class="row align-self-center"></div>
+`
+contents["hummingbirdPowerSuccess"] = `
+<div class="row align-self-center">
+	<h2>Thanks for using the support app!</h2>
+</div>
+<div class="row align-self-center">
+	<div class="col-sm-12">
+	` + basicButton("Diagnose another problem", "navigateTo('hummingbirdHome')") + `
+	</div>
+</div>
+<div class="row align-self-center">
+</div>
+`
+contents["hummingbirdServos1"] = `
+<div class="row align-self-center">
+	<h2>First, make sure your servos are plugged in correctly and securely</h2>
+</div>
+<div class="row align-self-center">
+	<div class="col-sm-4">
+		<div class="row justify-content-center">
+			<img src="support/hummingbird_servo.png" style="height: 212px; width: 157px;"/>
+		</div>
+	</div>
+	<div class="col-sm-8">
+		<span>Make sure the color coded wires are connected to the terminals as shown. The black wire should be attached to the negative terminal toward the outside edge of the board, the red to positive, and the white to 'S' (for signal). The plug should be pushed down as far as it will go.</span>
+		<p>For more advice, check out this <a href="https://support.birdbraintechnologies.com/hc/en-us/articles/360042769673-Why-is-my-servo-motor-not-responding-or-not-responding-as-expected-BirdBlox" target="_blank">support article</a>.</p>
+	</div>
+</div>
+<div class="row align-self-center">
+	<div class="col-12">
+	` + basicButton("Looks Good", "navigateTo('hummingbirdServos2')")
+	  + basicButton("Servo does not plug in", "navigateTo('contactSupport')", true) + `
+	</div>
+</div>
+<div class="row align-self-center"></div>
+`
+contents["hummingbirdServos2"] = `
+<div class="row align-self-center">
+	<h2>Next, make sure the hummingbird is getting enough power</h2>
+</div>
+<div class="row align-self-center">
+	<div class="col-sm-4">
+		<div class="row justify-content-center">
+			<img src="support/hummingbird_servo_power.png" style="height: 255px; width: 224px;"/>
+		</div>
+	</div>
+	<div class="col-sm-8">
+		<span>The hummingbird should be plugged into the included 4 AA battery pack or an approved wall plug using the power connector next to servo port 4.</span>
+		<p>Servos require more power than other components. If the batteries are low, or if the hummingbird is plugged in through either of the ports on the micro:bit, the lights and sensors may work while the servos do not.</p>
+	</div>
+</div>
+<div class="row align-self-center">
+	<div class="col-12">
+	` + basicButton("Looks Good", "navigateTo('hummingbirdServos3')") + `
+	</div>
+</div>
+<div class="row align-self-center"></div>
+`
+contents["hummingbirdServos3"] = connectRobotOverBle
+
+contents["hummingbirdServos4"] = `
+<div class="row align-self-center">
+	<h2>Now, decide which type of servo you will test</h2>
+	<span>Servos in the Hummingbird Kit come with labels on the side. If these labels are lost, you can use the part number shown on the top. FS5103R is a rotation servo and FS5103B is a position servo. The FS90 micro servo included with the Hummingbird Base Kit is a position servo.</span>
+</div>
+<div class="row align-self-center">
+	<div class="col-12">
+	` + basicButton("Test Position Servos", "navigateTo('hummingbirdServosPosition')")
+		+ basicButton("Test Rotation Servos", "navigateTo('hummingbirdServosRotation')") + `
+	</div>
+</div>
+<div class="row align-self-center"></div>
+`
+contents["hummingbirdServosPosition"] = `
+<div class="row align-self-center">
+	<h2>Position Servo Test</h2>
+	<span>Use the buttons below to test a position servo at the indicated port.</span>
+	<span>Your servo should move to the 0° position and then to 180°.</span>
+	<span><strong>If a servo fails, please repeat the test and record a short video to send to support</strong><span>
+</div>
+<div class="row align-self-center">
+	<div class="col-12">
+	` + basicButton("SERVOS 1", "testBBPosition(1)")
+		+ basicButton("SERVOS 2", "testBBPosition(2)")
+		+ basicButton("SERVOS 3", "testBBPosition(3)")
+		+ basicButton("SERVOS 4", "testBBPosition(4)") + `
+	</div>
+</div>
+<div class="row align-self-center">
+	<div class="col-12">
+	` + basicButton("My servos are working", "navigateTo('hummingbirdServosSuccess')")
+		+ basicButton("Test Rotation Servos", "navigateTo('hummingbirdServosRotation')")
+		+ basicButton("I have a video", "navigateTo('contactSupport')", true) + `
+	</div>
+</div>
+<div class="row align-self-center"></div>
+`
+contents["hummingbirdServosRotation"] = `
+<div class="row align-self-center">
+	<h2>Rotation Servo Test</h2>
+	<span>Use the buttons below to test a rotation servo at the indicated port.</span>
+	<span>Your servo should turn clockwise and then counterclockwise.</span>
+	<span><strong>If a servo fails, please repeat the test and record a short video to send to support</strong><span>
+</div>
+<div class="row align-self-center">
+	<div class="col-12">
+	` + basicButton("SERVOS 1", "testBBRotation(1)")
+		+ basicButton("SERVOS 2", "testBBRotation(2)")
+		+ basicButton("SERVOS 3", "testBBRotation(3)")
+		+ basicButton("SERVOS 4", "testBBRotation(4)") + `
+	</div>
+</div>
+<div class="row align-self-center">
+	<div class="col-12">
+	` + basicButton("My servos are working", "navigateTo('hummingbirdServosSuccess')")
+		+ basicButton("Test Position Servos", "navigateTo('hummingbirdServosPosition')")
+		+ basicButton("I have a video", "navigateTo('contactSupport')", true) + `
+	</div>
+</div>
+<div class="row align-self-center"></div>
+`
+contents["hummingbirdServosSuccess"] = `
+<div class="row align-self-center">
+	<h2>Thanks for using the support app!</h2>
+</div>
+<div class="row align-self-center">
+	<div class="col-sm-12">
+	` + basicButton("Help me with my code", "navigateTo('hummingbirdCode')")
+	  + basicButton("Diagnose another problem", "navigateTo('hummingbirdHome')") + `
 	</div>
 </div>
 <div class="row align-self-center">
@@ -1333,8 +1537,9 @@ contents["hummingbirdSensors1"] = `
 <div class="row align-self-center">
 	<div class="col-sm-4">
 		<div class="row justify-content-center">
-			<img src="support/hummingbird_triLED.png" style="height: 187px; width: 264px;"/>
+			<img src="support/hummingbird_sensor.png" style="height: 187px; width: 264px;"/>
 		</div>
+	</div>
 	<div class="col-sm-8">
 		<span>Make sure the color coded wires are connected to the terminals as shown. Regardless of which sensor you are using, the black wire should be attached to the negative terminal, the red to positive, and the yellow to 'S' (for signal). Once plugged in, a gentle tug on the wires should not dislodge them.</span>
 		<p>For more advice, check out this <a href="https://support.birdbraintechnologies.com/hc/en-us/articles/360042769833-Why-is-my-sensor-not-responding-or-not-responding-as-expected-in-BirdBlox" target="_blank">support article</a>.</p>
@@ -1370,21 +1575,36 @@ contents["hummingbirdSensors4"] = connectRobotOverBle
 
 contents["hummingbirdSensors5"] = `
 <div class="row align-self-center">
-	<h2>Use the buttons below to get data the Sensor in each port</h2>
+	<h2>Follow these steps to test your sensor</h2>
+	<span>Take several readings in different conditions to see the range of values</span>
 </div>
 <div class="row align-self-center">
-	<div class="col-12">
+	<div class="col-sm-4 text-start">
+		<p>1. Select the sensor you will test</p>
+		<input type="radio" id="distance" name="sensor" value="distance">
+		<label for="distance">Distance</label><br>
+		<input type="radio" id="dial" name="sensor" value="dial">
+		<label for="dial">Dial</label><br>
+		<input type="radio" id="light" name="sensor" value="light">
+		<label for="light">Light</label><br>
+		<input type="radio" id="sound" name="sensor" value="sound">
+		<label for="sound">Sound</label><br>
+	</div>
+	<div class="col-sm-4">
+		<p>2. Click the button to take a reading on the port your sensor is attached to</p>
 	` + basicButton("SENSORS 1", "testBBSENSOR(1)") 
-		+ basicButton("SENSORS 2", "testBBLED(2)")
-		+ basicButton("SENSORS 3", "testBBLED(3)")
-		+ basicButton("TRI-COLOR 1", "testBBTri(1)")
-		+ basicButton("TRI-COLOR 2", "testBBTri(2)") + `
+		+ basicButton("SENSORS 2", "testBBSENSOR(2)")
+		+ basicButton("SENSORS 3", "testBBSENSOR(3)") + `
 	</div>	
+	<div class="col-sm-4">
+		<p>3. Results are displayed below</p>
+		<code id="results">No results yet...</code>
+	</div>
 </div>
 <div class="row align-self-center">
 	<div class="col-12">
-	` + basicButton("My LEDs are on", "navigateTo('hummingbirdLEDsSuccess')")
-	  + basicButton("My LEDs are not working", "navigateTo('contactSupport')", true) + `
+	` + basicButton("My sensors are responsive", "navigateTo('hummingbirdSensorsSuccess')")
+	  + basicButton("My sensors are not working", "navigateTo('contactSupport')", true) + `
 	</div>	
 </div>
 <div class="row align-self-center">
@@ -1574,7 +1794,7 @@ function checkRobotId() {
 	let text = ""
 	let success = true
 	if (userRobotID.length != 7) {
-		text = "You have entered " + userRobotID + ". This ID is " + userRobotID.length + " characters long. Your id should be 7 characters long."
+		text = "You have entered " + userRobotID + ". This ID is " + userRobotID.length + " characters long. Your id should be 7 characters long and begin after the # symbol."
 		success = false
 	} else {
 
@@ -1718,6 +1938,42 @@ function testBBTri(port) {
 	robot.setTriLED(port, 255, 255, 255)
 }
 
+function testBBSENSOR(port) {
+	let robot = robots[0]
+	let sensor = document.querySelector('input[name="sensor"]:checked')
+	let results = document.getElementById("results")
+	if (!sensor) {
+		results.innerHTML = "Please select the type of sensor you are testing"
+	} else {
+		let sensorName = sensor.value
+		let sensorValue = robot.getSensor(sensorName, port)
+		results.innerHTML = "Your " + sensorName + " sensor on port " + port + " has reported the following value:</br>" + sensorValue
+	}
+}
+
+async function testBBPosition(port) {
+
+	await timeout(500)
+
+	let robot = robots[0]
+	robot.setServo(port, 0) //0 degree setting
+	await timeout(1000)
+	robot.setServo(port, 254) //180 degree setting
+	await timeout(1000)
+	robot.setServo(port, 255) //servo off
+}
+
+async function testBBRotation(port) {
+
+	await timeout(500)
+
+	let robot = robots[0]
+	robot.setServo(port, 99)
+	await timeout(1000)
+	robot.setServo(port, 145)
+	await timeout(1000)
+	robot.setServo(port, 255) //servo off
+}
 
 ///// Initialize State ///////
 
