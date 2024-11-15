@@ -281,7 +281,7 @@ pages['home'] = new Page("welcome", "home", function() {
 }, function() {
 	document.getElementById("home-button").setAttribute("style", "visibility: visible;")
 })
-pages['contactSupport'] = new Page("contactSupport", "contactSupport")
+//pages['contactSupport'] = new Page("contactSupport", "contactSupport")
 
 //finch pages
 pages['finchHome'] = new Page("finch", "finchHome")
@@ -293,10 +293,12 @@ pages['finchMotors4'] = new Page("finchMotors", "finchMotors4", setupConnectionP
 	navigateTo("finchMotors5")
 })
 pages['finchMotors5'] = new Page("finchMotors", "finchMotors5", null, null, async function() {
-	await testFinchMotors()
 	navigateTo("finchMotors6")
+	await testFinchMotors()
+	navigateTo("finchMotors7")
 })
 pages['finchMotors6'] = new Page("finchMotors", "finchMotors6") 
+pages['finchMotors7'] = new Page("finchMotors", "finchMotors7") 
 pages['finchMotorsSuccess'] = new Page("finchSuccess", "finchMotorsSuccess", setupSuccess, takedownSuccess) 
 
 pages['finchPower'] = new Page("finchPower", "finchPower1")
@@ -382,10 +384,12 @@ pages['finchLEDs2'] = new Page("finchLEDs", "finchLEDs2", setupConnectionPage, n
 	navigateTo("finchLEDs3")
 })
 pages['finchLEDs3'] = new Page("finchLEDs", "finchLEDs3", null, null, async function() {
-	await testFinchLEDs()
 	navigateTo("finchLEDs4")
+	await testFinchLEDs()
+	navigateTo("finchLEDs5")
 })
 pages['finchLEDs4'] = new Page("finchLEDs", "finchLEDs4")
+pages['finchLEDs5'] = new Page("finchLEDs", "finchLEDs5")
 pages['finchLEDsSuccess'] = new Page("finchSuccess", "finchLEDsSuccess", setupSuccess, takedownSuccess)
 
 pages['finchSensors'] = new Page("finchSensors", "finchSensors1")
@@ -456,7 +460,7 @@ pages['hummingbirdSensors4'] = new Page("hummingbirdSensors", "hummingbirdSensor
 	navigateTo("hummingbirdSensors5")
 })
 pages['hummingbirdSensors5'] = new Page("hummingbirdSensors", "hummingbirdSensors5")
-pages['hummingbirdSensorsSuccess'] = new Page("hummingbirdSensors", "hummingbirdSensorsSuccess", setupSuccess, takedownSuccess)
+pages['hummingbirdSensorsSuccess'] = new Page("hummingbirdSuccess", "hummingbirdSensorsSuccess", setupSuccess, takedownSuccess)
 
 
 
@@ -596,6 +600,34 @@ function codeTutorialPage(product) {
 	`
 	return page
 }
+function createContactSupportPage(pageName, detailText) {
+	let content = `
+	<div class="row align-self-center">
+		<h2>Thank you for using the support app!</h2> 
+	</div>
+	<div class="row align-self-center justify-content-center">
+		<div class="col-12 col-lg-10 col-xl-8 col-xxl-6">
+			<div class="row">
+				<span style="text-align: left">Please contact our support team for further assistance.<br>Be sure to include the following information in your message:
+					<ul>
+						<li id="details">` + detailText + `</li>
+						<li>A detailed description of what you have tried to fix the problem</li>
+						<li>Any images or videos of the problem you have</li>
+					</ul>
+				</span>
+			</div>
+		</div>
+	</div>
+	<div class="row align-self-center">
+		<div class="col-sm-12">
+		`	+ externalLinkButton("Contact Support", "https://www.birdbraintechnologies.com/about-us/contact-us/", true) + `
+		</div>
+	</div>
+	<div class="row"></div>
+	`
+	contents[pageName] = content
+	pages[pageName] = new Page("contactSupport", pageName)
+}
 
 const subHeader = `<div class="row align-self-center"><h2>What seems to be the trouble?</h2></div>`
 
@@ -682,6 +714,13 @@ const hummingbirdWires2 = `
 	</div>
 </div>
 `
+const testingInProgress = `
+<div class="row align-self-center">
+<div class="row align-self-center">
+	<span>Testing in progress...</span>
+</div>
+<div class="row align-self-center">
+`
 
 ///// Contents /////
 
@@ -708,7 +747,7 @@ contents["home"] =  `
 contents["comingSoon"] = `
 <div class="row align-self-center"><h2>Support for this topic is coming soon</h2></div>
 `
-contents["contactSupport"] = `
+/*contents["contactSupport"] = `
 <div class="row align-self-center">
 	<h2>Thank you for using the support app!</h2> 
 </div>
@@ -717,7 +756,7 @@ contents["contactSupport"] = `
 		<div class="row">
 			<span style="text-align: left">Please contact our support team for further assistance.<br>Be sure to include the following information in your message:
 				<ul>
-					<li id="details"><li>
+					<li id="details"></li>
 					<li>A detailed description of what you have tried to fix the problem</li>
 					<li>Any images or videos of the problem you have</li>
 				</ul>
@@ -731,7 +770,7 @@ contents["contactSupport"] = `
 	</div>
 </div>
 <div class="row"></div>
-`
+`*/
 contents["finchHome"] = subHeader + `
 <div class="row align-self-center">
 	<div class="col-sm-4">
@@ -858,19 +897,23 @@ contents["finchMotors5"] = `
 </div>
 ` + cameraInstruction
 
-contents["finchMotors6"] = `
+contents["finchMotors6"] = testingInProgress
+
+contents["finchMotors7"] = `
 <div class="row align-self-center">
 	<span>Did the Finch move forward, move backward, turn right, and turn left?</span>
 </div>
 <div class="row align-self-center">
 	<div class="col-sm-12">
 	` + basicButton("Yes", "navigateTo('finchMotorsSuccess')")
-		+ basicButton("No", "navigateTo('contactSupport')", true) + `
+		+ basicButton("No", "navigateTo('contactSupportFinchMotors')", true) + `
 	</div>
 </div>
 <div class="row align-self-center">
 </div>
 `
+createContactSupportPage("contactSupportFinchMotors", "A finch has failed the support app motors test")
+
 contents["finchMotorsSuccess"] = `
 <div class="row align-self-center">
 	<h2>Thanks for using the support app!<br>Your Finch's motors appear to be functioning normally!</h2>
@@ -905,19 +948,23 @@ contents["finchLEDs3"] = `
 </div>
 ` + cameraInstruction
 
-contents["finchLEDs4"] = `
+contents["finchLEDs4"] = testingInProgress
+
+contents["finchLEDs5"] = `
 <div class="row align-self-center">
 	<span>Did the Finch's 5 LEDs turn red, then green, then blue, and finally white?</span>
 </div>
 <div class="row align-self-center">
 	<div class="col-sm-12">
 	` + basicButton("Yes", "navigateTo('finchLEDsSuccess')")
-		+ basicButton("No", "navigateTo('contactSupport')", true) + `
+		+ basicButton("No", "navigateTo('contactSupportFinchLEDs')", true) + `
 	</div>
 </div>
 <div class="row align-self-center">
 </div>
 `
+createContactSupportPage("contactSupportFinchLEDs", "A finch has failed the support app LED test")
+
 contents["finchLEDsSuccess"] = `
 <div class="row align-self-center">
 	<h2>Thanks for using the support app!<br>Your Finch's LEDs appear to be functioning normally!</h2>
@@ -950,8 +997,7 @@ contents["finchSensors2"] = `
 </div>
 <div class="row align-self-center">
 	<div class="col-sm-12">
-		` + basicButton("I am in a well lit room and have a box", "navigateTo('finchSensors3')")
-			+ basicButton("I am unable to complete this test", "navigateTo('contactSupport')", true) + `
+		` + basicButton("I am in a well lit room and have a box", "navigateTo('finchSensors3')") + `
 	</div>
 </div>
 <div class="row">
@@ -993,12 +1039,14 @@ contents["finchSensorsFail"] = `
 <div class="row align-self-center">
 	<div class="col-sm-12">
 		` + basicButton("Try again", "navigateTo('finchSensors4')")
-			+ basicButton("I have a screenshot", "navigateTo('contactSupport')", true) + `
+			+ basicButton("I have a screenshot", "navigateTo('contactSupportFinchSensors')", true) + `
 	</div>
 </div>
 <div class="row">
 </div>
 `
+createContactSupportPage("contactSupportFinchSensors", "A finch has failed the support app sensors test")
+
 contents["finchSensorsSuccess"] = `
 <div class="row align-self-center">
 	<h2>Thanks for using the support app!<br>Your Finch's Sensors appear to be functioning normally!</h2>
@@ -1101,13 +1149,17 @@ contents["finchPower4"] = `
 <div class="row align-self-center">
 	<div class="col-12">
 	` + basicButton("This solved my problem", "navigateTo('finchPowerSuccess')")
-		+ basicButton("My Finch would not power on with the new battery", "navigateTo('contactSupport')", true) 
-		+ basicButton("I need a replacement battery", "navigateTo('contactSupport')", true) 
-		+ basicButton("I don't have a second Finch", "navigateTo('contactSupport')", true) + `
+		+ basicButton("My Finch would not power on with the new battery", "navigateTo('contactSupportFinchPowerFail')", true) 
+		+ basicButton("I need a replacement battery", "navigateTo('contactSupportFinchPowerNewBatt')", true) 
+		+ basicButton("I don't have a second Finch", "navigateTo('contactSupportFinchPowerNoFinch')", true) + `
 	</div>
 </div>
 <div class="row align-self-center"></div>
 `
+createContactSupportPage("contactSupportFinchPowerFail", "A finch will not power on, even with a new battery")
+createContactSupportPage("contactSupportFinchPowerNewBatt", "A finch needs a replacement battery")
+createContactSupportPage("contactSupportFinchPowerNoFinch", "A finch will not power on and no second finch is available for testing")
+
 contents["finchPowerSuccess"] = `
 <div class="row align-self-center">
 	<h2>Thanks for using the support app! Your Finch appears to be functioning normally!</h2>
@@ -1184,12 +1236,14 @@ contents["bluetooth5"] = `
 <div class="row align-self-center">
 	<div class="col-sm-12">
 	` + basicButton("Yes", null, false, "yes")
-		+ basicButton("No", "navigateTo('contactSupport')", true) + `
+		+ basicButton("No", "navigateTo('contactSupportBleNoRobot')", true) + `
 	</div>
 </div>
 <div class="row align-self-center">
 </div>
 ` 
+createContactSupportPage("contactSupportBleNoRobot", "A robot is not appearing in the bluetooth popup despite being powered on")
+
 contents["bluetooth6"] = `
 <div class="row align-self-center">
 	<span id="details"></span>
@@ -1213,12 +1267,14 @@ contents["bluetooth7"] = `
 <div class="row align-self-center">
 	<div class="col-sm-12">
 	` + basicButton("Chrome has now forgotten my robot", null, false, "robot_forgotten")
-		+ basicButton("I have a different problem", "navigateTo('contactSupport')", true) + `
+		+ basicButton("I have a different problem", "navigateTo('contactSupportBleWrongRobot')", true) + `
 	</div>
 </div>
 <div class="row align-self-center">
 </div>
 ` 
+createContactSupportPage("contactSupportBleWrongRobot", "A robot is appearing in the bluetooth popup with the wrong code and this was not correctable with any of the advice given")
+
 contents["bluetooth8"] = `
 <div class="row align-self-center">
 	<span>If you are having trouble updating the firmware on your micro:bit, please try the <a href="https://microbit.org/tools/webusb-hex-flashing/" target="_blank">webUSB flashing tool</a> on the micro:bit website</span>
@@ -1231,12 +1287,14 @@ contents["bluetooth8"] = `
 <div class="row align-self-center">
 	<div class="col-sm-12">
 	` + basicButton("I have updated the firmware", null, false, "btn_success")
-		+ basicButton("My micro:bit would still not accept the update", "navigateTo('contactSupport')", true) + `
+		+ basicButton("My micro:bit would still not accept the update", "navigateTo('contactSupportBleNoUpdate')", true) + `
 	</div>
 </div>
 <div class="row align-self-center">
 </div>
 `
+createContactSupportPage("contactSupportBleNoUpdate", "A micro:bit would not accept the firmware update, even with the webUSB flashing tool")
+
 contents["bluetoothSuccess"] = `
 <div class="row align-self-center">
 	<h2>Thanks for using the support app!</h2>
@@ -1303,11 +1361,13 @@ contents["hummingbirdPower3"] = `
 <div class="row align-self-center">
 	<div class="col-12">
 	` + basicButton("My Hummingbird is now powered on", "navigateTo('hummingbirdPowerSuccess')") 
-		+ basicButton("I still have a problem", "navigateTo('contactSupport')", true) + `
+		+ basicButton("I still have a problem", "navigateTo('contactSupportBBPower')", true) + `
 	</div>
 </div>
 <div class="row align-self-center"></div>
 `
+createContactSupportPage("contactSupportBBPower", "A hummingbird controller will not power on.")
+
 contents["hummingbirdPowerSuccess"] = `
 <div class="row align-self-center">
 	<h2>Thanks for using the support app!</h2>
@@ -1338,11 +1398,13 @@ contents["hummingbirdServos1"] = `
 <div class="row align-self-center">
 	<div class="col-12">
 	` + basicButton("Looks Good", "navigateTo('hummingbirdServos2')")
-	  + basicButton("Servo does not plug in", "navigateTo('contactSupport')", true) + `
+	  + basicButton("Servo does not plug in", "navigateTo('contactSupportServoPlug')", true) + `
 	</div>
 </div>
 <div class="row align-self-center"></div>
 `
+createContactSupportPage("contactSupportServoPlug", "A Hummingbird Kit servo cannot be plugged into the servo port")
+
 contents["hummingbirdServos2"] = `
 <div class="row align-self-center">
 	<h2>Next, make sure the hummingbird is getting enough power</h2>
@@ -1399,11 +1461,13 @@ contents["hummingbirdServosPosition"] = `
 	<div class="col-12">
 	` + basicButton("My servos are working", "navigateTo('hummingbirdServosSuccess')")
 		+ basicButton("Test Rotation Servos", "navigateTo('hummingbirdServosRotation')")
-		+ basicButton("I have a video", "navigateTo('contactSupport')", true) + `
+		+ basicButton("I have a video", "navigateTo('contactSupportBBPositionServo')", true) + `
 	</div>
 </div>
 <div class="row align-self-center"></div>
 `
+createContactSupportPage("contactSupportBBPositionServo", "A position servo is failing the support app test")
+
 contents["hummingbirdServosRotation"] = `
 <div class="row align-self-center">
 	<h2>Rotation Servo Test</h2>
@@ -1423,11 +1487,13 @@ contents["hummingbirdServosRotation"] = `
 	<div class="col-12">
 	` + basicButton("My servos are working", "navigateTo('hummingbirdServosSuccess')")
 		+ basicButton("Test Position Servos", "navigateTo('hummingbirdServosPosition')")
-		+ basicButton("I have a video", "navigateTo('contactSupport')", true) + `
+		+ basicButton("I have a video", "navigateTo('contactSupportBBRotationServo')", true) + `
 	</div>
 </div>
 <div class="row align-self-center"></div>
 `
+createContactSupportPage("contactSupportBBRotationServo", "A rotation servo is failing the support app test")
+
 contents["hummingbirdServosSuccess"] = `
 <div class="row align-self-center">
 	<h2>Thanks for using the support app!</h2>
@@ -1488,11 +1554,13 @@ contents["hummingbirdLEDs3"] = hummingbirdWires2 + `
 <div class="row align-self-center">
 	<div class="col-12">
 	` + basicButton("LED is now plugged in", "navigateTo('hummingbirdLEDs4')")
-	  + basicButton("I have a different problem", "navigateTo('contactSupport')", true) + `
+	  + basicButton("I have a different problem", "navigateTo('contactSupportBBLEDPlug')", true) + `
 	</div>
 </div>
 <div class="row align-self-center"></div>
 `
+createContactSupportPage("contactSupportBBLEDPlug", "A Hummingbird Kit LED cannot be plugged and support app advice was not sufficient")
+
 contents["hummingbirdLEDs4"] = connectRobotOverBle
 
 contents["hummingbirdLEDs5"] = `
@@ -1511,12 +1579,14 @@ contents["hummingbirdLEDs5"] = `
 <div class="row align-self-center">
 	<div class="col-12">
 	` + basicButton("My LEDs are on", "navigateTo('hummingbirdLEDsSuccess')")
-	  + basicButton("My LEDs are not working", "navigateTo('contactSupport')", true) + `
+	  + basicButton("My LEDs are not working", "navigateTo('contactSupportBBLEDFail')", true) + `
 	</div>	
 </div>
 <div class="row align-self-center">
 </div>
 `
+createContactSupportPage("contactSupportBBLEDFail", "A Hummingbird Kit LED has failed the support app test")
+
 contents["hummingbirdLEDsSuccess"] = `
 <div class="row align-self-center">
 	<h2>Thanks for using the support app!</h2>
@@ -1566,11 +1636,13 @@ contents["hummingbirdSensors3"] = hummingbirdWires2 + `
 <div class="row align-self-center">
 	<div class="col-12">
 	` + basicButton("Sensor is now plugged in", "navigateTo('hummingbirdSensors4')")
-	  + basicButton("I have a different problem", "navigateTo('contactSupport')", true) + `
+	  + basicButton("I have a different problem", "navigateTo('contactSupportBBSensorPlug')", true) + `
 	</div>
 </div>
 <div class="row align-self-center"></div>
 `
+createContactSupportPage("contactSupportBBSensorPlug", "A Hummingbird Kit sensor cannot be plugged and support app advice was not sufficient")
+
 contents["hummingbirdSensors4"] = connectRobotOverBle
 
 contents["hummingbirdSensors5"] = `
@@ -1604,13 +1676,15 @@ contents["hummingbirdSensors5"] = `
 <div class="row align-self-center">
 	<div class="col-12">
 	` + basicButton("My sensors are responsive", "navigateTo('hummingbirdSensorsSuccess')")
-	  + basicButton("My sensors are not working", "navigateTo('contactSupport')", true) + `
+	  + basicButton("My sensors are not working", "navigateTo('contactSupportBBSensorFail')", true) + `
 	</div>	
 </div>
 <div class="row align-self-center">
 </div>
 `
-contents["hummingbirdLEDsSuccess"] = `
+createContactSupportPage("contactSupportBBSensorFail", "A Hummingbird Kit sensor has failed the support app test")
+
+contents["hummingbirdSensorsSuccess"] = `
 <div class="row align-self-center">
 	<h2>Thanks for using the support app!</h2>
 </div>
@@ -1624,34 +1698,6 @@ contents["hummingbirdLEDsSuccess"] = `
 </div>
 `
 contents["hummingbirdCode1"] = codeTutorialPage('hummingbird')
-/*contents["hummingbirdCodeLEDs"] = `
-<div class="row align-self-center">
-	<h2>Watch this video for help with your LED code</h2>
-</div>
-<div class="row align-self-center">
-	<div class="col-12">
-		<iframe src="//fast.wistia.com/embed/iframe/iwvcot2aj7" width="560" height="315" frameborder="0" allowfullscreen=""></iframe>
-	</div>
-</div>
-<div class="row align-self-center">
-	<div class="col-sm-12">
-	` + basicButton("Problem Solved!", "navigateTo('hummingbirdCodeSuccess')")
-		+ basicButton("I still need help", "navigateTo('contactSupport')", true) + `
-	</div>
-</div>
-<div class="row align-self-center">
-</div>
-`
-contents["hummingbirdCodeSuccess"] = `
-<div class="row align-self-center">
-	<h2>Thanks for using the support app!</h2>
-</div>
-<div class="row align-self-center">
-	<div class="col-sm-12">
-	` + basicButton("Diagnose another problem", "navigateTo('hummingbirdHome')") + `
-	</div>
-</div>
-`*/
 
 
 
@@ -1695,19 +1741,21 @@ function setupConnectionPage() {
 	if (robots.length == 0) {
 		let bleOn = webBleIsAvailable()
 		document.getElementById("currentConnection").innerHTML = bleOn ? establishConnection : switchBrowsers
+
+		if (bleOn) {
+			let helpBn = document.getElementById("help-button")
+			let sectionName = (currentPage.productName == "Finch") ? "finchBluetooth" : "hummingbirdBluetooth"
+			let onclickAction =  "navigateTo('" + sectionName + "')" 
+			if (currentPage.headerName.endsWith("Bluetooth")) {
+				helpBn.innerHTML = "My robot was not listed in the popup"
+				onclickAction = "navigateTo('" + sectionName + "5')" 
+				document.getElementById("intro").innerHTML = "Please try again to connect<br>(remember to look for " + userRobotID + ")"
+			} 
+			helpBn.setAttribute("onclick", onclickAction) 
+		}
 	} else {
 		updateConnectedDevices()
 	}
-
-	let helpBn = document.getElementById("help-button")
-	let sectionName = (currentPage.productName == "Finch") ? "finchBluetooth" : "hummingbirdBluetooth"
-	let onclickAction =  "navigateTo('" + sectionName + "')" 
-	if (currentPage.headerName.endsWith("Bluetooth")) {
-		helpBn.innerHTML = "My robot was not listed in the popup"
-		onclickAction = "navigateTo('" + sectionName + "5')" 
-		document.getElementById("intro").innerHTML = "Please try again to connect<br>(remember to look for " + userRobotID + ")"
-	} 
-	helpBn.setAttribute("onclick", onclickAction) 
 }
 
 /* replaces function in gui.js */
@@ -1755,13 +1803,13 @@ function loadIDE() {}
 
 function webBleIsAvailable() {
 	if (!("bluetooth" in navigator)) {
-		console.log("*** not ble in nav ")
+		//console.log("*** not ble in nav ")
 		return false
 	}
 
 	navigator.bluetooth.getAvailability().then(isAvailable => {
   	if (!isAvailable) {
-  		console.log("*** ble not avail")
+  		//console.log("*** ble not avail")
   		return false
   	}
 
@@ -1809,7 +1857,7 @@ function checkRobotId() {
 			let codes = ["FN", "BB", "MB"]
 			if (type != currentPage.productID) {
 				if (codes.includes(type)) {
-					text = "You have entered " + userRobotID + " which starts with " + type + ". The correct code for the " + currentPage.productName + " is " + currentPage.productID + ". Your micro:bit may not be seated correctly. Please remove and reinsert the micro:bit, and be sure that its USB port is disconnected. Then enter the updated code. <button class=\"btn btn-teal btn-sm\" onclick=\"navigateTo('contactSupport')\">Code would not update</button>"
+					text = "You have entered " + userRobotID + " which starts with " + type + ". The correct code for the " + currentPage.productName + " is " + currentPage.productID + ". Your micro:bit may not be seated correctly. Please remove and reinsert the micro:bit, and be sure that its USB port is disconnected. Then enter the updated code. <button class=\"btn btn-teal btn-sm\" onclick=\"navigateTo('contactSupportMBCode')\">Code would not update</button>"
 				} else {
 					text = "You have entered " + userRobotID + " which is an invalid code."
 				}
@@ -1823,6 +1871,8 @@ function checkRobotId() {
 	document.getElementById("response").innerHTML = text
 	return success
 }
+createContactSupportPage("contactSupportMBCode", "A micro:bit with updated firmware is flashing a 7 character code that starts with the wrong product code and reseating/restarting the robot does not correct this")
+
 
 ///// Finch Tests /////
 
@@ -1854,7 +1904,7 @@ async function moveFinchAndWait(speedL, speedR, distance) {
     await timeout(100)
     moveStartTimedOut = (new Date().getTime() > moveSentTime + 500);
     let isMoving = robot.isMoving()
-    console.log("Waiting for move " + moveStartTimedOut + " " + isMoving + " " + wasMoving + " " + done)
+    //console.log("Waiting for move " + moveStartTimedOut + " " + isMoving + " " + wasMoving + " " + done)
     done = ((wasMoving || moveStartTimedOut) && !isMoving)
     wasMoving = isMoving
   }
@@ -1876,6 +1926,7 @@ async function testFinchLEDs() {
 	await timeout(1000)
 	robot.setTriLED(1, 255, 255, 255)
 	robot.setTriLED("all", 255, 255, 255)
+	await timeout(500)
 
 }
 
@@ -1979,6 +2030,7 @@ async function testBBRotation(port) {
 
 const currentUrl = window.location.href
 
+//Could redirect to main url and use document.referrer to get query
 /*console.log("*** referrer : " + document.referrer)
 if (currentPage != pages["home"]) {
 	window.location.replace(currentUrl.split('?')[0])
@@ -1989,8 +2041,6 @@ let queryString = new URLSearchParams(paramString);
 let startingProduct = null
 let startingSection = null
 for(let pair of queryString.entries()) {
-    //console.log("Key is:" + pair[0]);
-    //console.log("Value is:" + pair[1]);
     switch (pair[0].toLowerCase()) {
     case "product": 
     	startingProduct = pair[1].toLowerCase()
@@ -2049,8 +2099,3 @@ if (startingProduct == "finch" || startingProduct == "hummingbird") {
 const previousPages = []
 currentPage.show()
 
-//TODO:
-// - make 'test running' screen while a test is running
-// - add automatic details to 'contact support'
-// - remove the 'make sure it's plugged in' page when already connected
-// - remove query from header?

@@ -32,6 +32,17 @@ function onMessage(e) {
   } else if (e.data.cmd != null) {
     //This message is a micro:bit robot command
     parseMessage(e.data);
+  } else if (e.data.source == 'react-devtools-hook-settings-injector' || e.data.source == 'react-devtools-hook-installer') {
+    //TODO: anything? What is this?
+  } else if (robotTest) {
+    if (e.data == "new-wistia-iframe"){
+      //TODO: anything?
+    } else if (typeof e.data == "string" && e.data.startsWith('{"method":')) { //another wistia thing
+      //TODO: anything?
+    } else {
+      console.error("Message not recognized!")
+      console.error(e.data)
+    }
   } else {
     console.error("Message not recognized!")
     console.error(e.data)

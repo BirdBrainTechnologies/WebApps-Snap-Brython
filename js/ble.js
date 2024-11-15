@@ -222,7 +222,7 @@ function onConnectionComplete(robot) {
 
   console.log("Connection to " + robot.fancyName + " complete. Starting sensor polling.")
   robot.initialize()
-  console.log("*** initialized ")
+  //console.log("*** initialized ")
   closeErrorModal()
 
 
@@ -231,9 +231,9 @@ function onConnectionComplete(robot) {
     finchBloxRobot = robot
   }
   updateConnectedDevices();
-  console.log("*** connected devices updated")
+  //console.log("*** connected devices updated")
   updateBatteryStatus()
-  console.log("*** battery status updated")
+  //console.log("*** battery status updated")
   //open snap or brython.
   loadIDE();
 }

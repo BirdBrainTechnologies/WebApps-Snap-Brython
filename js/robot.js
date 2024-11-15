@@ -637,7 +637,7 @@ Robot.prototype.setLED = function(port, intensity) {
  * @param  {number} blue  Blue intensity (0-255)
  */
 Robot.prototype.setTriLED = function(port, red, green, blue) {
-  console.log("set led at " + port)
+  //console.log("set led at " + port)
   //microbits do not have any trileds
   if (this.isA(Robot.ofType.MICROBIT)) {
     //console.log("setTriLED called on a robot of type microbit");
