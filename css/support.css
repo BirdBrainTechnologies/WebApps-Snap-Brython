@@ -31,6 +31,7 @@ code { color: #fff; }
 .btn-orange { border-radius: 5px; background-color: #ff9922; color: #fff; }
 .btn-teal { border-radius: 5px; background-color: #089BAB; color: #fff; }
 .btn-product { width: 75%; height: 100%; font-size: 28px; }
+.btn-menu { width: 250px; font-size: 28px; }
 
 /* //BBT Style guide colors
 Colors.easternBlue = "#089BAB"; //bbt blue
@@ -40,3 +41,25 @@ Colors.seance = "#881199"; //dark purple
 Colors.bbtDarkGray = "#535353";
 Colors.iron = "#CACACA";
 */
+
+/* tooltip */
+.hoverable .hovertext {
+  visibility: hidden;
+  width: 250px;
+  background-color: #62BCC7;
+  color: #fff;
+  text-align: center;
+  border-radius: 6px;
+  padding: 5px;
+  margin-left: -20px;
+  margin-top: 40px;
+  opacity: 0.8;
+  font-size: 20px;
+
+  /* Position the tooltip */
+  position: absolute; 
+  z-index: 1;
+}
+.hoverable:hover .hovertext {
+  visibility: visible;
+}

@@ -370,12 +370,16 @@ function setupBluetoothSuccess() {
 	} else {
 		document.getElementById("details").innerHTML = "You are currently connected to " + robots[0].fancyName
 	}
+	let prefix = this.productName.toLowerCase()
+	document.getElementById("btn_robot_home").setAttribute("onclick", "navigateTo('" + prefix + "Home')")
+	document.getElementById("btn_mobile").setAttribute("onclick", "navigateTo('" + prefix + "BluetoothMobile')")
 }
 function nextActionBluetoothSuccess() {
 	let prefix = this.productName.toLowerCase()
 	navigateTo("" + prefix + "Bluetooth4")
 }
 pages['finchBluetoothSuccess'] = new Page("finchSuccess", "bluetoothSuccess", setupBluetoothSuccess, takedownSuccess, nextActionBluetoothSuccess)
+pages['finchBluetoothMobile'] = new Page("finchBluetooth", "bluetoothMobile")
 
 pages['finchCode'] = new Page("finchCode", "finchCode1")
 
@@ -428,6 +432,7 @@ pages['hummingbirdBluetooth6'] = new Page("hummingbirdBluetooth", "bluetooth6", 
 pages['hummingbirdBluetooth7'] = new Page("hummingbirdBluetooth", "bluetooth7", setupBluetooth7)
 pages['hummingbirdBluetooth8'] = new Page("hummingbirdBluetooth", "bluetooth8", setupBluetooth8)
 pages['hummingbirdBluetoothSuccess'] = new Page("hummingbirdSuccess", "bluetoothSuccess", setupBluetoothSuccess, takedownSuccess, nextActionBluetoothSuccess)
+pages['hummingbirdBluetoothMobile'] = new Page("hummingbirdBluetooth", "bluetoothMobile")
 
 pages['hummingbirdCode'] = new Page("hummingbirdCode", "hummingbirdCode1")
 //pages['hummingbirdCodeLEDs'] = new Page("hummingbirdCode", "hummingbirdCodeLEDs")
@@ -531,6 +536,12 @@ function basicButton(text, onclickFnString, tealBg, idString) {
 function externalLinkButton(text, href, tealBg) {
 	let colorClass = tealBg ? `btn-teal` : `btn-orange`
 	return `<a class="btn ` + colorClass + ` btn-lg m-1" style="color: #fff;" target="_blank" href="` + href + `">` + text + `</a>`
+}
+
+function buttonWithHoverText(btnLabel, onclickFnString, hoverText) {
+	let onclick = onclickFnString ? ` onclick="` + onclickFnString + `"` : ``
+	//return `<div class="hoverable"><button class="btn btn-orange btn-lg m-1 btn-menu"` + onclick + `>` + btnLabel + `</button><span class="hovertext">` + hoverText + `</span></div>`
+	return `<button class="btn btn-orange btn-lg m-1 btn-menu hoverable"` + onclick + `><span class="hovertext">` + hoverText + `</span>` + btnLabel + `</button>`
 }
 
 function codeTutorialButtons(product, component) {
@@ -774,36 +785,24 @@ contents["comingSoon"] = `
 contents["finchHome"] = subHeader + `
 <div class="row align-self-center">
 	<div class="col-sm-4">
-		<button class="btn btn-orange btn-lg" aria-label="power" onclick="navigateTo('finchPower')" style="width: 200px;">
-			<span>Power</span>
-		</button>
+	` + buttonWithHoverText("Power", "navigateTo('finchPower')", "Click here if your Finch isn't powering on, or powers off randomly") + `
 	</div>
 	<div class="col-sm-4">
-		<button class="btn btn-orange btn-lg" aria-label="bluetooth" onclick="navigateTo('finchBluetooth')" style="width: 200px;">
-			<span>Bluetooth</span>
-		</button>
+	` + buttonWithHoverText("Bluetooth", "navigateTo('finchBluetooth')", "Click here if you cannot connect to Bluetooth") + `
 	</div>
 	<div class="col-sm-4">
-		<button class="btn btn-orange btn-lg" aria-label="code" onclick="navigateTo('finchCode')" style="width: 200px;">
-			<span>Code</span>
-		</button>
+	` + buttonWithHoverText("Code", "navigateTo('finchCode')", "Click here for coding support and tutorials") + `
 	</div>
 </div>
 <div class="row align-self-center">
 	<div class="col-sm-4">
-		<button class="btn btn-orange btn-lg" aria-label="motors or wheels" onclick="navigateTo('finchMotors')" style="width: 200px;">
-			<span>Motors/Wheels</span>
-		</button>
+	` + buttonWithHoverText("Motors/Wheels", "navigateTo('finchMotors')", "Click here to troubleshoot and test your Finch motors/wheels") + `
 	</div>
 	<div class="col-sm-4">
-		<button class="btn btn-orange btn-lg" aria-label="L E D's" onclick="navigateTo('finchLEDs')" style="width: 200px;">
-			<span>LEDs</span>
-		</button>
+	` + buttonWithHoverText("LEDs", "navigateTo('finchLEDs')", "Click here to troubleshoot and test your Finch LEDs") + `
 	</div>
 	<div class="col-sm-4">
-		<button class="btn btn-orange btn-lg" aria-label="sensors" onclick="navigateTo('finchSensors')" style="width: 200px;">
-			<span>Sensors</span>
-		</button>
+	` + buttonWithHoverText("Sensors", "navigateTo('finchSensors')", "Click here to troubleshoot and test your Finch sensors") + `
 	</div>
 </div>
 <div class="row align-self-center">
@@ -812,36 +811,24 @@ contents["finchHome"] = subHeader + `
 contents["hummingbirdHome"] = subHeader + `
 <div class="row align-self-center">
 	<div class="col-sm-4">
-		<button class="btn btn-orange btn-lg" aria-label="power" onclick="navigateTo('hummingbirdPower')" style="width: 200px;">
-			<span>Power</span>
-		</button>
+	` + buttonWithHoverText("Power", "navigateTo('hummingbirdPower')", "Click here if your Hummingbird isn't powering on") + `
 	</div>
 	<div class="col-sm-4">
-		<button class="btn btn-orange btn-lg" aria-label="bluetooth" onclick="navigateTo('hummingbirdBluetooth')" style="width: 200px;">
-			<span>Bluetooth</span>
-		</button>
+	` + buttonWithHoverText("Bluetooth", "navigateTo('hummingbirdBluetooth')", "Click here if you cannot connect to Bluetooth") + `
 	</div>
 	<div class="col-sm-4">
-		<button class="btn btn-orange btn-lg" aria-label="code" onclick="navigateTo('hummingbirdCode')" style="width: 200px;">
-			<span>Code</span>
-		</button>
+	` + buttonWithHoverText("Code", "navigateTo('hummingbirdCode')", "Click here for coding support and tutorials") + `
 	</div>
 </div>
 <div class="row align-self-center">
 	<div class="col-sm-4">
-		<button class="btn btn-orange btn-lg" aria-label="servos" onclick="navigateTo('hummingbirdServos')" style="width: 200px;">
-			<span>Servos</span>
-		</button>
+	` + buttonWithHoverText("Motors/Servos", "navigateTo('hummingbirdServos')", "Click here to troubleshoot and test your Hummingbird motors/servos") + `
 	</div>
 	<div class="col-sm-4">
-		<button class="btn btn-orange btn-lg" aria-label="L E D's" onclick="navigateTo('hummingbirdLEDs')" style="width: 200px;">
-			<span>LEDs</span>
-		</button>
+	` + buttonWithHoverText("LEDs", "navigateTo('hummingbirdLEDs')", "Click here to troubleshoot and test your Hummingbird LEDs") + `
 	</div>
 	<div class="col-sm-4">
-		<button class="btn btn-orange btn-lg" aria-label="sensors" onclick="navigateTo('hummingbirdSensors')" style="width: 200px;">
-			<span>Sensors</span>
-		</button>
+	` + buttonWithHoverText("Sensors", "navigateTo('hummingbirdSensors')", "Click here to troubleshoot and test your Hummingbird sensors") + `
 	</div>
 </div>
 <div class="row align-self-center">
@@ -1175,7 +1162,8 @@ contents["finchCode1"] = codeTutorialPage('finch')
 
 contents["bluetooth1"] = `
 <div class="row align-self-center">
-	<span>When connecting over bluetooth, your robot should be on, and the micro:bit display should be flashing a sequence of characters. This sequence should be three letters, followed by the '#' symbol, followed by a seven character code.</span>
+	<span>When connecting over bluetooth, your robot should be on, and the micro:bit display should be flashing a sequence of characters.</span>
+	<span>This sequence should be three letters, followed by the '#' symbol, followed by a seven character code.</span>
 </div>
 <div class="row align-self-center">
 	<div class="col-sm-12">
@@ -1306,9 +1294,27 @@ contents["bluetoothSuccess"] = `
 	</div>
 	<div class="row">
 		<div class="col-sm-12">
-		` + basicButton("Test Connecting to a different robot", "disconnectFromAllRobots()")
-			+ basicButton("Diagnose another problem", "navigateTo('finchHome')") + `
+		` + basicButton("Test connecting to a different robot", "disconnectFromAllRobots()")
+			+ basicButton("Help me connect to a mobile app", null, true, "btn_mobile")
+			+ basicButton("Diagnose another problem", null, false, "btn_robot_home") + `
 		</div>
+	</div>
+</div>
+<div class="row align-self-center">
+</div>
+`
+contents["bluetoothMobile"] = `
+<div class="row align-self-center">
+	<h2>To connect your robot to one of our bluetooth mobile apps, make sure bluetooth is enabled</h2>
+</div>
+<div class="row align-self-center">
+	<div class="col-sm-4">
+		<div class="row justify-content-center">
+			<img class="img-fluid" src="support/BirdBloxSettings.png"/>
+		</div>
+	</div>
+	<div class="col-sm-8 align-self-center">
+		<span>To use these apps, bluetooth must be turned on in your tablet or phone's settings AND the app must be given permission to use bluetooth. To check your app's permissions, take a look at the app specific settings.</span>
 	</div>
 </div>
 <div class="row align-self-center">
@@ -1366,7 +1372,7 @@ contents["hummingbirdPower3"] = `
 </div>
 <div class="row align-self-center"></div>
 `
-createContactSupportPage("contactSupportBBPower", "A hummingbird controller will not power on.")
+createContactSupportPage("contactSupportBBPower", "A hummingbird controller will not power on")
 
 contents["hummingbirdPowerSuccess"] = `
 <div class="row align-self-center">
@@ -1416,7 +1422,7 @@ contents["hummingbirdServos2"] = `
 		</div>
 	</div>
 	<div class="col-sm-8">
-		<span>The hummingbird should be plugged into the included 4 AA battery pack or an approved wall plug using the power connector next to servo port 4.</span>
+		<span>The hummingbird should be plugged into the included 4 AA battery pack, the rechargeable power bank, or an approved wall plug using the power connector next to servo port 4.</span>
 		<p>Servos require more power than other components. If the batteries are low, or if the hummingbird is plugged in through either of the ports on the micro:bit, the lights and sensors may work while the servos do not.</p>
 	</div>
 </div>
@@ -1559,7 +1565,7 @@ contents["hummingbirdLEDs3"] = hummingbirdWires2 + `
 </div>
 <div class="row align-self-center"></div>
 `
-createContactSupportPage("contactSupportBBLEDPlug", "A Hummingbird Kit LED cannot be plugged and support app advice was not sufficient")
+createContactSupportPage("contactSupportBBLEDPlug", "A Hummingbird Kit LED cannot be plugged in and support app advice was not sufficient")
 
 contents["hummingbirdLEDs4"] = connectRobotOverBle
 
