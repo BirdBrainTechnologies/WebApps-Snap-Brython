@@ -1331,7 +1331,7 @@ contents["hummingbirdPower1"] = `
 		</div>
 	</div>
 	<div class="col-sm-6">
-		<span>You should be using the 4 AA battery pack provided with your kit, plugged in to the power connector located next to servo ports</span>
+		<span>You should be using the 4 AA battery pack provided with your kit or our <a href="https://store.birdbraintechnologies.com/collections/hummingbird-bit/products/hummingbird-rechargeable-battery" target="_blank">rechargeable power bank</a>, plugged in to the power connector located next to servo port 4</span>
 		<p></p>
 		<p>Using the USB connector or the battery port on the micro:bit will also provide some power, but it will not be enough for all components</p>
 	</div>
