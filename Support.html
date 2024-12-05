@@ -22,8 +22,18 @@
 		<div class="container-fluid min-vh-100 d-flex flex-column">
 
 			<div id="main-header" class="row">
-				<div class="col-xs-12">
+				<div class="col-sm-3 align-self-center">
+					<button id="back-button" class="btn btn-orange btn-lg" aria-label="back" onclick="navigateBack()" style="visibility: hidden;">
+						<i class="fas fa-chevron-left"></i>
+					</button>
+					<button id="home-button" class="btn btn-orange btn-lg" aria-label="home" onclick="navigateTo('home')">
+						<i class="fas fa-home"></i> 
+					</button>
+				</div>
+				<div class="col-sm-6 text-center">
 					<img id="birdbrain-logo" src="img/birdbrain-logo-h.png" alt="BirdBrain Technologies LLC" />
+				</div>
+				<div class="col-sm-3">
 				</div>
 			</div>
 
@@ -38,8 +48,7 @@
 		</div>
 
 
-		<footer id="bottom-buttons" style="position: absolute; bottom: 10px; right: 10px; width: 100% z-index: -1;">
-			<!--<div class="container fixed-bottom">-->
+		<!--<footer id="bottom-buttons" style="position: absolute; bottom: 10px; right: 10px; width: 100% z-index: -1;">
 				<div class="d-grid gap-2 d-flex justify-content-end">
 					<button id="back-button" class="btn btn-orange btn-lg" aria-label="back" onclick="navigateBack()" style="visibility: hidden;">
 						<i class="fas fa-chevron-left"></i>
@@ -48,8 +57,7 @@
 						<i class="fas fa-home"></i> 
 					</button>
 				</div>
-			<!--</div>-->
-		</footer>
+		</footer>-->
 
 		<!-- Include main code -->
 		<!--<script src="js/install.js"></script>-->
