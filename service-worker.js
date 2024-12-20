@@ -1961,7 +1961,7 @@ const FINCHBLOX_FILES_TO_CACHE = [
 ];
 
 const HATCHLING_FILES_TO_CACHE = [
-  'Hatchling.html',
+  'Hatchicons.html',
   'manifest-hatchling.json',
   'finchblox/Images/Color_circle_(RGB).svg',
   'img/hl_icon_32x32.png',

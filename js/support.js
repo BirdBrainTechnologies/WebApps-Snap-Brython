@@ -631,7 +631,7 @@ function createContactSupportPage(pageName, detailText) {
 	</div>
 	<div class="row align-self-center">
 		<div class="col-sm-12">
-		`	+ externalLinkButton("Contact Support", "https://www.birdbraintechnologies.com/about-us/contact-us/", true) + `
+		`	+ externalLinkButton("Contact Support", "https://www.birdbraintechnologies.com/contact-support/", true) + `
 		</div>
 	</div>
 	<div class="row"></div>
