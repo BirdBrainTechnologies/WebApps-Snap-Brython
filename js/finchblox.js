@@ -356,6 +356,9 @@ function parseFinchBloxRequest(request) {
         case "files":
           responseBody = FB_Files.getFileNamesResponse();
           break;
+        case "currentFile":
+          responseBody = FB_Files.getCurrentFile() 
+          break;
         case "new":
           filename = query[1].split("=").pop();
           let projectContent = request.body
