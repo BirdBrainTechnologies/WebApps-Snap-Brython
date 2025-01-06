@@ -247,6 +247,9 @@ function Page(headerName, contentName, setupFn, takedownFn, nextAction) {
 	} else if (headerName.startsWith("hummingbird") || contentName.startsWith("hummingbird")) {
 		this.productID = "BB"
 		this.productName = "Hummingbird"
+	} else if (headerName.startsWith("legacy")) {
+		this.productID = "LL"
+		this.productName = "Legacy"
 	}
 }
 Page.prototype.show = function() {
@@ -467,7 +470,8 @@ pages['hummingbirdSensors4'] = new Page("hummingbirdSensors", "hummingbirdSensor
 pages['hummingbirdSensors5'] = new Page("hummingbirdSensors", "hummingbirdSensors5")
 pages['hummingbirdSensorsSuccess'] = new Page("hummingbirdSuccess", "hummingbirdSensorsSuccess", setupSuccess, takedownSuccess)
 
-
+//pages for legacy products
+pages['legacyHome'] = new Page("legacy", "legacyHome")
 
 
 ///// Section Headers /////
@@ -486,7 +490,7 @@ sectionHeaders['contactSupport'] = `
 `
 
 function createSectionHeader(product, section) {
-	let text = (product == 'finch') ? "Finch Robot Support " : "Hummingbird Support "
+	let text = (product == 'finch') ? "Finch Robot Support " : (product == 'legacy') ? "Legacy Support " : "Hummingbird Support "
 	let subText = (section != null) ? "<h2>" + section + "</h2>" : ""
 	let imageFile = (product == 'finch') ? "finch_top_left_transparent.png" : "hummingbirdControllerTransparent.png"
 	return `
@@ -495,9 +499,10 @@ function createSectionHeader(product, section) {
 				<h1>` + text + `</h1>
 				` + subText + `
 			</div>
-			<div class="flex-fill col-lg-6">
-				<img src="support/` + imageFile + `"/>
-			</div>
+			<div class="flex-fill col-lg-6">` +
+			((product == 'legacy') ? `<img src="img/hummingbird128.png" style="max-width: 200px; width: 100%; padding-left: 20px;"/>
+				<img src="img/originalFinch.png" style="max-width: 200px; width: 100%; padding-left: 5px;"/>` : `<img src="support/` + imageFile + `"/>`) + 
+			`</div>
 		</div>
 	`
 }
@@ -523,6 +528,8 @@ sectionHeaders['hummingbirdServos'] = createSectionHeader("hummingbird", "Servos
 sectionHeaders['hummingbirdLEDs'] = createSectionHeader("hummingbird", "LEDs")
 sectionHeaders['hummingbirdSensors'] = createSectionHeader("hummingbird", "Sensors")
 sectionHeaders['hummingbirdSuccess'] = sectionHeaders['finchSuccess']
+
+sectionHeaders['legacy'] = createSectionHeader("legacy", "Hummingbird Duo and Original Finch")
 
 ///// Reusable Elements /////
 
@@ -740,16 +747,23 @@ const contents = {}
 contents["home"] =  `
 <div class="row align-self-center"><h2>Select your product</h2></div>
 <div class="row align-self-center">
-	<div class="col-sm-6">
+	<div class="col-sm-4">
 		<button class="btn btn-orange btn-lg btn-product" aria-label="finch" onclick="navigateTo('finchHome')">
 			<span>Finch Robot</span></br>
 			<img src="support/finch_top_left_transparent.png"/>
 		</button>
 	</div>
-	<div class="col-sm-6">
+	<div class="col-sm-4">
 		<button class="btn btn-orange btn-lg btn-product" aria-label="hummingbird" onclick="navigateTo('hummingbirdHome')">
 			<span>Hummingbird Kit</span></br>
 			<img src="support/hummingbirdControllerTransparent.png"/>
+		</button>
+	</div>
+	<div class="col-sm-4">
+		<button class="btn btn-orange btn-lg btn-product" aria-label="hummingbird" onclick="navigateTo('legacyHome')">
+			<span>Older Models</span></br>
+			<img src="img/hummingbird128.png" style="width: 40%;"/>
+			<img src="img/originalFinch.png" style="width: 40%;"/>
 		</button>
 	</div>
 </div>
@@ -832,6 +846,30 @@ contents["hummingbirdHome"] = subHeader + `
 	</div>
 </div>
 <div class="row align-self-center">
+</div>
+`
+contents["legacyHome"] = `
+<div class="row align-self-center">
+	
+	<span>
+	First, make sure you are using compatible software. 
+	</br>
+	For full details, check out our <a href="https://learn.birdbraintechnologies.com" target="_blank">portal</a>.
+	</br> 
+	Or, try one of our legacy web apps (available for <a href="https://snap-legacy.birdbraintechnologies.com/" target="_blank">Snap!</a> 
+	or <a href="https://brython-legacy.birdbraintechnologies.com/" target="_blank">Python</a>, these apps require a USB connection)
+	</br>
+	</br>
+	For Hummingbird Duo, you may need an upgrade bundle. 
+	</br>
+	If you would like to program your Hummingbird wirelessly, you will need to use BirdBlox and a <a href="https://store.birdbraintechnologies.com/collections/hummingbird-bit/products/birdblox-upgrade-bundle" target="_blank">Bluetooth Adapter</a>. 
+	</br>
+	If you would like to use MakeCode to program your Hummingbird, you will need the <a href="https://store.birdbraintechnologies.com/collections/hummingbird-bit/products/hummingbird-duo-makecode-upgrade" target="_blank">MakeCode Upgrade</a>.
+	</br>
+	</br>
+	If you are still having trouble, <a href="https://www.birdbraintechnologies.com/contact-support/" target="_blank">contact support</a>
+	</span>
+
 </div>
 `
 contents["finchMotors1"] = `
