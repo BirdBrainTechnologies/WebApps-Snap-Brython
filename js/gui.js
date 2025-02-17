@@ -106,10 +106,10 @@ function onLoad() {
  * user.
  */
 function updateConnectedDevices() {
-  console.log("*** updateConnectedDevices " + robots.length)
+  //console.log("*** updateConnectedDevices " + robots.length)
   if (BloxIDE) {
-    console.log("Updating FinchBlox connected devices. robots.length = " + robots.length + " finchbloxrobot = " + (finchBloxRobot ? finchBloxRobot.fancyName : null))
-    console.log(fbFrontend)
+    //console.log("Updating FinchBlox connected devices. robots.length = " + robots.length + " finchbloxrobot = " + (finchBloxRobot ? finchBloxRobot.fancyName : null))
+    //console.log(fbFrontend)
     if (fbFrontend.RowDialog.currentDialog && fbFrontend.RowDialog.currentDialog.constructor == fbFrontend.DiscoverDialog) {
       if (!finchBloxSetFrontendDevice()) {
         if (finchBloxRobot == null) {
@@ -220,7 +220,7 @@ function displayConnectedDevice(robot) {
     );
 
     el.find('.button-calibrate').click(function() {
-      console.log(robot.fancyName + " calibrate button pressed");
+      //console.log(robot.fancyName + " calibrate button pressed");
       robot.startCalibration();
       showCalibrationModal(robot.type, robot.hasV2Microbit);
     });
@@ -244,7 +244,7 @@ function displayConnectedDevice(robot) {
   }
 
   el.find('.button-disconnect').click(function() {
-    console.log(robot.fancyName + " disconnect button pressed");
+    //console.log(robot.fancyName + " disconnect button pressed");
     robot.userDisconnect();
   });
 

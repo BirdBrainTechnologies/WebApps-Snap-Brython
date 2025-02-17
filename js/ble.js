@@ -245,7 +245,8 @@ function onConnectionComplete(robot) {
  */
 function onDisconnected(event) {
   let device = event.target;
-  //console.log('Device ' + device.name + ' is disconnected.');
+  console.log('onDisconnected: ' + device.name + ' is disconnected.');
+
   for (let i = 0; i < robots.length; i++) {
     if (robots[i].device.name == device.name && robots[i].isConnected) {
       sendMessage({
@@ -260,6 +261,8 @@ function onDisconnected(event) {
       robots[i].externalDisconnect();
     }
   }
+
+  updateConnectedDevices();
 }
 
 /**

@@ -254,13 +254,29 @@ Robot.prototype.initialize = function() {
     this.write(Robot.propertiesFor[this.type].getFirmwareCommand)
   } else if (Hatchling || HatchPlus) {
     this.isInitialized = true //avoid any initialization for now
+    //this.setConnectionTimer()
   } else {
     this.write(Uint8Array.of(0x62, 0x67));
     this.startSetAll();
     this.isInitialized = true;
+    //this.setConnectionTimer()
   }
 
 }
+
+/*Robot.prototype.setConnectionTimer = function() {
+    this.connectionTimestamp = Date.now()
+    let oneHour = 3600000
+    let maxConnection = 20*oneHour
+
+    this.connectionTimer = setInterval(function() {
+      let currentTime = Date.now()
+      if ((currentTime - this.connectionTimestamp) > maxConnection) { //hours  //86400000) { //one day
+        console.log("disconnecting " + this.fancyName + " after " + maxConnection + "ms (" + maxConnection/3.6e+6 + " hours). Max connection time reached.")
+        this.userDisconnect()
+      }
+    }.bind(this), 1000)
+}*/
 
 /**
  * Robot.prototype.initializeDataArrays - Set all data arrays to initial values.
@@ -346,6 +362,9 @@ Robot.prototype.setDisconnected = function() {
   if (this.setAllInterval != null) {
     clearInterval(this.setAllInterval)
   }
+  /*if (this.connectionTimer != null) {
+    clearInterval(this.connectionTimer)
+  }*/
   updateConnectedDevices();
 }
 

@@ -8,6 +8,13 @@ var finchBloxRobot = null;
 var noFilesLoadedYet = true;
 const fbFrontend = document.getElementById('frontend').contentWindow
 
+//Capture keydown event for numpad
+if (HatchPlus) {
+  document.onkeydown = function(e) {
+    fbFrontend.CallbackManager.onKeyDownEvent(e)
+  }
+}
+
 /**
  * FB_Files - All of the file handling methods for FinchBlox. All files and
  * file information is stored in localStorage.
@@ -72,8 +79,23 @@ FB_Files.newFile = function(filename, contents) {
   //console.log("*** newFile " + filename + ": " + contents)
   //check if the filename already exists
   if (Object.keys(localStorage).includes(filename)) {
-    console.error("filename " + filename + " already exists.")
-    return
+    //This will only happen 
+    let availResponse = FB_Files.getAvailableName(filename)
+    try {
+      // Response is a JSON object
+      let json = JSON.parse(availResponse);
+      if (json.availableName != null) {
+        filename = json.availableName
+      } else {
+        console.error("filename " + filename + " already exists and no available name could be found.")
+        return
+      }
+    } catch (e) {
+      console.error("JSON parse error: ", e)
+      console.error("Response was: ", availResponse)
+      return
+    }
+    
   }
 
   let filenames = FB_Files.getFileNames()
@@ -82,6 +104,8 @@ FB_Files.newFile = function(filename, contents) {
   FB_Files.setFileNames(allFileNames.toString())
 
   localStorage[filename] = contents
+
+  return filename
 }
 /**
  * FB_Files.getFileNamesResponse - return a JSON list of the names of all currently
@@ -215,8 +239,9 @@ FB_Files.import = function() {
     console.log("**** found contents:")
     console.log(contents)
     
-    FB_Files.newFile(filename, contents)
-    FB_Files.openFile(filename)
+    //There can be a conflict if the filename already exists
+    let nameUsed = FB_Files.newFile(filename, contents)
+    FB_Files.openFile(nameUsed)
 
   }).catch(error => {
     console.error("failed to read file: " + error.message);
