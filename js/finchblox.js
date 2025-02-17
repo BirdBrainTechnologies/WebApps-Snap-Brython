@@ -10,9 +10,12 @@ const fbFrontend = document.getElementById('frontend').contentWindow
 
 //Capture keydown event for numpad
 if (HatchPlus) {
-  document.onkeydown = function(e) {
-    fbFrontend.CallbackManager.onKeyDownEvent(e)
-  }
+  document.addEventListener('DOMContentLoaded', function() {
+    console.log("*** content loaded")
+    document.onkeydown = function(e) {
+      fbFrontend.CallbackManager.onKeyDownEvent(e)
+    }
+  }, false);
 }
 
 /**
@@ -125,8 +128,8 @@ FB_Files.getFileNamesResponse = function() {
  * @param  {string} filename name of the file to open
  */
 FB_Files.openFile = function(filename) {
-  console.log("*** openFile " + filename + " " + noFilesLoadedYet)
-  console.log(localStorage)
+  //console.log("*** openFile " + filename + " " + noFilesLoadedYet)
+  //console.log(localStorage)
 
   if (noFilesLoadedYet) {
     noFilesLoadedYet = false;
@@ -206,7 +209,7 @@ FB_Files.rename = function(request) {
     return;
   }
   //console.log("*** rename " + oldName + " to " + newName)
-  console.log(localStorage)
+  //console.log(localStorage)
   this.newFile(newName, localStorage[oldName])
   this.deleteFile(oldName)
   this.openFile(newName)
@@ -230,14 +233,14 @@ FB_Files.deleteFile = function(filename) {
  * FB_Files.import - Import a file 
  */
 FB_Files.import = function() {
-  console.log("**** IMPORT!")
+  //console.log("**** IMPORT!")
 
   let input = document.getElementById('chooseFile')
   let file = input.files[0]
   let filename = file.name.slice(0, -4) //remove the extension
   file.text().then(contents => {
-    console.log("**** found contents:")
-    console.log(contents)
+    //console.log("**** found contents:")
+    //console.log(contents)
     
     //There can be a conflict if the filename already exists
     let nameUsed = FB_Files.newFile(filename, contents)

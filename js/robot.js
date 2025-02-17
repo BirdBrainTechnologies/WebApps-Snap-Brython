@@ -39,7 +39,7 @@ function Robot(device) {
   //this.isReconnecting = false; //uncomment for autoreconnect
   this.currentSensorData = [];
   this.hasStartedInitialization = false;
-  this.isInitialized = false;
+  this.isInitialized = (Hatchling || HatchPlus) ? true : false;
   this.hasV2Microbit = false;
 }
 
@@ -354,7 +354,7 @@ Robot.prototype.isA = function(type) {
 Robot.prototype.setDisconnected = function() {
   this.isConnected = false;
   this.hasStartedInitialization = false;
-  this.isInitialized = false;
+  this.isInitialized = (Hatchling || HatchPlus) ? true : false;
   this.devLetter = "X"
   this.RX = null
   this.TX = null
