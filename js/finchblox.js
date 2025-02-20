@@ -11,7 +11,7 @@ const fbFrontend = document.getElementById('frontend').contentWindow
 //Capture keydown event for numpad
 if (HatchPlus) {
   document.addEventListener('DOMContentLoaded', function() {
-    console.log("*** content loaded")
+    //console.log("*** content loaded")
     document.onkeydown = function(e) {
       fbFrontend.CallbackManager.onKeyDownEvent(e)
     }
@@ -322,6 +322,9 @@ function parseFinchBloxRequest(request) {
   let path = request.request.split("/");
   let query = path[1].split("?")
   switch (path[0]) {
+    case "focus":
+      window.focus()
+      break;
     case "settings":
       let key = query[1].split("=")[1]
       if (query[0] == "get" && key == "enableSnapNoise") {
