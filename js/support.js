@@ -1098,7 +1098,7 @@ contents["finchPower1"] = `
 	</div>
 	<div class="col-lg-8 col-md-6">
 		<p>
-			To charge the Finch, plug the USB-C cable (micro-USB on older models) into the charging slot beneath the Finch’s tail. A small green or yellow light will illuminate next to the charging plug. 
+			To charge the Finch, plug the USB-C cable (micro-USB on older models) into the charging slot beneath the Finch’s tail. A small red light (yellow on older models) will illuminate next to the charging plug. 
 			<br>
 			Plugging the micro USB into the micro:bit will <b>NOT</b> charge the Finch! A full charge requires 7 hours; consider charging overnight.
 		</p>
