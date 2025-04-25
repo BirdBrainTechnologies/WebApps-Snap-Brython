@@ -515,8 +515,6 @@ function parseFinchBloxRequest(request) {
           if (robot != null) {
             robot.userDisconnect()
             finchBloxRobot = null
-            //TODO: Should this be done in the FinchBlox frontend?
-            fbFrontend.DeviceManager.removeAllDevices()
           }
           break;
         default:
