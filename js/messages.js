@@ -201,6 +201,18 @@ function parseMessage(message) {
       robot.setHatchlingPort(message.port, message.value)
 
       break;*/
+    case "asrLearn":
+      robot.setI2C(50)
+      break;
+    case "asrClearLearning":
+      robot.setI2C(60)
+      break;
+    case "aiLensLearnObject":
+      robot.setI2C( (100 + message.idNum) )
+      break;
+    case "aiLensSwitchFunction":
+      robot.setI2C( message.mode )
+      break;
     default:
       console.error("Command not implemented: " + message.cmd);
   }

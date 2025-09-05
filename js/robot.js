@@ -96,7 +96,7 @@ Robot.propertiesFor = {
   //micro:bit
   3: {
     setAllLetter: 0x90,
-    setAllLength: 8,
+    setAllLength: 9, //8,  //Added one to accommodate I2C communication
     triLedCount: 0,
     buzzerIndex: 1,
     buzzerBytes: 5,
@@ -1054,6 +1054,21 @@ Robot.prototype.setPrint = function(printChars) {
   }
 
   this.ledDisplayData.update(0, data);
+}
+
+/**
+ * Robot.prototype.setI2C - Send command over I2C. Used for ElecFreaks 
+ * accessories. Standalone micro:bit only.
+ * 
+ * @param {number} command  Coded command to send
+ */
+Robot.prototype.setI2C = function(command) {
+  if (!this.isA(Robot.ofType.MICROBIT)) {
+    console.error("I2C accessories only available for standalone micro:bit")
+    return
+  }
+
+  this.setAllData.update(8, [command]);
 }
 
 /**
