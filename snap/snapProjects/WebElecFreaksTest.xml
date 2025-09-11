@@ -53,7 +53,7 @@
               <block s="doApplyExtension">
                 <l>src_load(url)</l>
                 <list>
-                  <l>libraries/bbtSnapExtension.js</l>
+                  <l>http://localhost:8000/snap/snapProjects/bbtSnapExtension.js</l>
                 </list>
               </block>
             </script>
@@ -91,7 +91,7 @@
             <block s="doApplyExtension">
               <l>src_load(url)</l>
               <list>
-                <l>libraries/bbtSnapExtension.js</l>
+                <l>http://localhost:8000/snap/snapProjects/bbtSnapExtension.js</l>
               </list>
             </block>
             <block s="doApplyExtension">
@@ -119,7 +119,7 @@
             <block s="doApplyExtension">
               <l>src_load(url)</l>
               <list>
-                <l>libraries/bbtSnapExtension.js</l>
+                <l>http://localhost:8000/snap/snapProjects/bbtSnapExtension.js</l>
               </list>
             </block>
             <block s="doApplyExtension">
@@ -147,7 +147,7 @@
             <block s="doApplyExtension">
               <l>src_load(url)</l>
               <list>
-                <l>libraries/bbtSnapExtension.js</l>
+                <l>http://localhost:8000/snap/snapProjects/bbtSnapExtension.js</l>
               </list>
             </block>
             <block s="doApplyExtension">
@@ -177,7 +177,7 @@
             <block s="doApplyExtension">
               <l>src_load(url)</l>
               <list>
-                <l>libraries/bbtSnapExtension.js</l>
+                <l>http://localhost:8000/snap/snapProjects/bbtSnapExtension.js</l>
               </list>
             </block>
             <block s="doApplyExtension">
@@ -207,7 +207,7 @@
             <block s="doApplyExtension">
               <l>src_load(url)</l>
               <list>
-                <l>libraries/bbtSnapExtension.js</l>
+                <l>http://localhost:8000/snap/snapProjects/bbtSnapExtension.js</l>
               </list>
             </block>
             <block s="doReport">
@@ -236,7 +236,7 @@
             <block s="doApplyExtension">
               <l>src_load(url)</l>
               <list>
-                <l>libraries/bbtSnapExtension.js</l>
+                <l>http://localhost:8000/snap/snapProjects/bbtSnapExtension.js</l>
               </list>
             </block>
             <block s="doIf">
@@ -300,7 +300,7 @@
             <block s="doApplyExtension">
               <l>src_load(url)</l>
               <list>
-                <l>libraries/bbtSnapExtension.js</l>
+                <l>http://localhost:8000/snap/snapProjects/bbtSnapExtension.js</l>
               </list>
             </block>
             <block s="doReport">
@@ -326,7 +326,7 @@
             <block s="doApplyExtension">
               <l>src_load(url)</l>
               <list>
-                <l>libraries/bbtSnapExtension.js</l>
+                <l>http://localhost:8000/snap/snapProjects/bbtSnapExtension.js</l>
               </list>
             </block>
             <block s="doReport">
@@ -352,7 +352,7 @@
             <block s="doApplyExtension">
               <l>src_load(url)</l>
               <list>
-                <l>libraries/bbtSnapExtension.js</l>
+                <l>http://localhost:8000/snap/snapProjects/bbtSnapExtension.js</l>
               </list>
             </block>
             <block s="doReport">
@@ -380,7 +380,7 @@
             <block s="doApplyExtension">
               <l>src_load(url)</l>
               <list>
-                <l>libraries/bbtSnapExtension.js</l>
+                <l>http://localhost:8000/snap/snapProjects/bbtSnapExtension.js</l>
               </list>
             </block>
             <block s="doReport">
@@ -420,7 +420,7 @@
             <block s="doApplyExtension">
               <l>src_load(url)</l>
               <list>
-                <l>libraries/bbtSnapExtension.js</l>
+                <l>http://localhost:8000/snap/snapProjects/bbtSnapExtension.js</l>
               </list>
             </block>
             <block s="doReport">
@@ -458,7 +458,7 @@
             <block s="doApplyExtension">
               <l>src_load(url)</l>
               <list>
-                <l>libraries/bbtSnapExtension.js</l>
+                <l>http://localhost:8000/snap/snapProjects/bbtSnapExtension.js</l>
               </list>
             </block>
             <block s="doReport">
@@ -482,7 +482,7 @@
             <block s="doApplyExtension">
               <l>src_load(url)</l>
               <list>
-                <l>libraries/bbtSnapExtension.js</l>
+                <l>http://localhost:8000/snap/snapProjects/bbtSnapExtension.js</l>
               </list>
             </block>
             <block s="doReport">
@@ -507,7 +507,7 @@
             <block s="doApplyExtension">
               <l>src_load(url)</l>
               <list>
-                <l>libraries/bbtSnapExtension.js</l>
+                <l>http://localhost:8000/snap/snapProjects/bbtSnapExtension.js</l>
               </list>
             </block>
             <block s="doReport">
@@ -544,7 +544,7 @@
             <block s="doApplyExtension">
               <l>src_load(url)</l>
               <list>
-                <l>libraries/bbtSnapExtension.js</l>
+                <l>http://localhost:8000/snap/snapProjects/bbtSnapExtension.js</l>
               </list>
             </block>
             <block s="doApplyExtension">
@@ -606,7 +606,7 @@
           <block s="doApplyExtension">
             <l>src_load(url)</l>
             <list>
-              <l>libraries/bbtSnapExtension.js</l>
+              <l>http://localhost:8000/snap/snapProjects/bbtSnapExtension.js</l>
             </list>
           </block>
           <block s="doDeclareVariables">
@@ -667,7 +667,7 @@
             <block s="doApplyExtension">
               <l>src_load(url)</l>
               <list>
-                <l>libraries/bbtSnapExtension.js</l>
+                <l>http://localhost:8000/snap/snapProjects/bbtSnapExtension.js</l>
               </list>
             </block>
             <block s="doApplyExtension">
@@ -689,7 +689,7 @@
             <block s="doApplyExtension">
               <l>src_load(url)</l>
               <list>
-                <l>libraries/bbtSnapExtension.js</l>
+                <l>http://localhost:8000/snap/snapProjects/bbtSnapExtension.js</l>
               </list>
             </block>
             <block s="doReport">
@@ -714,7 +714,7 @@
             <block s="doApplyExtension">
               <l>src_load(url)</l>
               <list>
-                <l>libraries/bbtSnapExtension.js</l>
+                <l>http://localhost:8000/snap/snapProjects/bbtSnapExtension.js</l>
               </list>
             </block>
             <block s="doReport">
@@ -740,7 +740,7 @@
             <block s="doApplyExtension">
               <l>src_load(url)</l>
               <list>
-                <l>libraries/bbtSnapExtension.js</l>
+                <l>http://localhost:8000/snap/snapProjects/bbtSnapExtension.js</l>
               </list>
             </block>
             <block s="doReport">
@@ -766,7 +766,7 @@
             <block s="doApplyExtension">
               <l>src_load(url)</l>
               <list>
-                <l>libraries/bbtSnapExtension.js</l>
+                <l>http://localhost:8000/snap/snapProjects/bbtSnapExtension.js</l>
               </list>
             </block>
             <block s="doReport">
@@ -791,7 +791,7 @@
             <block s="doApplyExtension">
               <l>src_load(url)</l>
               <list>
-                <l>libraries/bbtSnapExtension.js</l>
+                <l>http://localhost:8000/snap/snapProjects/bbtSnapExtension.js</l>
               </list>
             </block>
             <block s="doApplyExtension">
@@ -820,7 +820,7 @@
             <block s="doApplyExtension">
               <l>src_load(url)</l>
               <list>
-                <l>libraries/bbtSnapExtension.js</l>
+                <l>http://localhost:8000/snap/snapProjects/bbtSnapExtension.js</l>
               </list>
             </block>
             <block s="doIf">
@@ -894,7 +894,7 @@
             <block s="doApplyExtension">
               <l>src_load(url)</l>
               <list>
-                <l>libraries/bbtSnapExtension.js</l>
+                <l>http://localhost:8000/snap/snapProjects/bbtSnapExtension.js</l>
               </list>
             </block>
             <block s="doDeclareVariables">
@@ -977,7 +977,7 @@
             <block s="doApplyExtension">
               <l>src_load(url)</l>
               <list>
-                <l>libraries/bbtSnapExtension.js</l>
+                <l>http://localhost:8000/snap/snapProjects/bbtSnapExtension.js</l>
               </list>
             </block>
             <block s="doDeclareVariables">
@@ -1058,7 +1058,7 @@
             <block s="doApplyExtension">
               <l>src_load(url)</l>
               <list>
-                <l>libraries/bbtSnapExtension.js</l>
+                <l>http://localhost:8000/snap/snapProjects/bbtSnapExtension.js</l>
               </list>
             </block>
             <block s="doApplyExtension">
@@ -1083,7 +1083,7 @@
             <block s="doApplyExtension">
               <l>src_load(url)</l>
               <list>
-                <l>libraries/bbtSnapExtension.js</l>
+                <l>http://localhost:8000/snap/snapProjects/bbtSnapExtension.js</l>
               </list>
             </block>
             <block s="doApplyExtension">
@@ -1109,7 +1109,7 @@
             <block s="doApplyExtension">
               <l>src_load(url)</l>
               <list>
-                <l>libraries/bbtSnapExtension.js</l>
+                <l>http://localhost:8000/snap/snapProjects/bbtSnapExtension.js</l>
               </list>
             </block>
             <block s="doApplyExtension">
@@ -1141,7 +1141,7 @@
             <block s="doApplyExtension">
               <l>src_load(url)</l>
               <list>
-                <l>libraries/bbtSnapExtension.js</l>
+                <l>http://localhost:8000/snap/snapProjects/bbtSnapExtension.js</l>
               </list>
             </block>
             <block s="doIf">
@@ -1179,13 +1179,13 @@
           <translations></translations>
           <inputs>
               <input type="%txt" readonly="true">A<options>A&#xD;B&#xD;C</options></input>
-              <input type="%txt" readonly="true">Hi Shaun<options>Hi Shaun&#xD;Lights on&#xD;Lights off</options></input>
+              <input type="%txt" readonly="true">Hi Shaun<options>Hi Shaun&#xD;Lights on&#xD;Lights off&#xD;Turn left&#xD;Turn right&#xD;Full speed ahead&#xD;Reversing&#xD;Line Tracking&#xD;Avoid object&#xD;Stop&#xD;Start device&#xD;Turn off device&#xD;Pause&#xD;Keep going&#xD;Raise a level&#xD;Lower a level&#xD;Music on&#xD;Music off&#xD;Switch music&#xD;Execute function one&#xD;Execute function two&#xD;Learning entry 1&#xD;Learning entry 2&#xD;Learning entry 3&#xD;Learning entry 4&#xD;Learning entry 5&#xD;Learning entry 6&#xD;Learning entry 7&#xD;Learning entry 8&#xD;Learning entry 9&#xD;Learning entry 10</options></input>
           </inputs>
           <script>
             <block s="doApplyExtension">
               <l>src_load(url)</l>
               <list>
-                <l>libraries/bbtSnapExtension.js</l>
+                <l>http://localhost:8000/snap/snapProjects/bbtSnapExtension.js</l>
               </list>
             </block>
             <block s="doReport">
@@ -1198,18 +1198,80 @@
                       <l>
                         if (window.birdbrain.getASRPhrase === undefined) {
                           window.birdbrain.getASRPhrase = function (phrase, robot) {
+
+                            if(window.birdbrain.AiData[robot][0] != 1 &&
+                              window.birdbrain.AiData[robot][0] != 3) {
+                                console.log("Cannot get ASR phrase, no ASR connected.")
+                                return false;
+                              }
                             
-                            var phraseRecognized = window.birdbrain.sensorData[robot][0] 
+                            var phraseRecognized = window.birdbrain.AiData[robot][19] 
 
                             switch (phrase) {
                               case 'Hi Shaun':
-                                console.log("Hi Shaun " + phraseRecognized)
+                                //console.log("Hi Shaun " + phraseRecognized)
                                 return (phraseRecognized == 1)
                               case 'Lights on':
-                                console.log("Lights on " + phraseRecognized)
+                                //console.log("Lights on " + phraseRecognized)
                                 return (phraseRecognized == 16)
                               case 'Lights off':
                                 return (phraseRecognized == 17)
+                              case 'Turn left':
+                                return (phraseRecognized == 18)
+                              case 'Turn right':
+                                return (phraseRecognized == 19)
+                              case 'Full speed ahead':
+                                return (phraseRecognized == 20)
+                              case 'Reversing':
+                                return (phraseRecognized == 21)
+                              case 'Line Tracking':
+                                return (phraseRecognized == 22)
+                              case 'Avoid object':
+                                return (phraseRecognized == 23)
+                              case 'Stop':
+                                return (phraseRecognized == 24)
+                              case 'Start device':
+                                return (phraseRecognized == 32)
+                              case 'Turn off device':
+                                return (phraseRecognized == 33)
+                              case 'Pause':
+                                return (phraseRecognized == 34)
+                              case 'Keep going':
+                                return (phraseRecognized == 35)
+                              case 'Raise a level':
+                                return (phraseRecognized == 36)
+                              case 'Lower a level':
+                                return (phraseRecognized == 37)
+                              case 'Music on':
+                                return (phraseRecognized == 38)
+                              case 'Music off':
+                                return (phraseRecognized == 39)
+                              case 'Switch music':
+                                return (phraseRecognized == 40)
+                              case 'Execute function one':
+                                return (phraseRecognized == 49)
+                              case 'Execute function two':
+                                return (phraseRecognized == 50)
+                              case 'Learning entry 1':
+                                return (phraseRecognized == 80)
+                              case 'Learning entry 2':
+                                return (phraseRecognized == 81)
+                              case 'Learning entry 3':
+                                return (phraseRecognized == 82)
+                              case 'Learning entry 4':
+                                return (phraseRecognized == 83)
+                              case 'Learning entry 5':
+                                return (phraseRecognized == 84)
+                              case 'Learning entry 6':
+                                return (phraseRecognized == 85)
+                              case 'Learning entry 7':
+                                return (phraseRecognized == 86)
+                              case 'Learning entry 8':
+                                return (phraseRecognized == 87)
+                              case 'Learning entry 9':
+                                return (phraseRecognized == 88)
+                              case 'Learning entry 10':
+                                return (phraseRecognized == 89)
                               default:
                                 console.error("unknown phrase " + phrase);
                                 return false;
@@ -1240,7 +1302,7 @@
             <block s="doApplyExtension">
               <l>src_load(url)</l>
               <list>
-                <l>libraries/bbtSnapExtension.js</l>
+                <l>http://localhost:8000/snap/snapProjects/bbtSnapExtension.js</l>
               </list>
             </block>
             <block s="doRun">
@@ -1259,6 +1321,73 @@
                 </block>
                 <list>
                   <block var="devId"/>
+                </list>
+              </block>
+          </script>
+      </block-definition>
+      <block-definition s="micro:bit %&apos;devId&apos; AI Lens set mode %&apos;modeText&apos;"
+                        type="command" category="sensing">
+          <header></header>
+          <code></code>
+          <translations></translations>
+          <inputs>
+              <input type="%txt" readonly="true">A<options>A&#xD;B&#xD;C</options></input>
+              <input type="%txt" readonly="true">Ball recognition<options>Card recognition&#xD;Face recognition&#xD;Ball recognition&#xD;Tracking recognition&#xD;Color recognition&#xD;Learn Object</options></input>
+          </inputs>
+          <script>
+            <block s="doApplyExtension">
+              <l>src_load(url)</l>
+              <list>
+                <l>http://localhost:8000/snap/snapProjects/bbtSnapExtension.js</l>
+              </list>
+            </block>
+            <block s="doRun">
+                <block s="reportJSFunction">
+                  <list>
+                    <l>devId</l>
+                    <l>modeText</l>
+                  </list>
+                  <l>
+                    let mode = null
+
+                    switch(modeText) {
+                      case 'Card recognition':
+                        mode = 2
+                        break;
+                      case 'Face recognition':
+                        mode = 6
+                        break;
+                      case 'Ball recognition':
+                        mode = 7
+                        break;
+                      case 'Tracking recognition':
+                        mode = 8
+                        break;
+                      case 'Color recognition':
+                        mode = 9
+                        break;
+                      case 'Learn Object':
+                        mode = 10
+                        break;
+                      default:
+                        console.log("Unrecognized AI Lens mode '" + modeText + "'")
+                        console.log(modeText)
+                    }
+
+                    var thisCommand = {
+                      robot: devId,
+                      cmd: "aiLensSwitchFunction",
+                      mode: mode
+                    }
+
+                    if (mode != null) {
+                      window.birdbrain.sendCommand(thisCommand);
+                    }
+                  </l>
+                </block>
+                <list>
+                  <block var="devId"/>
+                  <block var="modeText"/>
                 </list>
               </block>
           </script>

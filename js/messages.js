@@ -202,16 +202,20 @@ function parseMessage(message) {
 
       break;*/
     case "asrLearn":
-      robot.setI2C(50)
+      //robot.setI2C(50)
+      robot.setASR(50)
       break;
     case "asrClearLearning":
-      robot.setI2C(60)
+      //robot.setI2C(60)
+      robot.setASR(60)
       break;
     case "aiLensLearnObject":
-      robot.setI2C( (100 + message.idNum) )
+      //robot.setI2C( (100 + message.idNum) )
+      robot.setAiLens(0x0A, message.idNum)
       break;
     case "aiLensSwitchFunction":
-      robot.setI2C( message.mode )
+      //robot.setI2C( message.mode )
+      robot.setAiLens(0x20, message.mode)
       break;
     default:
       console.error("Command not implemented: " + message.cmd);

@@ -12,6 +12,10 @@ window.birdbrain.currentBeak = {};
 window.birdbrain.currentBeak.A = [0,0,0];
 window.birdbrain.currentBeak.B = [0,0,0];
 window.birdbrain.currentBeak.C = [0,0,0];
+window.birdbrain.AiData = {};
+window.birdbrain.AiData.A = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
+window.birdbrain.AiData.B = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
+window.birdbrain.AiData.C = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
 window.birdbrain.robotType = {
   FINCH: 1,
   HUMMINGBIRDBIT: 2,
@@ -37,6 +41,12 @@ window.birdbrain.messageChannel.port1.onmessage = function (e) {
       window.birdbrain.sensorData[robot] = e.data.sensorData;
       window.birdbrain.robotType[robot] = e.data.robotType;
       window.birdbrain.microbitIsV2[robot] = e.data.hasV2Microbit;
+    }
+
+    //AI packets
+    if (e.data.AiData != null && e.data.robot != null) {
+      let robot = e.data.robot;
+      window.birdbrain.AiData[robot] = e.data.AiData;
     }
 
     if (e.data.hidSensorData != null ) {

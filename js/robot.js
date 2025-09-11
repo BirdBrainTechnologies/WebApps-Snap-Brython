@@ -96,7 +96,7 @@ Robot.propertiesFor = {
   //micro:bit
   3: {
     setAllLetter: 0x90,
-    setAllLength: 9, //8,  //Added one to accommodate I2C communication
+    setAllLength: 8,  
     triLedCount: 0,
     buzzerIndex: 1,
     buzzerBytes: 5,
@@ -1056,20 +1056,25 @@ Robot.prototype.setPrint = function(printChars) {
   this.ledDisplayData.update(0, data);
 }
 
+
+
+Robot.prototype.setAiLens = function(setting, arg) {
+  //this.setI2C(0xA1, setting, arg)
+  this.write(new Uint8Array([0xA1, setting, arg]))
+}
+Robot.prototype.setASR = function(setting) {
+  //this.setI2C(0xA2, setting)
+  this.write(new Uint8Array([0xA2, setting]))
+}
 /**
  * Robot.prototype.setI2C - Send command over I2C. Used for ElecFreaks 
  * accessories. Standalone micro:bit only.
  * 
  * @param {number} command  Coded command to send
  */
-Robot.prototype.setI2C = function(command) {
-  if (!this.isA(Robot.ofType.MICROBIT)) {
-    console.error("I2C accessories only available for standalone micro:bit")
-    return
-  }
-
-  this.setAllData.update(8, [command]);
-}
+/*Robot.prototype.setI2C = function(command, setting, arg) {
+  this.write([command, setting, arg])
+}*/
 
 /**
  * Robot.prototype.stopAll - Stop all robot actions and reset states.
@@ -1140,6 +1145,19 @@ Robot.prototype.receiveSensorData = function(data) {
     this.isInitialized = true
     return
   }
+
+
+  //AI packet
+  if (data[16] == 0xFF) {
+
+    sendMessage({
+      robot: this.devLetter,
+      AiData: data,
+    });
+
+    return
+  }
+
 
   this.currentSensorData = data
   //console.log(data)
