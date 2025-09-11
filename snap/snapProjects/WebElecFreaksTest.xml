@@ -1392,6 +1392,38 @@
               </block>
           </script>
       </block-definition>
+      <block-definition s="micro:bit %&apos;devId&apos; AI data" type="reporter"
+                        category="sensing">
+          <header></header>
+          <code></code>
+          <translations></translations>
+          <inputs>
+              <input type="%txt" readonly="true">A<options>A&#xD;B&#xD;C</options></input>
+          </inputs>
+          <script>
+            <block s="doApplyExtension">
+              <l>src_load(url)</l>
+              <list>
+                <l>http://localhost:8000/snap/snapProjects/bbtSnapExtension.js</l>
+              </list>
+            </block>
+            <block s="doReport">
+              <block s="evaluate">
+                  <block s="reportJSFunction">
+                      <list>
+                          <l>devId</l>
+                      </list>
+                      <l>
+                        return window.birdbrain.AiData[devId]
+                      </l>
+                  </block>
+                  <list>
+                      <block var="devId"/>
+                  </list>
+              </block>
+            </block>
+          </script>
+      </block-definition>
     </blocks>
     <variables></variables>
 </project>
