@@ -1,3 +1,8 @@
 *.DS_Store
 temp/
-finchblox/*
+
+finchblox/all*
+finchblox/Fonts/*
+finchblox/Images/*
+finchblox/MyCSS*
+finchblox/HummingbirdDragAndDrop.html
