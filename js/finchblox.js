@@ -315,7 +315,7 @@ FB_Audio.prototype.playNote = function(requestString) {
 function parseFinchBloxRequest(request) {
   //const robot = getRobotByLetter("A");
   const robot = finchBloxRobot
-  //console.log("FinchBlox request string " + JSON.stringify(request));
+//  console.log(" *** FinchBlox request string " + JSON.stringify(request));
   let status = 200;
   let responseBody = "";
 
@@ -511,8 +511,9 @@ function parseFinchBloxRequest(request) {
           }
           break;
         case "disconnect":
-          //console.log("finchblox disconnect request.")
-          if (robot != null) {
+          let id = query[1].split("=")[2]
+          //console.log("*** finchblox request disconnect " + id + ". Current robot: " + robot.device.name)
+          if (robot != null && id == robot.device.name) {
             robot.userDisconnect()
             finchBloxRobot = null
           }
@@ -720,7 +721,7 @@ function getFinchBloxRobotInput(path, robot) {
  * @param  {Object} device ble device connecting
  */
 function finchBloxNotifyDiscovered(device) {
-  console.log("*** Notifying frontend: Discovered " + device.name);
+//  console.log("*** Notifying frontend: Discovered " + device.name);
   let fancyName = null
   if (Hatchling || HatchPlus) {
     fancyName = device.name
@@ -742,14 +743,14 @@ function finchBloxNotifyDiscovered(device) {
  * @return {boolean}  true if set successfully
  */
 function finchBloxSetFrontendDevice() {
-  console.log("*** finchBloxSetFrontendDevice")
-  console.log(fbFrontend.RowDialog.currentDialog)
+//  console.log("*** finchBloxSetFrontendDevice")
+//  console.log(fbFrontend.RowDialog.currentDialog)
   if (fbFrontend.RowDialog.currentDialog != null &&
     fbFrontend.RowDialog.currentDialog.discoveredDevices != null &&
     fbFrontend.RowDialog.currentDialog.discoveredDevices.length > 0) {
     let guiDevice = fbFrontend.RowDialog.currentDialog.discoveredDevices[0];
-    console.log("*** setting device to: ")
-    console.log(guiDevice)
+    //console.log("*** setting device to: ")
+    //console.log(guiDevice)
     fbFrontend.RowDialog.currentDialog.selectDevice(guiDevice)
     return true
   } else {
